@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--  
+/******************************************************************************
+ * Copyright 2013, Qualcomm Innovation Center, Inc.
+ *
+ *    All rights reserved.
+ *    This file is licensed under the 3-clause BSD license in the NOTICE.txt
+ *    file for this project. A copy of the 3-clause BSD license is found at:
+ *
+ *        http://opensource.org/licenses/BSD-3-Clause.
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the license is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the license for the specific language governing permissions and
+ *    limitations under the license.
+ ******************************************************************************/
+ -->
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<fx:root type="javafx.scene.layout.HBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns:fx="http://javafx.com/fxml">
+  <children>
+    <VBox fx:id="mCompletePane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="genlabel" HBox.hgrow="ALWAYS">
+      <children>
+        <BorderPane fx:id="mTitlePane" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0">
+          <bottom>
+            <HBox fx:id="mButtonBar" alignment="CENTER" prefHeight="-1.0" prefWidth="-1.0" styleClass="genlabel">
+              <children>
+                <Button fx:id="mInvokeButton" mnemonicParsing="false" onAction="#onInvokeButtonPressed" styleClass="buttonbar-element" text="Invoke" />
+                <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+                <ProgressIndicator fx:id="mProgressIndicator" progress="-1.0" styleClass="buttonbar-element" visible="false" />
+              </children>
+            </HBox>
+          </bottom>
+        </BorderPane>
+        <ListView fx:id="mInputArgumentPane" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
+        <ListView fx:id="mOutputArgumentPane" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
+        <Label fx:id="mErrorMessage" alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" styleClass="error-member" text="Error Message" textFill="RED" wrapText="true">
+          <graphic>
+            <Label fx:id="mErrorTitle" alignment="BOTTOM_CENTER" maxWidth="1.7976931348623157E308" styleClass="error-member, genlabel" text="Error:" textFill="RED">
+              <font>
+                <Font name="System Bold" size="16.0" />
+              </font>
+            </Label>
+          </graphic>
+          <VBox.margin>
+            <Insets bottom="2.0" left="2.0" right="2.0" />
+          </VBox.margin>
+        </Label>
+      </children>
+    </VBox>
+  </children>
+  <stylesheets>
+    <URL value="@MemberView.css" />
+  </stylesheets>
+</fx:root>

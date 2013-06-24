@@ -1,0 +1,5 @@
+/bin
+.settings/*
+*.o
+*.so
+jni/org_alljoyn_triumph_TriumphCPPAdapter.h

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--  
+/******************************************************************************
+ * Copyright 2013, Qualcomm Innovation Center, Inc.
+ *
+ *    All rights reserved.
+ *    This file is licensed under the 3-clause BSD license in the NOTICE.txt
+ *    file for this project. A copy of the 3-clause BSD license is found at:
+ *
+ *        http://opensource.org/licenses/BSD-3-Clause.
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the license is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the license for the specific language governing permissions and
+ *    limitations under the license.
+ ******************************************************************************/
+ -->
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<fx:root type="javafx.scene.layout.AnchorPane" xmlns:fx="http://javafx.com/fxml">
+	<children>
+		<HBox layoutX="0.0" layoutY="0.0" prefHeight="-1.0" prefWidth="-1.0">
+			<children>
+				<Label fx:id="mLabel" alignment="CENTER_RIGHT" prefHeight="27.0"
+					prefWidth="-1.0" text="Label" HBox.hgrow="SOMETIMES">
+					<HBox.margin>
+						<Insets left="3.0" />
+					</HBox.margin>
+				</Label>
+				<TextField fx:id="mInput" onAction="#onSaveCurrentValue"
+					prefHeight="27.0" prefWidth="-1.0" promptText="Enter value or &lt;null&gt; for Null"
+					HBox.hgrow="ALWAYS" />
+				<Button fx:id="mSave" mnemonicParsing="false" onAction="#onSaveCurrentValue"
+					text="Save" HBox.hgrow="NEVER">
+					<HBox.margin>
+						<Insets bottom="3.0" top="3.0" />
+					</HBox.margin>
+				</Button>
+				<Label fx:id="mError" alignment="CENTER" maxWidth="1.7976931348623157E308"
+					prefHeight="27.0" prefWidth="-1.0" text="Error" textAlignment="RIGHT"
+					textFill="RED" HBox.hgrow="SOMETIMES">
+					<HBox.margin>
+						<Insets right="3.0" />
+					</HBox.margin>
+				</Label>
+			</children>
+		</HBox>
+	</children>
+</fx:root>
