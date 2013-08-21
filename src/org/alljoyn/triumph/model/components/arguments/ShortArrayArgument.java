@@ -28,7 +28,11 @@ import org.w3c.dom.Node;
  */
 public class ShortArrayArgument extends NumberArrayArgument<short[]> {
 
-	private static final String SIGNED_SIGNATURE = "" + AJConstant.ALLJOYN_ARRAY + AJConstant.ALLJOYN_INT16;
+	/**
+     * 
+     */
+    private static final long serialVersionUID = -8723213085252764027L;
+    private static final String SIGNED_SIGNATURE = "" + AJConstant.ALLJOYN_ARRAY + AJConstant.ALLJOYN_INT16;
 	private static final String UNSIGNED_SIGNATURE = "" + AJConstant.ALLJOYN_ARRAY + AJConstant.ALLJOYN_UINT16;
 	
 	ShortArrayArgument(String name, DIRECTION direction, boolean isUnsigned) {

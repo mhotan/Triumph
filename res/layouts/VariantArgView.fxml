@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.HBox?>
+
+<fx:root type="HBox" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns:fx="http://javafx.com/fxml">
+  <children>
+    <BorderPane fx:id="mComponentPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0">
+      <bottom>
+        <Label fx:id="mError" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="error-message" text="">
+          <graphic>
+            <Label styleClass="error-label" text="Error:" />
+          </graphic>
+        </Label>
+      </bottom>
+      <top>
+        <HBox maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="component-pane">
+          <children>
+            <Label id="mName" fx:id="mLabel" maxHeight="1.7976931348623157E308" text="Label" />
+            <Pane maxHeight="1.7976931348623157E308" minWidth="10.0" prefHeight="-1.0" prefWidth="-1.0" />
+            <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" text="Signature:" />
+            <TextField fx:id="mSignatureInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#onSignatureSet" prefWidth="200.0" promptText="Signature" />
+            <Button fx:id="mSave" mnemonicParsing="false" text="Save">
+              <stylesheets>
+                <URL value="@General.css" />
+              </stylesheets>
+            </Button>
+          </children>
+        </HBox>
+      </top>
+    </BorderPane>
+  </children>
+  <stylesheets>
+    <URL value="@Error.css" />
+    <URL value="@ArgumentView.css" />
+    <URL value="@General.css" />
+  </stylesheets>
+</fx:root>

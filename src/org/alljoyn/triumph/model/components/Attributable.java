@@ -16,17 +16,31 @@
 
 package org.alljoyn.triumph.model.components;
 
+import java.util.List;
+
 /**
  * Interface that describes features of a method.
  * @author mhotan
  */
 public interface Attributable {
 
+    /**
+     * Returns a list of attributes that describes this.
+     * @return list of attributes for this
+     */
+    public List<Attribute> getAttributes();
+    
 	/**
 	 * Adds an attribute to this annotation.
 	 * <b>Ignores attributes that are null
 	 * @param attr add attributes
 	 */
 	public void addAttribute(Attribute attr);
+	
+	/**
+	 * Remove attributes
+	 * @param attr attribute to remove.
+	 */
+	public void removeAttribute(Attribute attr);
 	
 }

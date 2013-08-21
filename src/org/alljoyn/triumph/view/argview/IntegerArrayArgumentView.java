@@ -18,6 +18,7 @@ package org.alljoyn.triumph.view.argview;
 
 import java.util.List;
 
+import org.alljoyn.triumph.TriumphException;
 import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
 import org.alljoyn.triumph.model.components.arguments.IntegerArgument;
 import org.alljoyn.triumph.model.components.arguments.IntegerArrayArgument;
@@ -26,49 +27,70 @@ import org.alljoyn.triumph.util.AJConstant;
 
 public class IntegerArrayArgumentView extends ArrayArgumentView<int[]> {
 
-	private final IntegerArrayArgument mIntArg;
-	
-	public IntegerArrayArgumentView(IntegerArrayArgument arg) {
-		super(arg);
-		mIntArg = arg;
-	}
+    private final IntegerArrayArgument mIntArg;
 
-	@Override
-	protected ArgumentView<?> getBlankElement() {
-		// The way this is designed this casting to byte argument
-		// is the only unstable process.
-		char sig = mIntArg.isUnsigned() ? AJConstant.ALLJOYN_UINT32: AJConstant.ALLJOYN_INT32;
-		IntegerArgument arg = (IntegerArgument) ArgumentFactory.getArgument(
-				"" + sig, "",  getArgDirection());
-		IntegerArgumentView view = new IntegerArgumentView(arg);
-		view.hideSaveOption();
-		return view;
-	}
+    public IntegerArrayArgumentView(IntegerArrayArgument arg) {
+        super(arg);
+        mIntArg = arg;
 
-	@Override
-	public int[] getCurrentElements(StringBuffer buf) {
-		List<ArgumentView<?>> currentViews = getArgViews();
-		int[] array = new int[currentViews.size()];
-		
-		// For every one of the views cast it into a byte argument to extract the value.
-		for (int i = 0; i < currentViews.size(); ++i) {
-			
-			// Cast down to the correct argument view.
-			IntegerArgumentView bView = (IntegerArgumentView) currentViews.get(i);
-			
-			// Extract the value if it exists.
-			Integer val =  bView.getValue();
-			
-			// if it doesn't exists notify the error.
-			if (val == null) {
-				if (buf != null)
-					buf.append("Null value at index " + i);
-				return null;
-			}
-			
-			array[i] = val;
-		}
-		return array;
-	}
+        // Check for any current values.
+        int[] values = getValue();
+        if (values == null) return;
+
+        // Now that we have current values.
+        // Populate the current view.
+        try {
+            ArgumentView<?>[] views = new ArgumentView<?>[values.length];
+            for (int i = 0; i < values.length; ++i) {
+                views[i] = ArgumentFactory.getArgument(
+                        getInternalArgumentName(i+1), 
+                        arg.getInnerElementType(), values[i]).getView();
+            }
+            // If there any current values then populate the view.
+            for (int i = 0; i < values.length; ++i) {
+                addNewElem(views[i]);
+            }
+        } catch (TriumphException e) {
+            showError("Unable to unpack " + values.getClass().getSimpleName() 
+                    + " because of " + e.getMessage());
+        }
+    }
+
+    @Override
+    protected ArgumentView<?> getBlankElement() {
+        // The way this is designed this casting to byte argument
+        // is the only unstable process.
+        char sig = mIntArg.isUnsigned() ? AJConstant.ALLJOYN_UINT32: AJConstant.ALLJOYN_INT32;
+        IntegerArgument arg = (IntegerArgument) ArgumentFactory.getArgument(
+                "" + sig, "",  getArgDirection());
+        IntegerArgumentView view = new IntegerArgumentView(arg);
+        return view;
+    }
+
+    @Override
+    public int[] getCurrentElements(StringBuffer buf) {
+        List<ArgumentView<?>> currentViews = getArgViews();
+        int[] array = new int[currentViews.size()];
+
+        // For every one of the views cast it into a byte argument to extract the value.
+        for (int i = 0; i < currentViews.size(); ++i) {
+
+            // Cast down to the correct argument view.
+            IntegerArgumentView bView = (IntegerArgumentView) currentViews.get(i);
+
+            // Extract the value if it exists.
+            Integer val =  bView.getValue();
+
+            // if it doesn't exists notify the error.
+            if (val == null) {
+                if (buf != null)
+                    buf.append("Null value at index " + i);
+                return null;
+            }
+
+            array[i] = val;
+        }
+        return array;
+    }
 
 }

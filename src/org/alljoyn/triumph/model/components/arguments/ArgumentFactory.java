@@ -181,7 +181,7 @@ public class ArgumentFactory {
 		case AJConstant.ALLJOYN_STRING:
 			return new StringArgument(node, defaultDir);
 		case AJConstant.ALLJOYN_SIGNATURE:
-
+		    return new SignatureArgument(node, defaultDir);
 		case AJConstant.ALLJOYN_OBJECT_PATH:
 			return new ObjectPathArgument(node, defaultDir);
 		case AJConstant.ALLJOYN_ARRAY:
@@ -300,9 +300,13 @@ public class ArgumentFactory {
 			((DoubleArgument)arg).setValue((Double) o);
 			break;
 		case AJConstant.ALLJOYN_STRING:
+		    ((StringArgument)arg).setValue((String) o);
+            break;
 		case AJConstant.ALLJOYN_SIGNATURE:
+		    ((SignatureArgument)arg).setValue((String) o);
+            break;
 		case AJConstant.ALLJOYN_OBJECT_PATH:
-			((StringArgument)arg).setValue((String) o);
+			((ObjectPathArgument)arg).setValue((String) o);
 			break;
 		case AJConstant.ALLJOYN_ARRAY:
 			

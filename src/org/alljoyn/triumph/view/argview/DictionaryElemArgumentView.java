@@ -55,33 +55,20 @@ public class DictionaryElemArgumentView extends ArgumentView<Map.Entry<?, ?>> {
 	public DictionaryElemArgumentView(DictionaryEntryArgument arg) {
 		super(arg);
 		mArg = arg;
-
-		// FXML load the fxml layer.
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().
-				getResource("DictionaryEntry.fxml"));
-		fxmlLoader.setRoot(this);
-		fxmlLoader.setController(this);
-
-		try {
-			fxmlLoader.load();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
+/*
 		// Label the Argument to present
 		setLabel(arg.getSignature());
-		hideError();
-
+		hideError();*/
 		// Extract the view for all 
 		mKeyArgView = mArg.getKey().getView();
 		mValArgView = mArg.getVal().getView();
 		
+		mKeyArgView.hideSaveButton();
+		mValArgView.hideSaveButton();
+		
 		// Add the key and value to the containers.
 		mKeyContainer.getChildren().add(mKeyArgView);
 		mValContainer.getChildren().add(mValArgView);
-		
-		mKeyArgView.hideSaveOption();
-		mValArgView.hideSaveOption();
 		
 		mKeyArgView.hideError();
 		mValArgView.hideError();
@@ -90,37 +77,54 @@ public class DictionaryElemArgumentView extends ArgumentView<Map.Entry<?, ?>> {
 		// we allow the uesr to continue to alter its state
 		if (isInputArg())
 			return;
-
-		// Hide the irrelavent components
-		hideSaveOption();
 	}
+	
+	@Override
+    protected String getFXMLFileName() {
+        return "DictionaryEntry.fxml";
+    }
 
 	@Override
 	@FXML
-	public void onSaveCurrentValue() {
-		mKeyArgView.onSaveCurrentValue();
-		mValArgView.onSaveCurrentValue();
+	public String onSaveCurrentValue() {
+		StringBuffer buf = new StringBuffer();
+		String temp;
+		temp = mKeyArgView.onSaveCurrentValue();
+		if (temp != null)
+			buf.append("Key " + temp);
+		
+		temp = mValArgView.onSaveCurrentValue();
+		if (temp != null) 
+			buf.append("Value " + temp);
 		
 		Object key = mKeyArgView.getValue();
 		Object val = mValArgView.getValue();
 		
-		if (key == null) {
+/*		if (key == null) {
 			showError("Invalid key " + key);
 			return;
 		}
 		if (val == null) {
 			showError("Invalid value " + val);
 			return;
-		}
+		}*/
 		
 		// TODO Check if this type unsafe behavior will work.
 		// This is a tough situation where we don't enforce 
 		Map.Entry<?, ?> entry = new DictionaryEntry<Object, Object>(
 				key, val);
-		mArg.setValue(entry);
+		setValue(entry);
+		return buf.length() == 0 ? null : buf.toString();
 	}
-	
 
+    @Override
+    public void setEditable(boolean editable) {
+        mKeyArgView.setEditable(editable);
+        mValArgView.setEditable(editable);
+    }
 
-
+    @Override
+    protected boolean isEditable() {
+        return mKeyArgView.isEditable();
+    }
 }

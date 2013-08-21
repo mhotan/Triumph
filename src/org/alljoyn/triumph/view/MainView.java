@@ -30,7 +30,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 
-import org.alljoyn.triumph.util.ViewLoader;
+import org.alljoyn.triumph.util.loaders.ViewLoader;
 
 /**
  * Constructs the Main View for showing the application
@@ -97,6 +97,9 @@ public class MainView extends BorderPane {
 		this(handler);
 		setDistributedBusView(distributed);
 		setLocalBusView(local);
+		
+		setWidth(800);
+		setHeight(600);
 	}
 
 	/**

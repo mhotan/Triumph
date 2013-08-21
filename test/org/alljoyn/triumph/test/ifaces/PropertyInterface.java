@@ -1,6 +1,5 @@
 package org.alljoyn.triumph.test.ifaces;
 
-import org.alljoyn.bus.PropsInterface;
 import org.alljoyn.bus.annotation.BusInterface;
 import org.alljoyn.bus.annotation.BusProperty;
 

@@ -16,10 +16,9 @@
 
 package org.alljoyn.triumph.view.argview;
 
-import java.io.IOException;
-
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
 
 import org.alljoyn.triumph.model.components.arguments.Argument;
@@ -33,97 +32,92 @@ import org.alljoyn.triumph.model.components.arguments.Argument;
  */
 public abstract class SimpleArgumentView<T> extends ArgumentView<T> {
 
-	private static final String DEF_ERROR_MSG = "Error";
+    /**
+     * This is the main input variable for this view
+     */
+    @FXML protected TextField mInput;
 
-	/**
-	 * This is the main input variable for this view
-	 */
-	@FXML protected TextField mInput;
+    /**
+     * Create the basis for a Simple Argument Cell.
+     * @param argument argument to assign cell to.
+     */
+    protected SimpleArgumentView(Argument<T> argument) {
+        super(argument);
+//        ViewLoader.loadView("SimpleArgView.fxml", this);
 
-	/**
-	 * Create the basis for a Simple Argument Cell.
-	 * @param argument argument to assign cell to.
-	 */
-	protected SimpleArgumentView(Argument<T> argument) {
-		super(argument);
+        // Output argument should have an output 
+        // value assigned.  This may be null
+        T value = getValue();
+        mInput.setText(value == null ? "Null" : value.toString());
+        mInput.textProperty().addListener(new ChangeListener<String>() {
 
-		// FXML load the fxml layer.
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().
-				getResource("SimpleArgView.fxml"));
+            @Override
+            public void changed(ObservableValue<? extends String> observable,
+                    String oldValue, String newValue) {
+                if (newValue == null) {
+                    // Ignore new values
+                    return;
+                }
 
-		// Root is defined by fx:root is FXML
-		fxmlLoader.setRoot(this);
-		fxmlLoader.setController(this);
+                attemptToSet(newValue);
+            }
+        });
+    }
+    
+    @Override
+    protected String getFXMLFileName() {
+        return "SimpleArgView.fxml";
+    }
 
-		try {
-			fxmlLoader.load();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+    /**
+     * Save the current value.
+     */
+    @FXML
+    public String onSaveCurrentValue() {
+        // hide any current error message
+        return attemptToSet(mInput.getText());
+    }
 
-		// Label the Argument to present
-		setLabel(argument.getSignature());
-		
-		// Hide any error message
-		hideError();
+    /**
+     * Attempts to set the value of the argument to the specific type.
+     * 
+     * @param value String representation of the Value to set the argument to
+     * @return Error string or null otherwise
+     */
+    private String attemptToSet(String value) {
+        hideError();
+        StringBuffer buffer = new StringBuffer();
+        if (setArgument(value.trim(), buffer)) 
+            return null; // Successful set the argument
+        showError(buffer.toString());
+        return buffer.toString();
+    }
 
-		// If the argument is an input argument 
-		// we allow the uesr to continue to alter its state
-		if (isInputArg())
-			return;
+    @Override
+    public void setEditable(boolean editable) {
+        mInput.setEditable(editable);
+    }
 
-		// Output argument should have an output 
-		// value assigned.  This may be null
-		T value = getValue();
-		mInput.setText(value == null ? "Null" : value.toString());
-	}
-	
-	@Override
-	public void hideSaveOption() {
-		super.hideSaveOption();
-		mInput.setEditable(false);
-	}
+    @Override
+    protected boolean isEditable() {
+        return mInput.isEditable();
+    }
 
-	@Override
-	public void unhideSaveOption() {
-		super.unhideSaveOption();
-		mInput.setEditable(true);
-	}
-	
-	/**
-	 * Save the current value.
-	 */
-	@FXML
-	public void onSaveCurrentValue() {
-		// hide any current error message
-		hideError();
-
-		String raw = mInput.getText();
-		StringBuffer buffer = new StringBuffer();
-		if (setArgument(raw.trim(), buffer)) 
-			return; // Successful setting
-
-		// Handle failure case
-		String error = buffer.length() == 0 ? DEF_ERROR_MSG: buffer.toString();
-		showError(error);
-	}
-
-
-	/**
-	 * Attempts to set the value of the argument to the value stored in
-	 * the raw string.
-	 * 
-	 * If the raw value is not able to converted to the correct type, false will be returned 
-	 * and the error buffer will be filled with the Error message.
-	 * 
-	 * If successfully inputted then true is returned and the buffer
-	 * is filled with the raw value the argument was set to.  Note that 
-	 * the raw String value set to can be changed do to some conversion properties
-	 * 
-	 * @param raw Raw value
-	 * @param errorBuffer Buffer to hold the message.
-	 * @return true if the argument was set, false if error occurred
-	 */
-	protected abstract boolean setArgument(String raw, StringBuffer errorBuffer);
+    /**
+     * Attempts to set the value of the argument to the value stored in
+     * the raw string.
+     * 
+     * If the raw value is not able to converted to the correct type, false will be returned 
+     * and the error buffer will be filled with the Error message.
+     * 
+     * If successfully inputted then true is returned and the buffer
+     * is filled with the raw value the argument was set to.  Note that 
+     * the raw String value set to can be changed do to some conversion properties
+     * 
+     * @param raw Raw value
+     * @param errorBuffer Buffer to hold the message.
+     * @return true if the argument was set, false if error occurred
+     */
+    protected abstract boolean setArgument(String raw, StringBuffer errorBuffer);
 
 }

@@ -16,6 +16,9 @@
 
 package org.alljoyn.triumph.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -38,12 +41,14 @@ import org.alljoyn.triumph.model.components.Signal;
  * 
  * @author Michael Hotan, mhotan@quicinc.com
  */
-public class ObjectAttributeTreeClickHandler implements EventHandler<MouseEvent> {
+public class AllJoynComponentTreeClickHandler implements EventHandler<MouseEvent> {
 
 	/**
 	 * A reference to the tree so that we can track down the selected item.
 	 */
 	private final TreeView<AllJoynComponent> mTree;
+	
+	private final List<OnClickListener> mClickListeners;
 	
 	/**
 	 * 
@@ -51,11 +56,12 @@ public class ObjectAttributeTreeClickHandler implements EventHandler<MouseEvent>
 	 * @param model model to notify of data 
 	 * @param treeView List of to handle click
 	 */
-	public ObjectAttributeTreeClickHandler(TreeView<AllJoynComponent> treeView) {
+	public AllJoynComponentTreeClickHandler(TreeView<AllJoynComponent> treeView) {
 		assert treeView != null: "Cannot create a handler with a null list";
 
 		mTree = treeView;
-
+		mClickListeners = new ArrayList<AllJoynComponentTreeClickHandler.OnClickListener>();
+		
 		// Actually do the registration of this list view with
 		// this handler
 		mTree.setOnMouseClicked(this);
@@ -63,6 +69,11 @@ public class ObjectAttributeTreeClickHandler implements EventHandler<MouseEvent>
 
 	@Override
 	public void handle(MouseEvent event) {
+	    
+	    // only handle clicks
+	    if (!event.getEventType().equals(MouseEvent.MOUSE_CLICKED))
+	        return;
+	    
 		TreeItem<AllJoynComponent> treeItem = mTree.getSelectionModel().getSelectedItem();
 		// Handle a click that is not on a tree item.
 		if (treeItem == null) return;
@@ -87,6 +98,20 @@ public class ObjectAttributeTreeClickHandler implements EventHandler<MouseEvent>
 		if (prop != null) {
 			model.onPropertySelected(prop);
 		}
+	}
+	
+	public void addClickListener(OnClickListener list) {
+	    mClickListeners.add(list);
+	}
+	
+	public void removeClickListener(OnClickListener list) {
+	    mClickListeners.remove(list);
+	}
+	
+	public interface OnClickListener {
+	    
+	    public void onClick();
+	    
 	}
 
 }

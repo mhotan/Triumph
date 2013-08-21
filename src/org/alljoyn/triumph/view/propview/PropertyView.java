@@ -24,9 +24,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.Priority;
 
 import org.alljoyn.bus.BusException;
 import org.alljoyn.triumph.model.TriumphModel;
@@ -36,155 +37,133 @@ import org.alljoyn.triumph.model.components.AllJoynService;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
-import org.alljoyn.triumph.util.ViewLoader;
+import org.alljoyn.triumph.util.loaders.ViewLoader;
 import org.alljoyn.triumph.view.argview.ArgumentView;
 
 /**
- * View that is used to contain a Dbus/Alljoyn property
+ * View that is used to present a Dbus/Alljoyn property.
+ * This allows users to adjust writable properties.
  * 
  * @author mhotan@quicinc.com, Michael Hotan
  */
-public class PropertyView extends VBox {
+public class PropertyView extends BorderPane {
 
-	@FXML private ResourceBundle resources;
-	@FXML private URL location;
+    @FXML
+    private ResourceBundle resources;
 
-	@FXML
-	private AnchorPane mContent;
+    @FXML
+    private URL location;
 
-	@FXML
-	private Label mAccessLabel, mInterfaceName, mName, mObjectPath, mServiceName, mErrorLabel;
+    @FXML
+    private AnchorPane mArgumentPane; // Pane that will hold arguments.
 
-	@FXML
-	private HBox mButtonPane;
+    @FXML
+    private HBox mButtonPane;
 
-	@FXML
-	private Pane mButtonSpaceFiller;
+    @FXML
+    private Pane mButtonSpaceFiller;
 
-	@FXML
-	private Button mGetButton, mSetButton;
+    @FXML
+    private Label mError;
+
+    @FXML
+    private Button mGetButton;
+
+    @FXML
+    private Button mSetButton;
 
 
-	/**
-	 * A reference to the current Argument View
-	 */
-	private ArgumentView<?> mCurrentArgument;
+    /**
+     * A reference to the current Argument View
+     */
+    private ArgumentView<?> mCurrentArgument;
 
-	/**
-	 * Property to build view with.
-	 */
-	private final Property mProperty;
+    /**
+     * Property to build view with.
+     */
+    private final Property mProperty;
 
-	/**
-	 * Creates a property view to present the value
-	 * @param property 
-	 */
-	public PropertyView(Property property) {
-		ViewLoader.loadView("PropertyView.fxml", this);
+    /**
+     * Creates a property view to present the value
+     * @param property 
+     */
+    public PropertyView(Property property) {
+        ViewLoader.loadView("PropertyView.fxml", this);
+        mProperty = property;
+        
+        PropertyTitleView titleView = new PropertyTitleView(mProperty);
+        HBox.setHgrow(titleView, Priority.ALWAYS);
+        setTop(titleView);
 
-		mProperty = property;
-		mName.setText(mProperty.getName());
+        // Default the signature to be read only.
+        if (mProperty.hasReadAccess()) {
+            getProperty();
+        }
 
-		// Set the visibility of the buttons according to the access permission
-		mSetButton.setVisible(mProperty.hasWriteAccess());
-		mGetButton.setVisible(mProperty.hasReadAccess());
+        // Hide the error
+        hideError();
+    }
 
-		StringBuffer buf = new StringBuffer();
-		if (mProperty.hasReadAccess() && mProperty.hasWriteAccess())
-			buf.append("Read & Write");
-		else if (mProperty.hasReadAccess()) 
-			buf.append("Read");
-		else if (mProperty.hasWriteAccess())
-			buf.append("Write");
-		else // If there is no access to this property then remove the entire button pane
-			getChildren().remove(mButtonPane);
+    @FXML
+    void onGet(ActionEvent event) {
+        getProperty();
+    }
 
-		if (buf.length() > 0) {
-			mAccessLabel.setText("Access: " + buf.toString());
-		} else {
-			getChildren().remove(mAccessLabel);
-		}
+    @FXML
+    void onSet(ActionEvent event) {
+        setProperty();
+    }
 
-		AllJoynInterface iface = mProperty.getInterface();
-		AllJoynObject object = iface.getObject();
-		AllJoynService service = object.getOwner();
+    /**
+     * Gets the current value of the property.  This is done remotely if
+     * this property is a remote Property.
+     * 
+     * @return Argument that pertains to the Property, null otherwise
+     */
+    private void getProperty() {
+        try {
+            Object o = TriumphModel.getInstance().getProperty(mProperty);
+            Argument<?> arg = ArgumentFactory.getArgument(mProperty.getName(), mProperty.getSignature(), o);
+            mCurrentArgument = arg.getView();
+            mArgumentPane.getChildren().clear();
+            mArgumentPane.getChildren().add(mCurrentArgument);
+        } catch (BusException e) {
+            showError(e.getMessage());
+        }
+    }
 
-		mObjectPath.setText(object.getName());
-		mInterfaceName.setText(iface.getName());
-		mServiceName.setText(service.getName());
+    /**
+     * Set the Property to the current value
+     */
+    private void setProperty() {
+        try {
+            mCurrentArgument.onSaveCurrentValue();
+            TriumphModel.getInstance().setProperty(mProperty, mCurrentArgument.getArgument());
+        } catch (Exception e) {
+            showError(e.getMessage());
+        }
+    }
 
-		// Default the signature to be read only.
-		if (mProperty.hasReadAccess()) {
-			getProperty();
-		}
+    /**
+     * Show error with the associated message 
+     * @param message Message
+     */
+    private void showError(String message) {
+        mError.setVisible(true);
+        mError.setText(message == null ? "Unknown Error" : message);
+    }
 
-		// Hide the error
-		hideError();
-	}
+    private void hideError() {
+        mError.setVisible(false);
+    }
 
-	@FXML
-	void onGet(ActionEvent event) {
-		getProperty();
-	}
-
-	@FXML
-	void onSet(ActionEvent event) {
-		setProperty();
-	}
-
-	/**
-	 * Gets the current value of the property.  This is done remotely if
-	 * this property is a remote Property.
-	 * 
-	 * @return Argument that pertains to the Property, null otherwise
-	 */
-	private void getProperty() {
-		try {
-			Object o = TriumphModel.getInstance().getProperty(mProperty);
-			Argument<?> arg = ArgumentFactory.getArgument(mProperty.getName(), mProperty.getSignature(), o);
-			mCurrentArgument = arg.getView();
-			mContent.getChildren().clear();
-			mContent.getChildren().add(mCurrentArgument);
-		} catch (BusException e) {
-			showError(e.getMessage());
-		}
-	}
-
-	/**
-	 * Set the Property to the current value
-	 */
-	private void setProperty() {
-		try {
-			mCurrentArgument.onSaveCurrentValue();
-			TriumphModel.getInstance().setProperty(mProperty, mCurrentArgument.getArgument());
-		} catch (Exception e) {
-			showError(e.getMessage());
-		}
-	}
-
-	/**
-	 * Show error with the associated message 
-	 * @param message Message
-	 */
-	private void showError(String message) {
-		mErrorLabel.setVisible(true);
-		mErrorLabel.setText(message == null ? "Unknown Error" : message);
-	}
-
-	private void hideError() {
-		mErrorLabel.setVisible(false);
-	}
-
-	@FXML
-	void initialize() {
-		assert mButtonPane != null : "fx:id=\"mButtonPane\" was not injected: check your FXML file 'PropertyView.fxml'.";
-		assert mButtonSpaceFiller != null : "fx:id=\"mButtonSpaceFiller\" was not injected: check your FXML file 'PropertyView.fxml'.";
-		assert mContent != null : "fx:id=\"mContent\" was not injected: check your FXML file 'PropertyView.fxml'.";
-		assert mGetButton != null : "fx:id=\"mGetButton\" was not injected: check your FXML file 'PropertyView.fxml'.";
-		assert mInterfaceName != null : "fx:id=\"mInterfaceName\" was not injected: check your FXML file 'PropertyView.fxml'.";
-		assert mName != null : "fx:id=\"mName\" was not injected: check your FXML file 'PropertyView.fxml'.";
-		assert mObjectPath != null : "fx:id=\"mObjectPath\" was not injected: check your FXML file 'PropertyView.fxml'.";
-		assert mServiceName != null : "fx:id=\"mServiceName\" was not injected: check your FXML file 'PropertyView.fxml'.";
-		assert mSetButton != null : "fx:id=\"mSetButton\" was not injected: check your FXML file 'PropertyView.fxml'.";
-	}
+    @FXML
+    void initialize() {
+        assert mArgumentPane != null : "fx:id=\"mArgumentPane\" was not injected: check your FXML file 'PropertyView.fxml'.";
+        assert mButtonPane != null : "fx:id=\"mButtonPane\" was not injected: check your FXML file 'PropertyView.fxml'.";
+        assert mButtonSpaceFiller != null : "fx:id=\"mButtonSpaceFiller\" was not injected: check your FXML file 'PropertyView.fxml'.";
+        assert mError != null : "fx:id=\"mError\" was not injected: check your FXML file 'PropertyView.fxml'.";
+        assert mGetButton != null : "fx:id=\"mGetButton\" was not injected: check your FXML file 'PropertyView.fxml'.";
+        assert mSetButton != null : "fx:id=\"mSetButton\" was not injected: check your FXML file 'PropertyView.fxml'.";
+    }
 }

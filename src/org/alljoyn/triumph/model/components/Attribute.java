@@ -16,6 +16,9 @@
 
 package org.alljoyn.triumph.model.components;
 
+import java.io.IOException;
+import java.io.Serializable;
+
 import org.w3c.dom.Node;
 
 /**
@@ -27,9 +30,21 @@ import org.w3c.dom.Node;
  * 
  * @author Michael Hotan mhotan@quicinc.com
  */
-public class Attribute {
-	private final String mKey;
+public class Attribute implements Serializable {
+	/**
+     * Serialization ID
+     */
+    private static final long serialVersionUID = -7609236900871099295L;
+    private String mKey;
 	private String mValue;
+	
+	/**
+	 * Constructor for serialization.
+	 */
+	public Attribute() {
+	    mKey = "";
+	    mValue = null;
+	}
 	
 	/**
 	 * Create a wrapper for a particular attribute
@@ -87,4 +102,17 @@ public class Attribute {
 	public int hashCode() {
 		return mKey.hashCode();
 	}
+	
+	
+	private void writeObject(java.io.ObjectOutputStream out)
+            throws IOException {
+           out.writeUTF(mKey);
+           out.writeUTF(mValue);
+    }
+    
+    private void readObject(java.io.ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
+        mKey = in.readUTF();
+        mValue = in.readUTF();
+    }
 }

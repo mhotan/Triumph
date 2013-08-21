@@ -1,0 +1,4 @@
+This directory contains native libraries for 
+
+OS = Linux
+Architecture = x86

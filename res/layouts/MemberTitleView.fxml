@@ -17,7 +17,6 @@
  *    limitations under the license.
  ******************************************************************************/
  -->
-
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import javafx.scene.control.*?>
@@ -26,11 +25,11 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root type="javafx.scene.layout.BorderPane" xmlns:fx="http://javafx.com/fxml">
+<fx:root type="javafx.scene.layout.BorderPane" maxWidth="1.7976931348623157E308" xmlns:fx="http://javafx.com/fxml">
   <left>
     <VBox fx:id="mMainLabelPane" alignment="CENTER" prefHeight="-1.0" prefWidth="-1.0">
       <children>
-        <Label fx:id="mMemberName" maxWidth="1.7976931348623157E308" styleClass="general-label, title-label" text="Method/Signature" />
+        <Label fx:id="mMemberName" alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="general-label, title-label" text="Method/Signature" />
         <Label id="mAnnotationsLabel" fx:id="mAnnotationTitleLabel" styleClass="general-label, annotation-title-label" text="Annotation(s):" />
         <ListView fx:id="mAnnotationsList" prefHeight="-1.0" prefWidth="-1.0" />
       </children>
@@ -39,9 +38,21 @@
   <right>
     <VBox fx:id="mDetailLabelPane" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0">
       <children>
-        <Label fx:id="mWellKnownNameLabel" maxWidth="1.7976931348623157E308" styleClass="general-label" text="Well Known Name" />
-        <Label fx:id="mInterfaceLabel" maxWidth="1.7976931348623157E308" styleClass="general-label" text="Interface" />
-        <Label fx:id="mObjectPathLabel" maxWidth="1.7976931348623157E308" styleClass="general-label" text="Object Path" />
+        <Label fx:id="mWellKnownNameLabel" maxWidth="1.7976931348623157E308" styleClass="general-label" text="Well Known Name">
+          <graphic>
+            <Label text="EndPoint:" />
+          </graphic>
+        </Label>
+        <Label fx:id="mInterfaceLabel" maxWidth="1.7976931348623157E308" styleClass="general-label" text="Interface">
+          <graphic>
+            <Label text="Interface:" />
+          </graphic>
+        </Label>
+        <Label fx:id="mObjectPathLabel" maxWidth="1.7976931348623157E308" styleClass="general-label" text="Object Path">
+          <graphic>
+            <Label text="Object:" />
+          </graphic>
+        </Label>
       </children>
     </VBox>
   </right>

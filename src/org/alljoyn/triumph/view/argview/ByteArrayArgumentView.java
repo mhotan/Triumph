@@ -18,6 +18,7 @@ package org.alljoyn.triumph.view.argview;
 
 import java.util.List;
 
+import org.alljoyn.triumph.TriumphException;
 import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
 import org.alljoyn.triumph.model.components.arguments.ByteArgument;
 import org.alljoyn.triumph.model.components.arguments.ByteArrayArgument;
@@ -35,6 +36,28 @@ public class ByteArrayArgumentView extends ArrayArgumentView<byte[]> {
 	 */
 	public ByteArrayArgumentView(ByteArrayArgument arg) {
 		super(arg);
+		
+		// Check for any current values.
+		byte[] values = getValue();
+        if (values == null) return;
+        
+        // Now that we have current values.
+        // Populate the current view.
+        try {
+            ArgumentView<?>[] views = new ArgumentView<?>[values.length];
+            for (int i = 0; i < values.length; ++i) {
+                views[i] = ArgumentFactory.getArgument(
+                        getInternalArgumentName(i+1), 
+                        arg.getInnerElementType(), values[i]).getView();
+            }
+            // If there any current values then populate the view.
+            for (int i = 0; i < values.length; ++i) {
+                addNewElem(views[i]);
+            }
+        } catch (TriumphException e) {
+            showError("Unable to unpack " + values.getClass().getSimpleName() 
+                    + " because of " + e.getMessage());
+        }
 	}
 
 	@Override
@@ -44,7 +67,6 @@ public class ByteArrayArgumentView extends ArrayArgumentView<byte[]> {
 		ByteArgument arg = (ByteArgument) ArgumentFactory.getArgument(
 				"" + AJConstant.ALLJOYN_BYTE, "",  getArgDirection());
 		ByteArgumentView view = new ByteArgumentView(arg);
-		view.hideSaveOption();
 		return view;
 	}
 

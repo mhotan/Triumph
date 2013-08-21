@@ -22,6 +22,7 @@ import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
 
 import org.alljoyn.triumph.model.TriumphModel;
+import org.alljoyn.triumph.util.loaders.NativeLoader;
 import org.alljoyn.triumph.view.MainController;
 
 /**
@@ -38,8 +39,9 @@ public class MainApplication extends Application {
 
 	// Statically load All Joyn java library
 	static {
-		System.loadLibrary("alljoyn_java");
-		System.loadLibrary("triumph");
+		NativeLoader loader = new NativeLoader();
+		loader.loadLibrary("alljoyn_java");
+		loader.loadLibrary("triumph");
 	}
 	
 	/**

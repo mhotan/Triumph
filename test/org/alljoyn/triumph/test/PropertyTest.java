@@ -1,6 +1,25 @@
+/******************************************************************************
+ * Copyright 2013, Qualcomm Innovation Center, Inc.
+ *
+ *    All rights reserved.
+ *    This file is licensed under the 3-clause BSD license in the NOTICE.txt
+ *    file for this project. A copy of the 3-clause BSD license is found at:
+ *
+ *        http://opensource.org/licenses/BSD-3-Clause.
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the license is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the license for the specific language governing permissions and
+ *    limitations under the license.
+ ******************************************************************************/
+
+
 package org.alljoyn.triumph.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -19,8 +38,6 @@ import org.alljoyn.triumph.model.components.AllJoynService;
 import org.alljoyn.triumph.model.components.TriumphAJParser;
 import org.alljoyn.triumph.model.session.Session;
 import org.alljoyn.triumph.model.session.SessionManager;
-import org.alljoyn.triumph.test.ifaces.MemberService;
-import org.alljoyn.triumph.test.ifaces.MethodInterface;
 import org.alljoyn.triumph.test.ifaces.PropertyInterface;
 import org.junit.After;
 import org.junit.AfterClass;

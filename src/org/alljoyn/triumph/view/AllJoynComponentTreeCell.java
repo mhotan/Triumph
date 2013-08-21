@@ -85,20 +85,20 @@ public class AllJoynComponentTreeCell extends TreeCell<AllJoynComponent> {
 
 	private void drawProperty(AllJoynComponent item) {
 		// TODO Complete with actual Representation
-		setText(item.getString());
-		setTextFill(Color.BISQUE);
+	    setTextFill(Color.BLACK);
+	    setText(item.getString());
 	}
 
 	private void drawSignal(AllJoynComponent item) {
 		// TODO Complete with actual Representation
-		setText(item.getString());
-		setTextFill(Color.ORANGERED);
+	    setTextFill(Color.BLACK);
+	    setText(item.getString());
 	}
 
 	private void drawMethod(AllJoynComponent item) {
 		// TODO Complete with actual Representation
-		setText(item.getString());
-		setTextFill(Color.BLUEVIOLET);
+	    setTextFill(Color.BLACK);
+	    setText(item.getString());
 	}
 
 	/**

@@ -23,31 +23,36 @@ import org.w3c.dom.Node;
 
 public class LongArgument extends NumberArgument<Long> {
 
-	LongArgument(String name, DIRECTION direction, boolean isUnsigned) {
-		super(name, direction, isUnsigned);
-	}
-	
-	LongArgument(Node node, boolean isUnsigned, DIRECTION defaultDir) {
-		super(node, isUnsigned, defaultDir);
-	}
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6250147441382470498L;
 
-	@Override
-	protected ArgumentView<Long> createJavaFXNode() {
-		return new LongArgumentView(this);
-	}
+    LongArgument(String name, DIRECTION direction, boolean isUnsigned) {
+        super(name, direction, isUnsigned);
+    }
 
-	@Override
-	public String getSignature() {
-		String sig = isUnsigned() ? "Unsigned " : "";
-		return sig + "long " + getName();
-	}
+    LongArgument(Node node, boolean isUnsigned, DIRECTION defaultDir) {
+        super(node, isUnsigned, defaultDir);
+    }
 
-	@Override
-	protected String getAJSignature() {
-		if (isUnsigned())
-			return "" + AJConstant.ALLJOYN_UINT64;
-		else 
-			return "" + AJConstant.ALLJOYN_INT64;
-	}
+    @Override
+    protected ArgumentView<Long> createJavaFXNode() {
+        return new LongArgumentView(this);
+    }
+
+    @Override
+    public String getSignature() {
+        String sig = isUnsigned() ? "Unsigned " : "";
+        return sig + "long " + getName();
+    }
+
+    @Override
+    protected String getAJSignature() {
+        if (isUnsigned())
+            return "" + AJConstant.ALLJOYN_UINT64;
+        else 
+            return "" + AJConstant.ALLJOYN_INT64;
+    }
 
 }

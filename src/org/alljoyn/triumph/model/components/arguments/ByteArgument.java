@@ -21,32 +21,36 @@ import org.alljoyn.triumph.view.argview.ArgumentView;
 import org.alljoyn.triumph.view.argview.ByteArgumentView;
 
 /**
- * This is an argument that represents a single Byte
- * @author mhotan
+ * Argument that represents a single byte.
  */
 public class ByteArgument extends NumberArgument<Byte> {
-	
-	ByteArgument(String name, DIRECTION direction) {
-		super(name, direction, false);
-	}
-	
-	ByteArgument(org.w3c.dom.Node node, DIRECTION direction) {
-		super(node, false, direction);
-	}
 
-	@Override
-	protected ArgumentView<Byte> createJavaFXNode() {
-		return new ByteArgumentView(this);
-	}
+    /**
+     * Added Serialization ID
+     */
+    private static final long serialVersionUID = 449607774098645923L;
 
-	@Override
-	public String getSignature() {
-		return Byte.class.getSimpleName() + " " + getName();
-	}
+    ByteArgument(String name, DIRECTION direction) {
+        super(name, direction, false);
+    }
 
-	@Override
-	protected String getAJSignature() {
-		return "" + AJConstant.ALLJOYN_BYTE;
-	}
+    ByteArgument(org.w3c.dom.Node node, DIRECTION direction) {
+        super(node, false, direction);
+    }
 
+    @Override
+    protected ArgumentView<Byte> createJavaFXNode() {
+        return new ByteArgumentView(this);
+    }
+
+    @Override
+    public String getSignature() {
+        return Byte.class.getSimpleName() + " " + getName();
+    }
+
+    @Override
+    protected String getAJSignature() {
+        return "" + AJConstant.ALLJOYN_BYTE;
+    }
+    
 }

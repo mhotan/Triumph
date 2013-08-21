@@ -14,10 +14,6 @@
  *    limitations under the license.
  ******************************************************************************/
 
-.error-member {
-	-fx-text-fill: rgb(255,0,0);
-}
-
 .buttonbar {
 	-fx-padding: 1em;
 }
@@ -27,5 +23,13 @@
 }
 
 .argument-pane {
-	-fx-padding: 2 2 0 2;
+	-fx-padding: 2 2 2 2;
+}
+
+#mInputArgBox {
+	-fx-background-color: rgb(191,191,191)
+}
+
+#mOutputArgBox {
+	-fx-background-color: rgb(229,229,229)
 }

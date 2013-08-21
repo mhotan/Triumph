@@ -16,19 +16,19 @@
 
 package org.alljoyn.triumph.view.argview;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
+import org.alljoyn.triumph.MainApplication;
 import org.alljoyn.triumph.model.components.arguments.Argument;
+import org.alljoyn.triumph.util.loaders.ViewLoader;
 
 /**
  * An JavaFXML element that shows a particular multi element argument.
@@ -40,194 +40,219 @@ import org.alljoyn.triumph.model.components.arguments.Argument;
  */
 public abstract class MultiElementArgumentView<T> extends ArgumentView<T> {
 
-	@FXML Button mAddElem;
-	@FXML VBox mCenter;
+    @FXML Button mAddElem;
+    @FXML VBox mCenter;
 
-	/**
-	 * Internal list of ArgumentViews
-	 */
-	private final List<ArgumentView<?>> mArgViews;
+    /**
+     * Internal list of ArgumentViews
+     */
+    private final List<ArgumentView<?>> mArgViews;
 
-	/**
-	 * Creates an empty multielement argument view.
-	 * @param arg 
-	 */
-	protected MultiElementArgumentView(Argument<T> arg) {
-		super(arg);
+    private boolean isEditable;
 
-		mArgViews = new ArrayList<ArgumentView<?>>();
+    /**
+     * Creates an empty multielement argument view.
+     * @param arg 
+     */
+    protected MultiElementArgumentView(Argument<T> arg) {
+        super(arg);
+        //        ViewLoader.loadView("MultiElementView.fxml", this);
 
-		// FXML load the fxml layer.
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().
-				getResource("MultiElementView.fxml"));
-		fxmlLoader.setRoot(this);
-		fxmlLoader.setController(this);
+        // Set default to editable
+        isEditable = true;
+        mArgViews = new ArrayList<ArgumentView<?>>();
 
-		try {
-			fxmlLoader.load();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+        // Label the Argument to present
+        setLabel(arg.getSignature());
+        hideError();
 
-		// Label the Argument to present
-		setLabel(arg.getSignature());
-		hideError();
+        // Check if the 
 
-		// If the argument is an input argument 
-		// we allow the uesr to continue to alter its state
-		if (isInputArg())
-			return;
+        // If the argument is an input argument 
+        // we allow the uesr to continue to alter its state
+        if (isInputArg())
+            return;
 
-		// Hide the irrelavent components
-		hideSaveOption();
-		
-		mAddElem.setVisible(false);
-	}
+        mAddElem.setVisible(false);
+    }
 
-	@FXML
-	void onSave() {
-		onSaveCurrentValue();
-	}
+    @Override
+    protected String getFXMLFileName() {
+        return "MultiElementView.fxml";
+    }
 
-	/**
-	 * Adds an empty element to the end of this multiview element
-	 */
-	@FXML void onAddNewElem() {
-		// The type of this multi element argument 
-		// has the ability to produce a empty type to add this view.
-		addNewElem(getBlankElement());
-	}
+    @Override
+    public String onSaveCurrentValue() {
+        StringBuffer buf = new StringBuffer();
 
-	/**
-	 * Adds a pre constructed view to this argument.
-	 * If the view is null then nothing is added.
-	 * @param view inner view to add to this view
-	 */
-	protected void addNewElem(ArgumentView<?> view) {
-		if (view == null)
-			return; //  unable to create new view.
-		
-		// Current using two seperate data structures to track
-		// the new element.  mArgViews is an internal use data structure 
-		// to be used for saving and manipulating data.
-		// While mCenter is the actual UI element containing 
-		mArgViews.add(view);
+        for (ArgumentView<?> argView: mArgViews) {
+            String tmp = argView.onSaveCurrentValue();
+            if (tmp != null) {
+                if (buf.length() != 0) 
+                    buf.append("\n");
+                buf.append(tmp);
+            }
+        }
 
-		// If the structure is editable then wrap the contents in
-		// a removable container.
-		Node toAdd;
-		if (isEditable())
-			toAdd = new RemovableContainer(view, mCenter);
-		else 
-			toAdd = view;	
-		mCenter.getChildren().add(toAdd);
-	}
-	
-	/**
-	 * Returns the current list of ArgumentViews.
-	 * It is safe to case the elements of the ArgumentView elements
-	 * to the same dynamic type of the value returned from getBlankElement
-	 * 
-	 * @return a list of all the current Argument Views
-	 */
-	protected List<ArgumentView<?>> getArgViews() {
-		return new ArrayList<ArgumentView<?>>(mArgViews);
-	}
-	
-	@Override
-	public void onSaveCurrentValue() {
-		for (ArgumentView<?> argView: mArgViews) {
-			argView.onSaveCurrentValue();
-		}
-		
-		// Now we after updating all the internal elements we will 
-		// try to extract all the values.
-		// check if they are valid.
-		StringBuffer buf = new StringBuffer();
-		T currentValue = getCurrentElements(buf);
-		if (currentValue == null)
-			showError(buf.length() == 0 ? "Error" : buf.toString());
-		setValue(currentValue);
-	}
-	
-	/**
-	 * Attempts to extract the current state of the argument.
-	 * If there is an error null will be returned and the error 
-	 * message will be populated 
-	 * 
-	 * @return The current array of values in its current state, null on failure
-	 */
-	public abstract T getCurrentElements(StringBuffer buf);
+        if (buf.length() != 0) {
+            MainApplication.getLogger().warning("Unable to save " + mArg.getName());
+            return buf.toString();
+        }
 
-	/**
-	 * Method for subclass use.  Remove all UI elements to 
-	 * add new elements to this view.
-	 */
-	protected void hideAddElementButton() {
-		if (mAddElem == null) return;
-		mAddElem.setVisible(false);
-	}
-	
-	/**
-	 * Method for subclass use.  Remove all UI elements to 
-	 * add new elements to this view.
-	 */
-	protected void unHideAddElementButton() {
-		if (mAddElem == null) return;
-		mAddElem.setVisible(true);
-	}
-	
-	/**
-	 * Container object to help contain the any kind of payload.
-	 * @author mhotan
-	 */
-	private final class RemovableContainer extends BorderPane {
+        // Now we after updating all the internal elements we will 
+        // try to extract all the values.
+        // check if they are valid.
+        buf = new StringBuffer();
+        T currentValue = getCurrentElements(buf);
+        if (currentValue == null) {
+            return buf.length() == 0 ? "Error" : buf.toString();
+        }
+        setValue(currentValue);
+        return null;
+    }
 
-		@FXML Pane mPayload;
-		@FXML Button mRemove;
+    @FXML void onSave() {
+        onSaveCurrentValue();
+    }
 
-		private final Pane mParent;
+    /**
+     * Adds an empty element to the end of this multiview element
+     */
+    @FXML void onAddNewElem() {
+        // The type of this multi element argument 
+        // has the ability to produce a empty type to add this view.
+        addNewElem(getBlankElement());
+    }
 
-		RemovableContainer(Node payload, Pane parent) {
-			super();
+    /**
+     * Adds a pre constructed view to this argument.
+     * If the view is null then nothing is added.
+     * @param view inner view to add to this view
+     */
+    protected void addNewElem(ArgumentView<?> view) {
+        if (view == null)
+            return; //  unable to create new view.
 
-			// FXML load the fxml layer.
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().
-					getResource("RemovableContainer.fxml"));
-			fxmlLoader.setRoot(this);
-			fxmlLoader.setController(this);
+        // hide the save button
+        view.hideSaveButton();
+        
+        // Current using two seperate data structures to track
+        // the new element.  mArgViews is an internal use data structure 
+        // to be used for saving and manipulating data.
+        // While mCenter is the actual UI element containing 
+        mArgViews.add(view);
 
-			try {
-				fxmlLoader.load();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+        // If the structure is editable then wrap the contents in
+        // a removable container.
+        Node toAdd;
+        if (isEditable())
+            toAdd = new RemovableContainer(view, mCenter);
+        else 
+            toAdd = view;	
+        mCenter.getChildren().add(toAdd);
+    }
 
-			// Add the content inside this container.
-			mPayload.getChildren().add(payload);
-			mParent = parent;
-		}
+    /**
+     * Returns the current list of ArgumentViews.
+     * It is safe to case the elements of the ArgumentView elements
+     * to the same dynamic type of the value returned from getBlankElement
+     * 
+     * @return a list of all the current Argument Views
+     */
+    protected List<ArgumentView<?>> getArgViews() {
+        return new ArrayList<ArgumentView<?>>(mArgViews);
+    }
 
-		@FXML
-		void onRemove() {
-			// Have to remove the ArgumentView<?> element from the list containing it
-			mArgViews.remove(mPayload);
-			// Remove the UI element.
-			mParent.getChildren().remove(this);
-		}
+    /**
+     * Attempts to extract the current state of the argument.
+     * If there is an error null will be returned and the error 
+     * message will be populated 
+     * 
+     * @return The current array of values in its current state, null on failure
+     */
+    public abstract T getCurrentElements(StringBuffer buf);
 
-	}
-	
-	/**
-	 * Provides an blank argument view that corresponds to the right
-	 * type of the contained argument's type.
-	 * @return no value element that corresponds to this specific type.
-	 */
-	protected abstract ArgumentView<?> getBlankElement();
+    @Override
+    public void setEditable(boolean editable) {
+        isEditable = editable;
+        for (ArgumentView<?> arg : mArgViews) {
+            arg.setEditable(isEditable);
+        }
 
-	/**
-	 * Each multi element structure has the ability to determine if a 
-	 * @return whether this argument is editable
-	 */
-	protected abstract boolean isEditable();
+        if (isEditable) 
+            unHideAddElementButton();
+        else 
+            hideAddElementButton();
+    }
+
+    /**
+     * Return a general name when there is one present
+     * 
+     * @param position Position of the internal argument inside this argument view's argument
+     * @return String name of the argument
+     */
+    protected String getInternalArgumentName(int position) {
+        return "Field " + position + ".";
+    }
+
+    /**
+     * Method for subclass use.  Remove all UI elements to 
+     * add new elements to this view.
+     */
+    protected void hideAddElementButton() {
+        if (mAddElem == null) return;
+        mAddElem.setVisible(false);
+    }
+
+    /**
+     * Method for subclass use.  Remove all UI elements to 
+     * add new elements to this view.
+     */
+    protected void unHideAddElementButton() {
+        if (mAddElem == null) return;
+        mAddElem.setVisible(true);
+    }
+
+    @Override
+    protected boolean isEditable() {
+        return isEditable;
+    }
+
+    /**
+     * Provides an blank argument view that corresponds to the right
+     * type of the contained argument's type.
+     * @return no value element that corresponds to this specific type.
+     */
+    protected abstract ArgumentView<?> getBlankElement();
+
+    /**
+     * Container object to help contain the any kind of payload.
+     * @author mhotan
+     */
+    private final class RemovableContainer extends BorderPane {
+
+        @FXML Button mRemove;
+
+        private final Pane mParent;
+        private final ArgumentView<?> mPayload;
+
+        RemovableContainer(ArgumentView<?> payload, Pane parent) {
+            ViewLoader.loadView("RemovableContainer.fxml", this);
+
+            // Add the content inside this container.
+            setCenter(payload);
+            mParent = parent;
+            mPayload = payload;
+        }
+
+        @FXML
+        void onRemove() {
+            // Have to remove the ArgumentView<?> element from the list containing it
+            setCenter(null);
+            mArgViews.remove(mPayload);
+            // Remove the UI element.
+            mParent.getChildren().remove(this);
+        }
+    }
+
 }

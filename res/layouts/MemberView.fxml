@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--  
+/******************************************************************************
+ * Copyright 2013, Qualcomm Innovation Center, Inc.
+ *
+ *    All rights reserved.
+ *    This file is licensed under the 3-clause BSD license in the NOTICE.txt
+ *    file for this project. A copy of the 3-clause BSD license is found at:
+ *
+ *        http://opensource.org/licenses/BSD-3-Clause.
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the license is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the license for the specific language governing permissions and
+ *    limitations under the license.
+ ******************************************************************************/
+ -->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<fx:root type="VBox" fx:id="mCompletePane" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased" prefHeight="-1.0" prefWidth="800.0" styleClass="genlabel" xmlns:fx="http://javafx.com/fxml">
+  <children>
+    <HBox fx:id="mTitlePane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="NEVER" />
+    <HBox fx:id="mButtonBar" alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="genlabel" VBox.vgrow="NEVER">
+      <children>
+        <Button fx:id="mInvokeButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#onInvokeButtonPressed" styleClass="buttonbar-element" text="Invoke" />
+        <Pane maxHeight="1.7976931348623157E308" prefHeight="-1.0" prefWidth="10.0" />
+        <Label maxHeight="1.7976931348623157E308" text="or Press Shift+Enter" />
+      </children>
+      <padding>
+        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+      </padding>
+    </HBox>
+    <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+      <children>
+        <VBox fx:id="mInputArgPane" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="argument-pane" HBox.hgrow="ALWAYS">
+          <children>
+            <Label alignment="BOTTOM_CENTER" maxWidth="1.7976931348623157E308" text="Input Arguments" />
+            <VBox fx:id="mInputArgBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
+          </children>
+        </VBox>
+        <VBox fx:id="mOutputArgPane" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="argument-pane" HBox.hgrow="ALWAYS">
+          <children>
+            <Label alignment="BOTTOM_CENTER" maxWidth="1.7976931348623157E308" text="Output Arguments" />
+            <VBox fx:id="mOutputArgBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
+          </children>
+        </VBox>
+      </children>
+    </HBox>
+    <Label fx:id="mErrorMessage" alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" styleClass="error-message" text="Error Message" textFill="RED" wrapText="true" VBox.vgrow="NEVER">
+      <graphic>
+        <Label id="mErrorTitle" alignment="BOTTOM_CENTER" maxWidth="1.7976931348623157E308" styleClass="genlabel, error-label" text="Error:" textFill="BLACK">
+          <font>
+            <Font size="16.0" />
+          </font>
+        </Label>
+      </graphic>
+      <VBox.margin>
+        <Insets bottom="2.0" left="2.0" right="2.0" />
+      </VBox.margin>
+    </Label>
+  </children>
+  <stylesheets>
+    <URL value="@MemberView.css" />
+    <URL value="@Error.css" />
+  </stylesheets>
+</fx:root>

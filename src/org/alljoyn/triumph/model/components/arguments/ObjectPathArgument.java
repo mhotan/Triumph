@@ -21,7 +21,12 @@ import org.w3c.dom.Node;
 
 public class ObjectPathArgument extends StringArgument {
 
-	ObjectPathArgument(String name, DIRECTION direction) {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 6107129585015575804L;
+
+    ObjectPathArgument(String name, DIRECTION direction) {
 		super(name, direction);
 	}
 	

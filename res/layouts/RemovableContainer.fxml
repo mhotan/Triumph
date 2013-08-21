@@ -17,29 +17,14 @@
  *    limitations under the license.
  ******************************************************************************/
  -->
-
 <?import java.lang.*?>
-<?import javafx.geometry.*?>
+<?import java.net.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 
-<fx:root type="javafx.scene.layout.AnchorPane" xmlns:fx="http://javafx.com/fxml">
-  <!-- TODO Add Nodes -->
-  <children>
-    <HBox layoutX="5.0" layoutY="1.0" prefHeight="-1.0" prefWidth="-1.0">
-      <children>
-        <SplitPane dividerPositions="0.5" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="SOMETIMES">
-          <items>
-            <AnchorPane id="mKeyArg" fx:id="mKeyContainer" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" />
-            <AnchorPane id="mValArg" fx:id="mValContainer" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" />
-          </items>
-        </SplitPane>
-        <Label fx:id="mError" text="Label" textFill="RED" HBox.hgrow="NEVER" />
-      </children>
-    </HBox>
-  </children>
-  <padding>
-    <Insets left="3.0" right="3.0" />
-  </padding>
+<fx:root type="BorderPane" fx:id="mComponentPane" maxHeight="-1.0" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" xmlns:fx="http://javafx.com/fxml">
+  <right>
+    <Button fx:id="mRemove" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#onRemove" text="Remove" />
+  </right>
 </fx:root>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?scenebuilder-preview-i18n-resource AlertDialog_en_ER.properties?>
+
+<fx:root type="GridPane" hgap="14.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" vgap="20.0" xmlns:fx="http://javafx.com/fxml">
+  <children>
+    <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="TOP">
+      <image>
+        <Image url="@img-alljoyn-logo.png" />
+      </image>
+    </ImageView>
+    <VBox maxHeight="+Infinity" maxWidth="+Infinity" minHeight="-Infinity" prefWidth="400.0" spacing="7.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+      <children>
+        <Label fx:id="messageLabel" text="%label.message" textAlignment="LEFT" wrapText="true">
+          <font>
+            <Font name="System Bold" size="13.0" />
+          </font>
+        </Label>
+        <TextField fx:id="mInput" maxWidth="1.7976931348623157E308" onAction="#onSetName" prefWidth="-1.0" promptText="%label.inputhint" />
+        <Label id="detailsLabel" fx:id="mError" styleClass="error-message" text="%label.error" textAlignment="LEFT" wrapText="true">
+          <font>
+            <Font size="12.0" />
+          </font>
+          <graphic>
+            <Label maxHeight="1.7976931348623157E308" styleClass="error-label" text="Error:" />
+          </graphic>
+        </Label>
+      </children>
+    </VBox>
+    <HBox maxHeight="-Infinity" maxWidth="+Infinity" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <children>
+        <HBox id="HBox" fx:id="actionParent" alignment="CENTER">
+          <children>
+            <Button id="actionButton" fx:id="mOverwriteButton" mnemonicParsing="false" onAction="#onOverwrite" text="%button.action" HBox.hgrow="NEVER">
+              <HBox.margin>
+                <Insets right="14.0" />
+              </HBox.margin>
+            </Button>
+          </children>
+          <HBox.margin>
+            <Insets />
+          </HBox.margin>
+        </HBox>
+        <Pane maxWidth="+Infinity" HBox.hgrow="ALWAYS" />
+        <Button id="cancelButton" fx:id="mCancelButton" cancelButton="true" minWidth="80.0" mnemonicParsing="false" text="%button.cancel" HBox.hgrow="NEVER">
+          <HBox.margin>
+            <Insets />
+          </HBox.margin>
+        </Button>
+        <HBox id="HBox" fx:id="okParent" alignment="CENTER">
+          <children>
+            <Button id="okButton" fx:id="mOkButton" minWidth="80.0" mnemonicParsing="false" onAction="#onOk" text="%button.ok" HBox.hgrow="NEVER">
+              <HBox.margin>
+                <Insets left="14.0" />
+              </HBox.margin>
+            </Button>
+          </children>
+        </HBox>
+      </children>
+    </HBox>
+  </children>
+  <columnConstraints>
+    <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+    <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="+Infinity" minWidth="-Infinity" />
+  </columnConstraints>
+  <padding>
+    <Insets bottom="14.0" left="14.0" right="14.0" top="14.0" />
+  </padding>
+  <rowConstraints>
+    <RowConstraints maxHeight="+Infinity" minHeight="-Infinity" prefHeight="66.0" valignment="CENTER" vgrow="ALWAYS" />
+    <RowConstraints maxHeight="26.0" minHeight="-Infinity" prefHeight="26.0" vgrow="NEVER" />
+  </rowConstraints>
+  <stylesheets>
+    <URL value="@SaveArgumentDialog.css" />
+    <URL value="@General.css" />
+  </stylesheets>
+</fx:root>

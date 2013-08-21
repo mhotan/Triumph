@@ -16,6 +16,10 @@
 
 package org.alljoyn.triumph.model.components.arguments;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.alljoyn.triumph.util.AJConstant;
 import org.alljoyn.triumph.view.argview.ArgumentView;
 import org.alljoyn.triumph.view.argview.ByteArrayArgumentView;
@@ -27,29 +31,78 @@ import org.w3c.dom.Node;
  */
 public class ByteArrayArgument extends NumberArrayArgument<byte[]> {
 
-	/**
-	 * Creates an empty array argument.
-	 * 
-	 * @param name Name of this argument
-	 * @param isInput Whether this argument is input or output argument
-	 * @param elementSignature Signature of 
-	 */
-	ByteArrayArgument(String name, DIRECTION direction) {
-		super(name, direction, "" + AJConstant.ALLJOYN_ARRAY + AJConstant.ALLJOYN_BYTE);
-	}
-	
-	ByteArrayArgument(Node node, DIRECTION direction) {
-		super(node, direction);
-	}
+    /**
+     * Added Serialization ID
+     */
+    private static final long serialVersionUID = -5178162865679127521L;
 
-	@Override
-	protected ArgumentView<byte[]> createJavaFXNode() {
-		return new ByteArrayArgumentView(this); 
-	}
+    /**
+     * Creates an empty array argument.
+     * 
+     * @param name Name of this argument
+     * @param isInput Whether this argument is input or output argument
+     * @param elementSignature Signature of 
+     */
+    ByteArrayArgument(String name, DIRECTION direction) {
+        super(name, direction, "" + AJConstant.ALLJOYN_ARRAY + AJConstant.ALLJOYN_BYTE);
+    }
 
-	@Override
-	protected String getAJSignature() {
-		return "" + AJConstant.ALLJOYN_ARRAY + AJConstant.ALLJOYN_BYTE;
-	}
-	
+    ByteArrayArgument(Node node, DIRECTION direction) {
+        super(node, direction);
+    }
+
+    @Override
+    protected ArgumentView<byte[]> createJavaFXNode() {
+        return new ByteArrayArgumentView(this); 
+    }
+
+    @Override
+    protected String getAJSignature() {
+        return "" + AJConstant.ALLJOYN_ARRAY + AJConstant.ALLJOYN_BYTE;
+    }
+
+//    //////////////////////////////////////////////////////////////////////////////////////
+//    //////  Methods that are used for Serialization.
+//    //////  
+//    //////////////////////////////////////////////////////////////////////////////////////
+//
+//    /**
+//     * As implemented regarding by interface Serializable.
+//     * This method requires this exact signature.
+//     * <br> This method is called from serialization to write out internal 
+//     * fields to a file storage.
+//     * 
+//     * @param out ObjectOutputStream to write the file out to.
+//     * @throws IOException Exception occured while writing a file.
+//     */
+//    private void writeObject(java.io.ObjectOutputStream out)
+//            throws IOException {
+//        writeOut(out);
+//    }
+//
+//    /**
+//     * As implemented regarding by interface Serializable.
+//     * This method requires this exact signature.
+//     * <br> This method is called when reading an object from file storage.
+//     * 
+//     * @param in ObjectInputStream to read in from
+//     * @throws IOException Error occured accessing file
+//     * @throws ClassNotFoundException unable to load default values.
+//     */
+//    private void readObject(java.io.ObjectInputStream in)
+//            throws IOException, ClassNotFoundException {
+//        readIn(in);
+//    }
+//
+//    @Override
+//    protected void writeOut(ObjectOutputStream out) throws IOException {
+//        super.writeOut(out);
+//        out.writeObject(getValue());
+//    }
+//
+//    @Override
+//    protected void readIn(ObjectInputStream in) throws IOException, ClassNotFoundException {
+//        super.readIn(in);
+//        setValue((byte[])in.readObject());
+//    }
 }

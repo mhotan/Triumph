@@ -27,7 +27,12 @@ import org.alljoyn.triumph.view.argview.ShortArgumentView;
  */
 public class ShortArgument extends NumberArgument<Short> {
 
-	ShortArgument(String name, DIRECTION direction, boolean isUnsigned) {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 8444279590324346584L;
+
+    ShortArgument(String name, DIRECTION direction, boolean isUnsigned) {
 		super(name, direction, isUnsigned);
 	}
 

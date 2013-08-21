@@ -25,10 +25,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import org.alljoyn.bus.BusAttachment;
-
-import java.util.logging.Logger;
 
 /**
  * Class that manages saving the session ports with their
@@ -40,13 +40,12 @@ public class SessionPortStorage {
 	
 	private static final Logger LOGGER = Logger.getGlobal();
 
-	private static final String DELIMINATOR = "---|::::|---";
+	private static final String DELIMINATOR = ";;";
 	
-	/**
-	 * Absolute path where the file is stored
-	 */
-	private static final String FILE_PATH = "data/_ports.txt"; 
-
+	private static final String BIN_PATH = "bin";
+	private static final String DATA_PATH = BIN_PATH + "/" + "data";
+	private static final String FILE_PATH = DATA_PATH + "/" + "ports.txt";
+	
 	private static SessionPortStorage mInstance;
 
 	/**
@@ -64,6 +63,21 @@ public class SessionPortStorage {
 		// Here we will do the brunt of the work.  So we can minimize work done 
 		// post this process
 		try {
+		    File binDir = new File(BIN_PATH);
+		    // Make sure the bin directory exists
+		    if (binDir.exists() && !binDir.isDirectory()) {
+		        binDir.delete();
+		    } 
+		    if (!binDir.exists()) {
+		        binDir.mkdir();
+		    }
+		    
+		    // Make the data directory
+		    File dataDir = new File(DATA_PATH);
+		    if (!dataDir.exists())
+		        dataDir.mkdir();
+		    
+		    // Make the file if it doesn't exist
 			File file = new File(FILE_PATH);
 			if (file.exists()) {
 
@@ -74,14 +88,13 @@ public class SessionPortStorage {
 				
 				// Read line by line.
 				while ((line = br.readLine()) != null) {
-					String[] pair = line.split(DELIMINATOR);
+					String[] pair = line.split(Pattern.quote(DELIMINATOR));
 					
 					// Safe for valid line structure
 					if (pair.length != 2) {
-						LOGGER.warning("Invalid File entry: " + line);
+						LOGGER.warning("Invalid File entry: " + line + " Deliminated value " + pair);
 						continue;
 					}
-					
 					mInternalMap.put(pair[0], Short.valueOf(pair[1]));
 				}
 				
@@ -138,10 +151,10 @@ public class SessionPortStorage {
 		try {
 			BufferedWriter bw =  new BufferedWriter(new FileWriter(new File(FILE_PATH), true));
 			bw.append(serviceName + DELIMINATOR + portNumber);
+			bw.newLine();
 			bw.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException("Error trying to extract port: " + e.getMessage());
 		} 
 	}
 

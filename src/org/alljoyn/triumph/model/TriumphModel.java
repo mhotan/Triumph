@@ -36,11 +36,13 @@ import org.alljoyn.bus.SignalEmitter.GlobalBroadcast;
 import org.alljoyn.bus.Status;
 import org.alljoyn.triumph.MainApplication;
 import org.alljoyn.triumph.TriumphCPPAdapter;
+import org.alljoyn.triumph.TriumphException;
 import org.alljoyn.triumph.model.BusObserver.BusObserverListener;
 import org.alljoyn.triumph.model.components.AllJoynComponent;
 import org.alljoyn.triumph.model.components.AllJoynInterface;
 import org.alljoyn.triumph.model.components.AllJoynObject;
 import org.alljoyn.triumph.model.components.AllJoynService;
+import org.alljoyn.triumph.model.components.AllJoynService.SERVICE_TYPE;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.Signal;
@@ -203,18 +205,21 @@ public class TriumphModel implements BusObserverListener, Destroyable {
 		List<String> servicesStr = new ArrayList<String>(mDistributedServices);
 		List<AllJoynService> services = new ArrayList<AllJoynService>(servicesStr.size());
 		for (String service: servicesStr) {
-			services.add(new AllJoynService(service));
+		    AllJoynService ser = new AllJoynService(service);
+		    ser.setServiceType(SERVICE_TYPE.REMOTE);
+			services.add(ser);
 		}
 		return services;
 	}
 
 	public synchronized List<AllJoynService> getLocalServices() {
-
 		// Extract all the names of the local services
 		List<String> servicesStr = new ArrayList<String>(mLocalServices);
 		List<AllJoynService> services = new ArrayList<AllJoynService>(servicesStr.size());
 		for (String service: servicesStr) {
-			services.add(new AllJoynService(service));
+		    AllJoynService ser = new AllJoynService(service);
+            ser.setServiceType(SERVICE_TYPE.LOCAL);
+            services.add(ser);
 		}
 		return services;
 	}
@@ -268,11 +273,25 @@ public class TriumphModel implements BusObserverListener, Destroyable {
 		// There is no need to parse any data because 
 		if (!service.isEmpty()) 
 			return;
-
-		TreeItem<AllJoynComponent> root = buildTree(service, SessionPortStorage.getPort(service.getName()));
-		LOGGER.info("Tree built for service " + service  + " found.");
-		// Expand the tree showing all the objects.
-		root.setExpanded(true);
+		
+		try {
+		    TreeItem<AllJoynComponent> root = buildTree(service, SessionPortStorage.getPort(service.getName()));
+		    // Expand the tree showing all the objects.
+		    root.setExpanded(true);
+		} catch (TriumphException e) {
+		    broadCastError(e.getMessage());
+		}
+	}
+	
+	/**
+	 * Attempts to build service.
+	 * 
+	 * @param service Service to attempt to build 
+	 * @return The complete built service
+	 * @throws TriumphException Exception if could not communicate with the service
+	 */
+	public AllJoynService buildService(AllJoynService service) throws TriumphException {
+	    return buildService(service, SessionPortStorage.getPort(service.getName()));
 	}
 
 	/**
@@ -303,12 +322,30 @@ public class TriumphModel implements BusObserverListener, Destroyable {
 	public void onPropertySelected(Property property) {
 		broadcastProperty(property);
 	}
+	
+	/**
+	 * Calls remote method for this specific method instance.
+	 * 
+	 * @param method Method to invoke
+	 * @param arguments indexed argument list
+	 * @return Unmarshaled result
+	 * @throws BusException Error
+	 */
+	public Object onMethodInvoked(Method method, List<Argument<?>> arguments) throws BusException {
+	    Argument<?>[] args = new Argument<?>[arguments.size()];
+	    for (int i = 0; i < args.length; ++i) {
+	        args[i] = arguments.get(i);
+	    }
+	    return onMethodInvoked(method, args);
+	}
 
 	/**
-	 * Calls remote method for this specific method.
+	 * Calls remote method for this specific method instance.
 	 * 
 	 * @param method Method to invoke.
 	 * @param arguments Array of arguments the correlate to method input arguments
+	 * @return Unmarshaled result
+	 * @throws BusException Error
 	 */
 	public Object onMethodInvoked(Method method, Argument<?>[] arguments) throws BusException {
 
@@ -338,10 +375,24 @@ public class TriumphModel implements BusObserverListener, Destroyable {
 		String ifaceName = iface.getName();
 		String methodName = method.getName();
 		String inputSig = method.getInputSignature();	
-		return TriumphCPPAdapter.callMethod(mBus, proxy, ifaceName, methodName, 
-				inputSig, Object.class, args);
+		return TriumphCPPAdapter.callMethod(mBus, proxy, ifaceName, methodName, inputSig, args);
 	}
 
+	/**
+	 * Emits a signal with specified arguments.
+	 * 
+	 * @param signal Signal to emit
+	 * @param arguments Arguments of the signal
+	 * @throws BusException Error occured
+	 */
+	public void onEmitSignal(Signal signal, List<Argument<?>> arguments) throws BusException {
+	    Argument<?>[] args = new Argument<?>[arguments.size()];
+        for (int i = 0; i < args.length; ++i) {
+            args[i] = arguments.get(i);
+        }
+        onEmitSignal(signal, args);
+	}
+	
 	/**
 	 * Emits a signal with the correct arguments.  It is up to the client
 	 * to create an array of arguments that matches the signature of the signal.
@@ -490,22 +541,17 @@ public class TriumphModel implements BusObserverListener, Destroyable {
 	 * Notifies all listeners there is was an error
 	 * @param message message to notify all viewers with
 	 */
-	private void notifyError(String message) {
+	private void broadCastError(String message) {
 		for (TriumphViewable view: mViewables)
 			view.showError(message);
 	}
 
-	/*	private void showResult(Object result) {
-		for (TriumphViewable view: mViewables)
-			view.showResult(result);
-	}*/
-
 	/* ********************************************************* 		*/
 	/* 	Methods to add and remove view that this instance is aware of 	*/
-	/*  
 	/* ********************************************************* 		*/	
 
 	/**
+	 * 
 	 * @param view View to add to track
 	 */
 	public void addView(TriumphViewable view) {
@@ -524,7 +570,28 @@ public class TriumphModel implements BusObserverListener, Destroyable {
 	/* 	Helper Methods											 */	  
 	/* ********************************************************* */
 
-
+	/**
+	 * Build the service and all its components via introspection.
+	 * 
+	 * @param service Service to build
+	 * @param sessionPort Session port to use to connect to endpoint
+	 * @return The Alljoyn service to use.
+	 * @throws TriumphException
+	 */
+	private AllJoynService buildService(AllJoynService service, short sessionPort) throws TriumphException {
+	    LOGGER.fine("Building Service Via Introspection: " + service);
+	    
+	    // Attempt to create a session
+	    Session session = mSessionManager.getSession(service.getName());
+	    if (session == null) 
+	        session = mSessionManager.createNewSession(service.getName(), sessionPort);
+	    // If fails throw exception
+	    ProxyBusObject proxy = session.getProxy("org/alljoyn/Bus/Peer");
+	    service.saveBusPeerProxy(proxy);
+	    
+        TriumphAJParser parser = new TriumphAJParser(mSessionManager);
+        return parser.parseIntrospectData(service, sessionPort);
+	}
 
 	/**
 	 * For a given service return all the Objects that exists within 
@@ -532,11 +599,11 @@ public class TriumphModel implements BusObserverListener, Destroyable {
 	 * 
 	 * @param service Well known name of service
 	 * @return List of all Objects associated with the service
+	 * @throws Unable to get introspection
 	 */
-	private TreeItem<AllJoynComponent> buildTree(AllJoynService service, short sessionId) {
-		LOGGER.fine("Building Tree for Service: " + service);
-		TriumphAJParser parser = new TriumphAJParser(mSessionManager);
-		return parser.parseIntrospectData(service, sessionId).toTree();
+	private TreeItem<AllJoynComponent> buildTree(AllJoynService service, short sessionPort) 
+	        throws TriumphException {
+		return buildService(service, sessionPort).toTree();
 	}
 
 	/**

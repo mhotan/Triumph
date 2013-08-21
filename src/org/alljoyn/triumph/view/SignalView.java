@@ -16,12 +16,15 @@
 
 package org.alljoyn.triumph.view;
 
+import java.util.List;
+
 import javafx.fxml.FXML;
 
 import org.alljoyn.bus.BusException;
 import org.alljoyn.triumph.model.TriumphModel;
 import org.alljoyn.triumph.model.components.Signal;
 import org.alljoyn.triumph.model.components.arguments.Argument;
+import org.alljoyn.triumph.view.argview.ArgumentView;
 
 /**
  * The view that represents a single Signal member of the interface. 
@@ -30,34 +33,46 @@ import org.alljoyn.triumph.model.components.arguments.Argument;
  */
 public class SignalView extends MemberView {
 
-	/**
-	 * Internal Signal reference to the view.
-	 */
-	private final Signal mSignal;
-	
-	/**
-	 * Create's a signal view for the signal instance.
-	 * 
-	 * @param signal signal to present.
-	 */
-	public SignalView(Signal signal) {
-		super(signal);
-		mSignal = signal;
-	
-		
-	}
+    /**
+     * Internal Signal reference to the view.
+     */
+    private final Signal mSignal;
 
-	@Override
-	protected String getMemberTypeName() {
-		return "Signal";
-	}
+    /**
+     * Create's a signal view for the signal instance.
+     * 
+     * @param signal signal to present.
+     */
+    public SignalView(Signal signal) {
+        super(signal);
+        mSignal = signal;
 
-	@Override
-	@FXML
-	protected void invoke() throws BusException {
-		// Use the model as the call back to emit the signal
-		Argument<?>[] outArgs = getOutputArguments();
-		TriumphModel.getInstance().onEmitSignal(mSignal, outArgs);
-	}
+        // Make sure output arguments are not editable 
+        // and input argument are editable
+        setIntputArgumentEditability(false);
+        setOutputArgumentEditability(true);
+    }
 
+    @Override
+    @FXML
+    protected void invoke() throws BusException {
+        
+        StringBuffer buf = new StringBuffer();
+        for (ArgumentView<?> view : mOutputArgs) {
+            String error = view.onSaveCurrentValue();
+            if (error == null) continue;
+            buf.append(error);
+            buf.append("\n");
+        }
+
+        if (buf.length() > 0) {
+            showError("Invocation Cancelled due to following errors: \n" + buf.toString());
+            return;
+        }
+
+        // Use the model as the call back to emit the signal
+        TriumphModel model = TriumphModel.getInstance();
+        List<Argument<?>> args = mSignal.getOutputArguments();
+        model.onEmitSignal(mSignal, args);
+    }
 }

@@ -27,31 +27,36 @@ import org.w3c.dom.Node;
  */
 public class IntegerArgument extends NumberArgument<Integer> {
 
-	IntegerArgument(String name, DIRECTION direction, boolean isUnsigned) {
-		super(name, direction, isUnsigned);
-	}
-	
-	IntegerArgument(Node node, boolean isUnsigned, DIRECTION defaultDir) {
-		super(node, isUnsigned, defaultDir);
-	}
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6996729228553795921L;
 
-	@Override
-	protected ArgumentView<Integer> createJavaFXNode() {
-		return new IntegerArgumentView(this);
-	}
+    IntegerArgument(String name, DIRECTION direction, boolean isUnsigned) {
+        super(name, direction, isUnsigned);
+    }
 
-	@Override
-	public String getSignature() {
-		String sig = isUnsigned() ? "Unsigned " : "";
-		return sig + "int " + getName();
-	}
+    IntegerArgument(Node node, boolean isUnsigned, DIRECTION defaultDir) {
+        super(node, isUnsigned, defaultDir);
+    }
 
-	@Override
-	protected String getAJSignature() {
-		if (isUnsigned())
-			return "" + AJConstant.ALLJOYN_UINT32;
-		else 
-			return "" + AJConstant.ALLJOYN_INT32;
-	}
+    @Override
+    protected ArgumentView<Integer> createJavaFXNode() {
+        return new IntegerArgumentView(this);
+    }
+
+    @Override
+    public String getSignature() {
+        String sig = isUnsigned() ? "Unsigned " : "";
+        return sig + "int " + getName();
+    }
+
+    @Override
+    protected String getAJSignature() {
+        if (isUnsigned())
+            return "" + AJConstant.ALLJOYN_UINT32;
+        else 
+            return "" + AJConstant.ALLJOYN_INT32;
+    }
 
 }

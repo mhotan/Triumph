@@ -18,6 +18,7 @@ package org.alljoyn.triumph.view.argview;
 
 import java.util.List;
 
+import org.alljoyn.triumph.TriumphException;
 import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
 import org.alljoyn.triumph.model.components.arguments.ShortArgument;
 import org.alljoyn.triumph.model.components.arguments.ShortArrayArgument;
@@ -25,49 +26,70 @@ import org.alljoyn.triumph.util.AJConstant;
 
 public class ShortArrayArgumentView extends ArrayArgumentView<short[]> {
 
-	private final ShortArrayArgument mShortArg;
-	
-	public ShortArrayArgumentView(ShortArrayArgument arg) {
-		super(arg);
-		mShortArg = arg;
-	}
+    private final ShortArrayArgument mShortArg;
 
-	@Override
-	protected ArgumentView<?> getBlankElement() {
-		// The way this is designed this casting to byte argument
-		// is the only unstable process.
-		char sig = mShortArg.isUnsigned() ? AJConstant.ALLJOYN_UINT16: AJConstant.ALLJOYN_INT16;
-		ShortArgument arg = (ShortArgument) ArgumentFactory.getArgument(
-				"" + sig, "", getArgDirection());
-		ShortArgumentView view = new ShortArgumentView(arg);
-		view.hideSaveOption();
-		return view;
-	}
+    public ShortArrayArgumentView(ShortArrayArgument arg) {
+        super(arg);
+        mShortArg = arg;
 
-	@Override
-	public short[] getCurrentElements(StringBuffer buf) {
-		List<ArgumentView<?>> currentViews = getArgViews();
-		short[] array = new short[currentViews.size()];
-		
-		// For every one of the views cast it into a byte argument to extract the value.
-		for (int i = 0; i < currentViews.size(); ++i) {
-			
-			// Cast down to the correct argument view.
-			ShortArgumentView bView = (ShortArgumentView) currentViews.get(i);
-			
-			// Extract the value if it exists.
-			Short val =  bView.getValue();
-			
-			// if it doesn't exists notify the error.
-			if (val == null) {
-				if (buf != null)
-					buf.append("Null value at index " + i);
-				return null;
-			}
-			
-			array[i] = val;
-		}
-		return array;
-	}
+        // Check for any current values.
+        short[] values = getValue();
+        if (values == null) return;
+
+        // Now that we have current values.
+        // Populate the current view.
+        try {
+            ArgumentView<?>[] views = new ArgumentView<?>[values.length];
+            for (int i = 0; i < values.length; ++i) {
+                views[i] = ArgumentFactory.getArgument(
+                        getInternalArgumentName(i+1), 
+                        arg.getInnerElementType(), values[i]).getView();
+            }
+            // If there any current values then populate the view.
+            for (int i = 0; i < values.length; ++i) {
+                addNewElem(views[i]);
+            }
+        } catch (TriumphException e) {
+            showError("Unable to unpack " + values.getClass().getSimpleName() 
+                    + " because of " + e.getMessage());
+        }
+    }
+
+    @Override
+    protected ArgumentView<?> getBlankElement() {
+        // The way this is designed this casting to byte argument
+        // is the only unstable process.
+        char sig = mShortArg.isUnsigned() ? AJConstant.ALLJOYN_UINT16: AJConstant.ALLJOYN_INT16;
+        ShortArgument arg = (ShortArgument) ArgumentFactory.getArgument(
+                "" + sig, "", getArgDirection());
+        ShortArgumentView view = new ShortArgumentView(arg);
+        return view;
+    }
+
+    @Override
+    public short[] getCurrentElements(StringBuffer buf) {
+        List<ArgumentView<?>> currentViews = getArgViews();
+        short[] array = new short[currentViews.size()];
+
+        // For every one of the views cast it into a byte argument to extract the value.
+        for (int i = 0; i < currentViews.size(); ++i) {
+
+            // Cast down to the correct argument view.
+            ShortArgumentView bView = (ShortArgumentView) currentViews.get(i);
+
+            // Extract the value if it exists.
+            Short val =  bView.getValue();
+
+            // if it doesn't exists notify the error.
+            if (val == null) {
+                if (buf != null)
+                    buf.append("Null value at index " + i);
+                return null;
+            }
+
+            array[i] = val;
+        }
+        return array;
+    }
 
 }

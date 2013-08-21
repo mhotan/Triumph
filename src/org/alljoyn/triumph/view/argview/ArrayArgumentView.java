@@ -27,22 +27,15 @@ import org.alljoyn.triumph.model.components.arguments.ArrayArgument;
  */
 public abstract class ArrayArgumentView<T> extends MultiElementArgumentView<T> {
 
-	private final ArrayArgument<T> mArrayArg;
-	
-	/**
-	 * @param arg ArrayArgument to associate to.
-	 */
-	protected ArrayArgumentView(ArrayArgument<T> arg) {
-		super(arg);
-		mArrayArg = arg;
-	}
+    /**
+     * @param arg ArrayArgument to associate to.
+     */
+    protected ArrayArgumentView(ArrayArgument<T> arg) {
+        super(arg);
+    }
 
-	@Override
-	protected boolean isEditable() {
-		// Only allow the ability to add more elements
-		// if it is a constructed 
-		return isInputArg();
-	}
-	
-
+    @Override
+    protected String getInternalArgumentName(int position) {
+        return position + ".";
+    }
 }

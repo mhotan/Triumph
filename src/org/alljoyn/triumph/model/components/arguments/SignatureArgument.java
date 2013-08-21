@@ -21,7 +21,12 @@ import org.w3c.dom.Node;
 
 public class SignatureArgument extends StringArgument {
 
-	SignatureArgument(String name, DIRECTION dir) {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 1201865963115602658L;
+
+    SignatureArgument(String name, DIRECTION dir) {
 		super(name, dir);
 	}
 	

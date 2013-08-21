@@ -17,27 +17,28 @@
 package org.alljoyn.triumph.view;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 
 import org.alljoyn.bus.BusException;
 import org.alljoyn.triumph.model.components.Member;
 import org.alljoyn.triumph.model.components.arguments.Argument;
-import org.alljoyn.triumph.util.ViewLoader;
-import org.alljoyn.triumph.view.argview.ArgumentCell;
+import org.alljoyn.triumph.util.loaders.ViewLoader;
+import org.alljoyn.triumph.view.argview.ArgumentView;
 
 /**
  * Base view class that is used to present a distinct member instance.
@@ -46,194 +47,233 @@ import org.alljoyn.triumph.view.argview.ArgumentCell;
  * 
  * @author mhotan@quicinc.com, Michael Hotan
  */
-public abstract class MemberView extends HBox {
+public abstract class MemberView extends VBox {
 
-	@FXML
-	protected ResourceBundle resources;
+    @FXML
+    private ResourceBundle resources;
 
-	@FXML
-	protected URL location;
+    @FXML
+    private URL location;
 
-	@FXML
-	protected HBox mButtonBar;
+    @FXML
+    protected HBox mButtonBar;
 
-	@FXML
-	protected VBox mCompletePane;
+    @FXML
+    protected VBox mCompletePane;
 
-	@FXML
-	protected Label mErrorMessage;
+    @FXML
+    protected Label mErrorMessage;
 
-	@FXML
-	protected Label mErrorTitle;
+    @FXML
+    protected VBox mInputArgBox;
 
-	@FXML
-	protected ListView<Argument<?>> mInputArgumentPane;
+    @FXML
+    protected Button mInvokeButton;
 
-	@FXML
-	protected ListView<Argument<?>> mOutputArgumentPane;
-	
-	@FXML
-	protected Button mInvokeButton;
+    @FXML
+    protected VBox mOutputArgBox;
 
-	@FXML
-	protected ProgressIndicator mProgressIndicator;
+    @FXML
+    protected ProgressIndicator mProgressIndicator;
 
-	@FXML
-	protected BorderPane mTitlePane;
+    @FXML
+    protected HBox mTitlePane;
 
-	/**
-	 * Title View of this member
-	 */
-	private final MemberTitleView mTitleView;
+    @FXML
+    protected VBox mInputArgPane, mOutputArgPane;
 
-	/**
-	 * Call back that determines how to draw the argument
-	 */
-	private final Callback<ListView<Argument<?>>, ListCell<Argument<?>>> mCellFactory;
-	
-	/**
-	 * Argument list of input and output.
-	 */
-	private final ObservableList<Argument<?>> mInputArgs, mOutputArgs;
-	
-	/**
-	 * Constructs a basic Member View.  This intializes the actual view elements
-	 * and checks to make sure all the components are accessible.  
-	 * 
-	 * @param member The Member to intialize view with.
-	 */
-	protected MemberView(Member member) {
-		// Loads MemberView.fxml
-		ViewLoader.loadView("MemberView.fxml", this);
+    private final MemberTitleView mTitleView;
 
-		// Load the title view for this member.
-		mTitleView = new MemberTitleView(member);
-		mTitlePane.setCenter(mTitleView);
+    /**
+     * Internal List that we use to track the state of the independent arguments.
+     */
+    protected final List<ArgumentView<?>> mInputArgs, mOutputArgs;
 
-		// Handle the variable amount of input and output arguments
-		List<Argument<?>> inputArgs = member.getInputArguments();
-		List<Argument<?>> outputArgs = member.getOutputArguments();
+    private BooleanProperty shiftPressedProperty;
 
-		// Establish a cell factory to handle the production of the Arguments.
-		mCellFactory = new Callback<ListView<Argument<?>>, ListCell<Argument<?>>>() {
-			
-			@Override
-			public ListCell<Argument<?>> call(ListView<Argument<?>> param) {
-				return new ArgumentCell();
-			}
-		};
-		
-		// If there are not any input arguments remove the unecesary pane
-		mInputArgs = addOrRemove(mInputArgumentPane, inputArgs);
-		mOutputArgs = addOrRemove(mOutputArgumentPane, outputArgs);
-		
-		// Hide an error message until there is an actual error.
-		hideError();
-	}
+    /**
+     * Constructs a basic Member View.  This intializes the actual view elements
+     * and checks to make sure all the components are accessible.  
+     * 
+     * @param member The Member to intialize view with.
+     */
+    protected MemberView(Member member) {
+        // Loads MemberView.fxml
+        ViewLoader.loadView("MemberView.fxml", this);
+        mErrorMessage.managedProperty().bind(mErrorMessage.visibleProperty());
+        mInputArgPane.managedProperty().bind(mInputArgPane.visibleProperty());
+        mOutputArgPane.managedProperty().bind(mOutputArgPane.visibleProperty());
+        
+        // Load the title view for this member.
+        mTitleView = new MemberTitleView(member);
+        mTitlePane.getChildren().clear();
+        HBox.setHgrow(mTitleView, Priority.ALWAYS);
+        mTitlePane.getChildren().add(mTitleView);
 
-	/**
-	 * Gets all the output arguments
-	 * @return Array of output arguments
-	 */
-	protected Argument<?>[] getOutputArguments() {
-		return toArray(mOutputArgs);
-	}
-	
-	/**
-	 * Gets all the input arguments of this member.
-	 * @return Array of input arguments.
-	 */
-	protected Argument<?>[] getInputArguments() {
-		return toArray(mInputArgs);
-	}
-	
-	/**
-	 * returns an array of the argument in the same order of the list.
-	 * If list is null then an empty array is returned.
-	 * 
-	 * @param list the list of argument to turn into an array
-	 * @return Array of all the arguments
-	 */
-	private static Argument<?>[] toArray(ObservableList<Argument<?>> list) {
-		if (list == null) {
-			return new Argument<?>[0];
-		}
-		Argument<?>[] args = new Argument[list.size()];
-		list.toArray(args);
-		return args;
-	} 
-	
-	/**
-	 * Attempts to add the list of argument 
-	 * 
-	 * @param viewList List of arguments to present in fun views
-	 * @param arguments Arguments to add to list view.
-	 */
-	private ObservableList<Argument<?>> addOrRemove(ListView<Argument<?>> viewList, List<Argument<?>> arguments) {
-		// If there are not any input arguments remove the unecesary pane
-		if (arguments.isEmpty()) {
-			mCompletePane.getChildren().remove(viewList);
-			return null;
-		} else {
-			// Set the appropiate cell factory for this list
-			viewList.setCellFactory(mCellFactory);
-			
-			// Create an observable list of all the arguments
-			ObservableList<Argument<?>> mList = FXCollections.observableArrayList(arguments);
-			viewList.setItems(mList);
-			return mList;
-		}
-	}
+        // Handle the variable amount of input and output arguments
+        List<Argument<?>> inputArgs = member.getInputArguments();
+        List<Argument<?>> outputArgs = member.getOutputArguments();
 
-	/**
-	 * In order to construct the view there has to be a way to label
-	 * what type of member we are looking at.
-	 * IE Signal, Method, etc...
-	 * 
-	 * @return String representation of the member type.
-	 */
-	protected abstract String getMemberTypeName();
+        mInputArgs = new ArrayList<ArgumentView<?>>(inputArgs.size());
+        mOutputArgs = new ArrayList<ArgumentView<?>>(outputArgs.size());
 
-	/**
-	 * Abstract method that notifies whatever sublass that
-	 * the wish to invoke the method with the current state of the arguments
-	 */
-	@FXML protected void onInvokeButtonPressed() {
-		try {
-			hideError();
-			invoke();
-		} catch (BusException e) {
-			showError(e.getMessage());
-		}
-	}
-	
-	/**
-	 * Calls to the subclasses to invoke its feature 
-	 */
-	protected abstract void invoke() throws BusException;
+        // For each input and out argument,
+        // Create the view for each
+        // Add that view to a list that we use for tracking state
+        // and add it to the actual view for the user to view.
+        setInputArguments(inputArgs);
+        setOutputArguments(outputArgs);
 
-	private void showError(String message) {
-		mErrorMessage.setVisible(true);
-		mErrorTitle.setVisible(true);
-		mErrorMessage.setText(message);
-	}
-	
-	private void hideError() {
-		mErrorMessage.setVisible(false);
-		mErrorTitle.setVisible(false);
-	}
-	
-	@FXML
-	void initialize() {
-		assert mButtonBar != null : "fx:id=\"mButtonBar\" was not injected: check your FXML file 'MemberView.fxml'.";
-		assert mCompletePane != null : "fx:id=\"mCompletePane\" was not injected: check your FXML file 'MemberView.fxml'.";
-		assert mErrorMessage != null : "fx:id=\"mErrorMessage\" was not injected: check your FXML file 'MemberView.fxml'.";
-		assert mErrorTitle != null : "fx:id=\"mErrorTitle\" was not injected: check your FXML file 'MemberView.fxml'.";
-		assert mInputArgumentPane != null : "fx:id=\"mInputArgumentPane\" was not injected: check your FXML file 'MemberView.fxml'.";
-		assert mInvokeButton != null : "fx:id=\"mInvokeButton\" was not injected: check your FXML file 'MemberView.fxml'.";
-		assert mOutputArgumentPane != null : "fx:id=\"mOutputArgs\" was not injected: check your FXML file 'MemberView.fxml'.";
-		assert mProgressIndicator != null : "fx:id=\"mProgressIndicator\" was not injected: check your FXML file 'MemberView.fxml'.";
-		assert mTitlePane != null : "fx:id=\"mTitlePane\" was not injected: check your FXML file 'MemberView.fxml'.";
-	}
+        shiftPressedProperty = new SimpleBooleanProperty(false);
+
+        // Hide an error message until there is an actual error.
+        hideError();
+    }
+
+    /**
+     * Helper method for setting the argument to display.
+     * 
+     * @param newargs The new list of arguments to add.
+     * @param trackingList Internal use list for tracking Argument views
+     * @param view View to add argument views to.
+     */
+    private static void setArguments(List<Argument<?>> newargs, 
+            List<ArgumentView<?>> trackingList, VBox view) {
+        assert trackingList != null: "Internal list of argument view cannot be null";
+        assert view != null: "View cannot be null";
+
+        // Remove any previous views.
+        view.getChildren().clear();
+        trackingList.clear();
+
+        // Add the new argument views.
+        for (Argument<?> arg: newargs) {
+            ArgumentView<?> argView = arg.getView();
+            trackingList.add(argView);
+            view.getChildren().add(argView);
+        }
+    }
+
+    /**
+     * Sets an internal list of views editbality
+     * 
+     * @param trackingList Internal list of views
+     * @param editable whether the arguments are editable
+     */
+    private static void setArgumentEditability(List<ArgumentView<?>> trackingList, boolean editable) {
+        for (ArgumentView<?> view: trackingList) {
+            view.setEditable(editable);
+        }
+    }
+
+    /**
+     * Presents the list of argument as the input arguments
+     * @param inargs Input arguments.
+     */
+    protected void setInputArguments(List<Argument<?>> inargs) {
+        if (inargs == null || inargs.isEmpty())
+            mInputArgPane.setVisible(false);
+        setArguments(inargs, mInputArgs, mInputArgBox);
+    }
+
+    /**
+     * @param editable true if input arguments wish to be editable, false if not
+     */
+    protected void setIntputArgumentEditability(boolean editable) {
+        setArgumentEditability(mInputArgs, editable);
+    }
+
+    /**
+     * Presents the list of arguments as the output arguments of this member.
+     * @param outargs Output Arguments to use
+     */
+    protected void setOutputArguments(List<Argument<?>> outargs) {
+        if (outargs == null || outargs.isEmpty())
+            mOutputArgPane.setVisible(false);
+        setArguments(outargs, mOutputArgs, mOutputArgBox);
+    }
+
+    /**
+     * @param editable true if output arguments wish to be editable, false if not 
+     */
+    protected void setOutputArgumentEditability(boolean editable) {
+        setArgumentEditability(mOutputArgs, editable);
+    }
+
+    /**
+     * private helper method to handle different ways
+     * of invokation request.
+     */
+    private void handleInvokationRequest() {
+        hideError();
+
+        // Hide any pending errors before the invocation
+        try {
+            invoke();
+        }  catch (BusException e) {
+            showError(e.getMessage());
+        }
+    }
+
+    @FXML
+    void onInvokeButtonPressed(ActionEvent event) {
+        // Explicit request to invoke button pressed
+        handleInvokationRequest();
+    }
+
+    @FXML
+    void onKeyPressed(KeyEvent event) {
+        switch (event.getCode()) {
+        case SHIFT:
+            shiftPressedProperty.set(true);
+            break;
+        case ENTER:
+            // If the Shift key is pressed down  
+            // and enter pressed then attempt to invoke the method.
+            if (shiftPressedProperty.get()) {
+                handleInvokationRequest();
+            }
+            break;
+        default:
+            // TODO handle more input keys
+        }
+    }
+
+    @FXML
+    void onKeyReleased(KeyEvent event) {
+        switch (event.getCode()) {
+        case SHIFT:
+            shiftPressedProperty.set(false);
+            break;
+        default:
+        }
+    }
+
+    /**
+     * Calls to the subclasses to invoke its feature 
+     */
+    protected abstract void invoke() throws BusException;
+
+    protected void showError(String message) {
+        mErrorMessage.setVisible(true);
+        mErrorMessage.setText(message);
+    }
+
+    protected void hideError() {
+        mErrorMessage.setVisible(false);
+    }
+
+    @FXML
+    void initialize() {
+        assert mButtonBar != null : "fx:id=\"mButtonBar\" was not injected: check your FXML file 'MemberView.fxml'.";
+        assert mCompletePane != null : "fx:id=\"mCompletePane\" was not injected: check your FXML file 'MemberView.fxml'.";
+        assert mErrorMessage != null : "fx:id=\"mErrorMessage\" was not injected: check your FXML file 'MemberView.fxml'.";
+        assert mInputArgBox != null : "fx:id=\"mInputArgBox\" was not injected: check your FXML file 'MemberView.fxml'.";
+        assert mInputArgPane != null : "fx:id=\"mInputArgPane\" was not injected: check your FXML file 'MemberView.fxml'.";
+        assert mInvokeButton != null : "fx:id=\"mInvokeButton\" was not injected: check your FXML file 'MemberView.fxml'.";
+        assert mOutputArgBox != null : "fx:id=\"mOutputArgBox\" was not injected: check your FXML file 'MemberView.fxml'.";
+        assert mOutputArgPane != null : "fx:id=\"mOutputArgPane\" was not injected: check your FXML file 'MemberView.fxml'.";
+        assert mTitlePane != null : "fx:id=\"mTitlePane\" was not injected: check your FXML file 'MemberView.fxml'.";
+    }
 
 }

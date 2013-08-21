@@ -88,15 +88,17 @@ public class SessionManager implements Destroyable, TriumphSessionListener {
 	 * @param name name of the Service or advertised well known name to connect to.
 	 * @param portNum Port number to use to connect
 	 * @return null on fail, else session with object
+	 * @throws TriumphException Unable to create a session with endpoint
 	 */
-	public Session createNewSession(String name, short portNum) {
+	public Session createNewSession(String name, short portNum) throws TriumphException {
 		Session session = null;
 		try {
 			session = new Session(portNum, name, mBus, this);
+			// Save the session for later use.
+            saveSession(session);
 		} catch (IllegalStateException e) {
 			session = null;
-			LOGGER.severe("Unable to create a session for Object: " + name 
-					+ " with port number: " + portNum);
+			throw new TriumphException(e.getMessage());
 		}
 		return session;
 	}
@@ -130,8 +132,7 @@ public class SessionManager implements Destroyable, TriumphSessionListener {
 		if (session == null) {
 			// Create a session if it does not exists
 			session = createNewSession(service, portNum);
-			// Save the session for later use.
-			saveSession(session);
+			
 		}
 		// If we are unable to retrieve or create a session then it 
 		// is a purely exceptional case
@@ -162,7 +163,6 @@ public class SessionManager implements Destroyable, TriumphSessionListener {
 		try {
 			intData = ret.Introspect();
 		} catch (BusException e) {
-
 
 			// Attempt to extract the introspection data here
 			try {

@@ -46,210 +46,183 @@ import org.xml.sax.SAXException;
  */
 public class TriumphAJParser {
 
-	/**
-	 * Must have a session to 
-	 */
-	private final SessionManager mBusManager;
+    /**
+     * Must have a session to 
+     */
+    private final SessionManager mBusManager;
 
-	private final static String DOC_TYPE = "<!DOCTYPE node PUBLIC \"-" +
-			"//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n" +
-			"\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">";
+    private final static String DOC_TYPE = "<!DOCTYPE node PUBLIC \"-" +
+            "//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n" +
+            "\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">";
 
-	/**
-	 * Creates a parser with a session manager that is able to access the bus.
-	 * @param manager Initialized 
-	 */
-	public TriumphAJParser(SessionManager manager) {
-		if (manager == null) 
-			throw new IllegalArgumentException("Null Session manager for parser.");
-		mBusManager = manager;
-	}
-
-
-	/**
-	 * Given an Alljoyn Service attempt to retrieve all the objects that are accessible.
-	 * This returns a complete AllJoyn Service and all the internal objects.
-	 * 
-	 * @param service AllJoyn service to construct
-	 * @param sessionId Session ID associated 
-	 * @return The complete service with all the internal objects
-	 */
-	public AllJoynService parseIntrospectData(AllJoynService service,
-			short sessionId) {
-		
-		// Retrieve all the names of the objects that currently exists within that
-		// service.  This allows us to check if we need to create a session.
-		Set<AllJoynObject> currentObjects = new HashSet<AllJoynObject>(service.getObjects());
-		Set<String> currObjStrs = new HashSet<String>(currentObjects.size());
-		for (AllJoynObject obj: currentObjects) 
-			currObjStrs.add(obj.getName());
-		
-		// Parse the root object path first and recursively complete the set
-		List<AllJoynObject> objects = parse(service.getName(), "/", sessionId, currObjStrs);
-		service.addAll(objects);
-		return service;
-	}
-	
-	/**
-	 * Given a wellknown name of a service and the root path
-	 * of the parent highest on the tree, Find all the children.
-	 * 
-	 * All the children that have names in the ignore set will
-	 * not be introspected.
-	 * 
-	 * @param service Well known name of the service to introspect
-	 * @param objectPath The object path to find object under.
-	 * @param sessionPortNum Session port number to use to establish a connection to service
-	 * @param ignoreSet Set of names to ignore if come across.
-	 * @return List of all children objects that didnt have names in the ignore set.
-	 */
-	private List<AllJoynObject> parse(
-			String service, String objectPath, 
-			short sessionPortNum, Set<String> ignoreSet) {
-		
-		// A null ignore set is as good as having an empty one.
-		ignoreSet = ignoreSet == null ? new HashSet<String>(): ignoreSet;
-		
-		try {
-			// Get the introspect data of the bus mamager
-			String intr = mBusManager.getInstrospection(service, objectPath, sessionPortNum);
-			
-			// A builder that will be used to parse a String.
-			// After removing the header the builder parses the document into nodes.
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			Document doc = builder.parse(new InputSource(new StringReader(
-					intr.replace(DOC_TYPE, ""))));
-
-			// Get the 
-			doc.getDocumentElement().normalize();
-			Node node = doc.getDocumentElement();
-
-			// Register the node's interfaces on the bus the bus manager uses.
-			Status status = mBusManager.registerInterface(node);
-			if (status == Status.BUS_IFACE_ALREADY_EXISTS) {
-				MainApplication.getLogger().info("Repeated Interface found while parsing service: " + service + " object path: " + objectPath);
-			} else if (status != Status.OK) {
-				MainApplication.getLogger().warning("Unable create Interfaces found while parsing service: " + service + " object path: " + objectPath);
-			}
-			// if this node is an object then add it to the list.
-			List<AllJoynObject> objects = new ArrayList<AllJoynObject>();
-			if (AllJoynObject.isObject(node))
-				objects.add(new AllJoynObject(node, objectPath));
-
-			// iterate through all the sub objects and add 
-			// child objects to the list.
-			List<String> subObjects = getSubObjects(objectPath, node);
-
-			// Parse each descendant object and add it to
-			for (String childName: subObjects) {
-				if (ignoreSet.contains(childName)) continue;	
-				List<AllJoynObject> childObjects = parse(service, childName, sessionPortNum, ignoreSet);
-				objects.addAll(childObjects);
-			}
-			return objects; 
-		} catch (TriumphException e) {
-			throw new RuntimeException("Error with bus: " + e);
-		} catch (ParserConfigurationException e) {
-			throw new RuntimeException("ParserConfigurationException: " + e);
-		} catch (SAXException e) {
-			throw new RuntimeException("SAXException: " + e);
-		} catch (IOException e) {
-			throw new RuntimeException("IOException: " + e);
-		}
-	}
-
-	/**
-	 * Given a node with its full name find the immediate children names
-	 * of that parent.  This will find a one level deep / one generation
-	 *  list of children.  
-	 * 
-	 * @param parentName Object path of parent name. (IE. Parent: /org/alljoyn Child: /org/alljoyn/triumph)
-	 * @param node Node of the parent
-	 * @return A list containing all the full names of the children
-	 */
-	private static List<String> getSubObjects(String parentName, Node node) {
-
-		// iterate through all the child nodes
-		// If the child is an object then add it to the list to return.
-		NodeList children = node.getChildNodes();
-		int length = children.getLength();
-
-		// Maintain a list of sub objects.
-		List<String> subObjs = new ArrayList<String>(length);
-
-		for (int i = 0; i < length; ++i) {
-			Node child = children.item(i); // Get the child
-
-			// If this node is not an object.
-			// IE could be an interface or something else.
-			if (!AllJoynObject.LABEL.equals(child.getNodeName()))
-				continue;
-
-			//Attempt to find the name attribute in the parse
-			String name = findName(child);
-			if (name == null) {
-				MainApplication.getLogger().warning(
-						"Null child name returned for object");
-				continue;
-			} 
-
-			// Apply the name suffix to the parent full name
-			// This is Unix style naming.
-			if (parentName.endsWith("/")) 
-				name = parentName + name;
-			else 
-				name = parentName + "/" + name;
-			subObjs.add(name);
-		}
-
-		return subObjs;
-	}
-
-	/**
-	 * Given a distinct node, attempts to find the name 
-	 * correspoding to this node
-	 * @param node node to find name in.
-	 * @return name on success, null on failure to find name
-	 */
-	public static String findName(Node node) {
-		String name = "";
-		
-		NamedNodeMap attributes = node.getAttributes();
-		if (attributes == null) 
-			return name;
-		
-		Node nameNode = attributes.getNamedItem("name");
-		if (nameNode != null)
-			name = nameNode.getNodeValue();
-		return name;
-	}
-
-//	/**
-//	 * Given an advertised well known name, extracts the complete well known name components
-//	 * and structures it in the form of an AllJoynService.
-//	 * 
-//	 * @param wellKnownName Well known name of the service to find.
-//	 * @param sessionId Session ID if needed.  If not needed, pass in 0.
-//	 * @return A list of all Alljoyn Objects found. 
-//	 */
-//	public AllJoynService parseIntrospectData(String wellKnownName, short sessionId) {
-//		List<AllJoynObject> objects = parseIntrospectData(wellKnownName, "/", sessionId);
-//		return new AllJoynService(wellKnownName, objects);
-//	}
+    /**
+     * Creates a parser with a session manager that is able to access the bus.
+     * @param manager Initialized 
+     */
+    public TriumphAJParser(SessionManager manager) {
+        if (manager == null) 
+            throw new IllegalArgumentException("Null Session manager for parser.");
+        mBusManager = manager;
+    }
 
 
-//	/**
-//	 * Given a String representing an introspection of a well known
-//	 * name.  A list of all the sub objects of contained in 
-//	 * 
-//	 * @param service Well known name of the service to introspect
-//	 * @param objectPath The object path to find object under.
-//	 * @param sessionPortNum Session port number. 
-//	 * @return a list of all objects found in this node.
-//	 */
-//	private List<AllJoynObject> parseIntrospectData(
-//			String service, String objectPath, short sessionPortNum) {
-//		return parse(service, objectPath, sessionPortNum, null);
-//	}
-	
+    /**
+     * Given an Alljoyn Service attempt to retrieve all the objects that are accessible.
+     * This returns a complete AllJoyn Service and all the internal objects.
+     * 
+     * @param service AllJoyn service to construct
+     * @param sessionId Session ID associated 
+     * @return The complete service with all the internal objects
+     * @throws TriumphException Unable to get introspection
+     */
+    public AllJoynService parseIntrospectData(AllJoynService service,
+            short sessionId) throws TriumphException {
+
+        
+
+        // Retrieve all the names of the objects that currently exists within that
+        // service.  This allows us to check if we need to create a session.
+        Set<AllJoynObject> currentObjects = new HashSet<AllJoynObject>(service.getObjects());
+        Set<String> currObjStrs = new HashSet<String>(currentObjects.size());
+        for (AllJoynObject obj: currentObjects) 
+            currObjStrs.add(obj.getName());
+
+        // Parse the root object path first and recursively complete the set
+        List<AllJoynObject> objects = parse(service.getName(), "/", sessionId, currObjStrs);
+        service.addAll(objects);
+        return service;
+    }
+
+    /**
+     * Given a wellknown name of a service and the root path
+     * of the parent highest on the tree, Find all the children.
+     * 
+     * All the children that have names in the ignore set will
+     * not be introspected.
+     * 
+     * @param service Well known name of the service to introspect
+     * @param objectPath The object path to find object under.
+     * @param sessionPortNum Session port number to use to establish a connection to service
+     * @param ignoreSet Set of names to ignore if come across.
+     * @return List of all children objects that didnt have names in the ignore set.
+     * @throws TriumphException Unable to get introspection
+     */
+    private List<AllJoynObject> parse(
+            String service, String objectPath, 
+            short sessionPortNum, Set<String> ignoreSet) throws TriumphException {
+
+        // A null ignore set is as good as having an empty one.
+        ignoreSet = ignoreSet == null ? new HashSet<String>(): ignoreSet;
+
+        try {
+            // Get the introspect data of the bus mamager
+            String intr = mBusManager.getInstrospection(service, objectPath, sessionPortNum);
+
+            // A builder that will be used to parse a String.
+            // After removing the header the builder parses the document into nodes.
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc = builder.parse(new InputSource(new StringReader(
+                    intr.replace(DOC_TYPE, ""))));
+
+            // Get the 
+            doc.getDocumentElement().normalize();
+            Node node = doc.getDocumentElement();
+
+            // Register the node's interfaces on the bus the bus manager uses.
+            Status status = mBusManager.registerInterface(node);
+            if (status == Status.BUS_IFACE_ALREADY_EXISTS) {
+                MainApplication.getLogger().info("Repeated Interface found while parsing service: " + service + " object path: " + objectPath);
+            } else if (status != Status.OK) {
+                MainApplication.getLogger().warning("Unable create Interfaces found while parsing service: " + service + " object path: " + objectPath);
+            }
+            // if this node is an object then add it to the list.
+            List<AllJoynObject> objects = new ArrayList<AllJoynObject>();
+            if (AllJoynObject.isObject(node))
+                objects.add(new AllJoynObject(node, objectPath));
+
+            // iterate through all the sub objects and add 
+            // child objects to the list.
+            List<String> subObjects = getSubObjects(objectPath, node);
+
+            // Parse each descendant object and add it to
+            for (String childName: subObjects) {
+                if (ignoreSet.contains(childName)) continue;	
+                List<AllJoynObject> childObjects = parse(service, childName, sessionPortNum, ignoreSet);
+                objects.addAll(childObjects);
+            }
+            return objects; 
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException("ParserConfigurationException: " + e);
+        } catch (SAXException e) {
+            throw new RuntimeException("SAXException: " + e);
+        } catch (IOException e) {
+            throw new RuntimeException("IOException: " + e);
+        }
+    }
+
+    /**
+     * Given a node with its full name find the immediate children names
+     * of that parent.  This will find a one level deep / one generation
+     *  list of children.  
+     * 
+     * @param parentName Object path of parent name. (IE. Parent: /org/alljoyn Child: /org/alljoyn/triumph)
+     * @param node Node of the parent
+     * @return A list containing all the full names of the children
+     */
+    private static List<String> getSubObjects(String parentName, Node node) {
+
+        // iterate through all the child nodes
+        // If the child is an object then add it to the list to return.
+        NodeList children = node.getChildNodes();
+        int length = children.getLength();
+
+        // Maintain a list of sub objects.
+        List<String> subObjs = new ArrayList<String>(length);
+
+        for (int i = 0; i < length; ++i) {
+            Node child = children.item(i); // Get the child
+
+            // If this node is not an object.
+            // IE could be an interface or something else.
+            if (!AllJoynObject.LABEL.equals(child.getNodeName()))
+                continue;
+
+            //Attempt to find the name attribute in the parse
+            String name = findName(child);
+            if (name == null) {
+                MainApplication.getLogger().warning(
+                        "Null child name returned for object");
+                continue;
+            } 
+
+            // Apply the name suffix to the parent full name
+            // This is Unix style naming.
+            if (parentName.endsWith("/")) 
+                name = parentName + name;
+            else 
+                name = parentName + "/" + name;
+            subObjs.add(name);
+        }
+
+        return subObjs;
+    }
+
+    /**
+     * Given a distinct node, attempts to find the name 
+     * correspoding to this node
+     * @param node node to find name in.
+     * @return name on success, null on failure to find name
+     */
+    public static String findName(Node node) {
+        String name = "";
+
+        NamedNodeMap attributes = node.getAttributes();
+        if (attributes == null) 
+            return name;
+
+        Node nameNode = attributes.getNamedItem("name");
+        if (nameNode != null)
+            name = nameNode.getNodeValue();
+        return name;
+    }
 }

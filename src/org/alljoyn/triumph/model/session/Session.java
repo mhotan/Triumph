@@ -27,6 +27,8 @@ import org.alljoyn.bus.SessionListener;
 import org.alljoyn.bus.SessionOpts;
 import org.alljoyn.bus.Status;
 import org.alljoyn.bus.ifaces.Introspectable;
+import org.alljoyn.bus.ifaces.Peer;
+import org.alljoyn.bus.ifaces.Properties;
 
 /**
  * Class that represents the established session with this application
@@ -63,12 +65,11 @@ public class Session extends SessionListener {
 	private int sessionId;
 
 	/**
-	 * A reference to hold introspect data once retrieved.
-	 * if this is null then introspect data has yet to be retrieved sucessfully.
-	 * else then introspect data is already retrieved.
+	 * Hold an array of standard interfaces that we know all 
+	 * advertised bus object and bus attachments implement
 	 */
-	//	private Map<String, String> mIntrospectData;
-	//	
+	private static final Class<?>[] STANDARD_INTERFACES = {Introspectable.class, Peer.class, Properties.class};
+	
 	/**
 	 * Mapping of objects found in this service to
 	 * their corresponding proxy bus objects.
@@ -97,10 +98,26 @@ public class Session extends SessionListener {
 		mBus = bus;
 		mProxies = new HashMap<String, ProxyBusObject>();
 
+		// Check if the client is a local session.  If so attempt to get the introspection
+		// data and there fore be able to make following network calls.
+		if (mPortNum == 0) {
+			ProxyBusObject proxy = getProxy("/");
+			Introspectable i = proxy.getInterface(Introspectable.class);
+			try {
+				// Attempt to call basic function to check 
+				// if we have a logical connect 
+				i.Introspect();
+				return; // Success we got introspection
+			} catch (BusException e) {
+				throw new IllegalStateException("Unable to establish a logical connection with " + name);
+			}
+		}
+		
+		// joining with a REMOTE advertised name
 		// Attempt to join a session if there is a valid port number to do so.
-		if (port != 0 && join() != Status.OK)
-			throw new IllegalStateException("Unable to join session with the bus");
-
+		if (join() != Status.OK)
+			throw new IllegalStateException("Unable to join session with the Endpoint: " + name 
+			        + " please check your port number");
 	}
 
 	/**
@@ -156,25 +173,10 @@ public class Session extends SessionListener {
 	 * @throws BusException Unable to get Introspect data.
 	 */
 	public String getIntrospection(String objectPath) throws BusException {
-		ProxyBusObject proxy = getProxy(objectPath, new Class<?>[] { Introspectable.class});
+		// Gets a cache Proxy or creates a new one.	
+		ProxyBusObject proxy = getProxy(objectPath, STANDARD_INTERFACES);
 		Introspectable i = proxy.getInterface(Introspectable.class);
 		return i.Introspect();
-		
-		//		if (mIntrospectData.containsKey(objectPath))
-		/*//			return mIntrospectData.get(objectPath);
-
-		if (objectPath == null) {
-			throw new IllegalArgumentException("Null objectPath in get Introspect");
-		}
-		ProxyBusObject proxy =  mBus.getProxyBusObject(mWellKnownName,
-				objectPath,
-				sessionId,
-				new Class<?>[] { Introspectable.class});
-		Introspectable i = proxy.getInterface(Introspectable.class);
-		String retValue = i.Introspect();
-
-		mProxies.put(objectPath, proxy);
-		return retValue;*/
 	}
 
 	@Override
@@ -194,7 +196,7 @@ public class Session extends SessionListener {
 	public ProxyBusObject getProxy(String objPath) {
 		// Load the default barebones proxy Bus object.
 		// All proxy bus objects implement Introspectable.class
-		return getProxy(objPath, new Class<?>[] {Introspectable.class});
+		return getProxy(objPath, STANDARD_INTERFACES);
 	}
 	
 	/**
@@ -231,4 +233,28 @@ public class Session extends SessionListener {
 		return proxy;
 	}
 
+	/**
+	 * Details of the session port listener.
+	 */
+	private static class SessionDetails {
+	    
+	    public short mPortNum;
+	    public String mEndPointName;
+	    
+	    public SessionDetails() {
+	        mPortNum = 0;
+	        mEndPointName = null;
+	    }
+	    
+	    /**
+	     * 
+	     * @param endpoint Endpoint 
+	     * @param port Port to associate 
+	     */
+	    public SessionDetails(String endpoint, short port) {
+	        mPortNum = port;
+	        mEndPointName = endpoint;
+	    }
+	}
+	
 }

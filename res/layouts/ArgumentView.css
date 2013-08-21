@@ -1,0 +1,17 @@
+#mComponentPane {
+	-fx-padding: 2pt;
+	-fx-max-width: MAX_VALUE;
+}
+
+.label {
+	-fx-text-alignment: left ;
+}
+
+#mRootPane {
+	-fx-max-width: MAX_VALUE;
+	
+}
+
+#mLabelPane {
+	-fx-padding: 2pt;
+}

@@ -23,27 +23,32 @@ import org.w3c.dom.Node;
 
 public class DoubleArgument extends NumberArgument<Double> {
 
-	DoubleArgument(String name, DIRECTION direction, boolean isUnsigned) {
-		super(name, direction, isUnsigned);
-	}
-	
-	DoubleArgument(Node node, boolean isUnsigned, DIRECTION direction) {
-		super(node, isUnsigned, direction);
-	}
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8779877698999881818L;
 
-	@Override
-	protected ArgumentView<Double> createJavaFXNode() {
-		return new DoubleArgumentView(this);
-	}
+    DoubleArgument(String name, DIRECTION direction, boolean isUnsigned) {
+        super(name, direction, isUnsigned);
+    }
 
-	@Override
-	public String getSignature() {
-		return "double " + getName();
-	}
+    DoubleArgument(Node node, boolean isUnsigned, DIRECTION direction) {
+        super(node, isUnsigned, direction);
+    }
 
-	@Override
-	protected String getAJSignature() {
-		return "" + AJConstant.ALLJOYN_DOUBLE;
-	}
+    @Override
+    protected ArgumentView<Double> createJavaFXNode() {
+        return new DoubleArgumentView(this);
+    }
+
+    @Override
+    public String getSignature() {
+        return "double " + getName();
+    }
+
+    @Override
+    protected String getAJSignature() {
+        return "" + AJConstant.ALLJOYN_DOUBLE;
+    }
 
 }

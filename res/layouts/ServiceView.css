@@ -1,6 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--  
 /******************************************************************************
  * Copyright 2013, Qualcomm Innovation Center, Inc.
  *
@@ -16,23 +13,22 @@
  *    See the license for the specific language governing permissions and
  *    limitations under the license.
  ******************************************************************************/
- -->
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.layout.BorderPane?>
+.root {
+	-fx-padding: 2pt;
+}
 
-<fx:root type="javafx.scene.layout.BorderPane" xmlns:fx="http://javafx.com/fxml">
-  <center>
-    <Pane fx:id="mPayload" prefHeight="-1.0" prefWidth="-1.0" />
-  </center>
-  <right>
-    <Button fx:id="mRemove" mnemonicParsing="false" onAction="#onRemove" text="Remove">
-      <BorderPane.margin>
-        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-      </BorderPane.margin>
-    </Button>
-  </right>
-</fx:root>
+.label {
+	-fx-text-fill: rgb(40,98,212);
+	-fx-font-weight: bold;
+	-fx-font-style: normal ;
+}
+
+.filler {
+	-fx-pref-width: 10;
+	-fx-min-width: 10;
+}
+
+.error {
+	-fx-text-fill: rgb(255,0,0);
+}

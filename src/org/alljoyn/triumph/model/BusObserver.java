@@ -54,256 +54,267 @@ import org.alljoyn.bus.ifaces.DBusProxyObj;
  */
 public class BusObserver implements Destroyable {
 
-	private static final Logger LOGGER = Logger.getLogger(BusObserver.class.getSimpleName());
+    private static final Logger LOG = Logger.getLogger(BusObserver.class.getSimpleName());
 
-	/**
-	 * Attempt to request any name that is visible on the bus.
-	 */
-	private static final String WILDCARD_PREFIX = "";
+    /**
+     * Attempt to request any name that is visible on the bus.
+     */
+    private static final String WILDCARD_PREFIX = "";
 
-	/**
-	 * Number of seconds to wait between calls to flush.
-	 */
-	private static final int SECONDS_PER_FLUSH = 3;
+    /**
+     * Number of seconds to wait between calls to flush.
+     */
+    private static final int SECONDS_PER_FLUSH = 3;
 
-	/**
-	 * Connection to virtual bus.
-	 */
-	private final BusAttachment mBus;
+    /**
+     * Connection to virtual bus.
+     */
+    private final BusAttachment mBus;
 
-	/**
-	 * Triumph Listener  
-	 */
-	private final TriumphBusListener mBusListener;
+    /**
+     * Triumph Listener  
+     */
+    private final TriumphBusListener mBusListener;
 
-	public BusObserver(final BusAttachment bus, final BusObserverListener list) {
-		this(bus, list, false);
-	}
+    public BusObserver(final BusAttachment bus, final BusObserverListener list) {
+        this(bus, list, false);
+    }
 
-	/**
-	 * Initializes the Bus Observer.  Effectively 
-	 * does all the pre-processing work to allow this
-	 * instance to be able to start looking at the bus.
-	 * 
-	 * @param list Listener to keep track of 
-	 * @param dbusCompatible Set if Dbus names are desired.
-	 */
-	public BusObserver(final BusAttachment bus, final BusObserverListener list, boolean dbusCompatible) {
+    /**
+     * Initializes the Bus Observer.  Effectively 
+     * does all the pre-processing work to allow this
+     * instance to be able to start looking at the bus.
+     * 
+     * @param list Listener to keep track of 
+     * @param dbusCompatible Set if Dbus names are desired.
+     */
+    public BusObserver(final BusAttachment bus, final BusObserverListener list, boolean dbusCompatible) {
 
-		// Create a new context to start your bus attachment instance.
-		mBus = bus;
-		if (dbusCompatible)
-			mBusListener = new TriumphBusListener(list, mBus.getDBusProxyObj());
-		else 
-			mBusListener = new TriumphBusListener(list, null);	
-		mBus.registerBusListener(mBusListener);
+        // Create a new context to start your bus attachment instance.
+        mBus = bus;
+        if (dbusCompatible)
+            mBusListener = new TriumphBusListener(list, mBus.getDBusProxyObj());
+        else 
+            mBusListener = new TriumphBusListener(list, null);	
+        mBus.registerBusListener(mBusListener);
 
-		// Connect Bus attachment to the Virtual Distributed Bus
-		attemptConnect();
+        // Connect Bus attachment to the Virtual Distributed Bus
+        attemptConnect();
 
-		// Attempt to find all the the advertised bus names on
-		// the distributed bus network.
-		Status status = mBus.findAdvertisedName(WILDCARD_PREFIX);
-		if (status != org.alljoyn.bus.Status.OK) {
-			LOGGER.severe("Unable to initiate call to query to find all names");
-			return;
-		}
-		LOGGER.info("Bus Observer Initialized");
-	}
-	
-	/**
-	 * Attempt to connect
-	 * @return
-	 */
-	private  boolean attemptConnect() {
-		if (mBus.isConnected())
-			return true;
-		// Connect Bus attachment to the Virtual Distributed Bus
-		org.alljoyn.bus.Status status = mBus.connect();
-		if (status != org.alljoyn.bus.Status.OK) {
-			LOGGER.log(Level.SEVERE, "SessionManager, Unable to connect to bus");
-			return false;
-		}
-		return true;
-	}
+        // Attempt to find all the the advertised bus names on
+        // the distributed bus network.
+        Status status = mBus.findAdvertisedName(WILDCARD_PREFIX);
+        if (status != org.alljoyn.bus.Status.OK) {
+            LOG.severe("Unable to initiate call to query to find all names");
+            return;
+        }
+        LOG.info("Bus Observer Initialized");
+    }
 
-	/**
-	 * This method causes the synchronization of any pending buffers
-	 */
-	public void sync() {
-		// Here is where we would flush any cache that is pending some names
-		mBusListener.flush();
-	}
+    /**
+     * Attempt to connect
+     * @return
+     */
+    private  boolean attemptConnect() {
+        if (mBus.isConnected())
+            return true;
+        // Connect Bus attachment to the Virtual Distributed Bus
+        org.alljoyn.bus.Status status = mBus.connect();
+        if (status != org.alljoyn.bus.Status.OK) {
+            LOG.log(Level.SEVERE, "SessionManager, Unable to connect to bus");
+            return false;
+        }
+        return true;
+    }
 
-	@Override
-	public void destroy() {
-		mBus.unregisterSignalHandlers(this);
-		mBus.disconnect();
-	}
+    /**
+     * This method causes the synchronization of any pending buffers
+     */
+    public void sync() {
+        // Here is where we would flush any cache that is pending some names
+        mBusListener.flush();
+    }
 
-	/**
-	 * Interface that allows any class interested in discovery new
-	 * name on the alljoyn bus.
-	 * @author mhotan
-	 */
-	public interface BusObserverListener {
+    @Override
+    public void destroy() {
+        mBus.unregisterSignalHandlers(this);
+        mBus.disconnect();
+    }
 
-		/**
-		 * Found a new well known name on the local
-		 * distributed bus. 
-		 * 
-		 * Note: as of right now it is picking up any Alljoyn services that
-		 * advertises itself.
-		 * 
-		 * @param name name that has not been previously seen.
-		 */
-		void onDistributedNameFound(Collection<String> name);
-		
-		/**
-		 * Notifies the listener a local DBus service has 
-		 * been identified.
-		 * 
-		 * @param name Name of the service.
-		 */
-		void onLocalNameFound(Collection<String> name);
+    /**
+     * Interface that allows any class interested in discovery new
+     * name on the alljoyn bus.
+     * @author mhotan
+     */
+    public interface BusObserverListener {
 
-		/**
-		 * Name that we were previously tracking was losted.
-		 * @param name Name that was lost 
-		 */
-		void onNameLost(Collection<String> name);	
-	}
+        /**
+         * Found a new well known name on the local
+         * distributed bus. 
+         * 
+         * Note: as of right now it is picking up any Alljoyn services that
+         * advertises itself.
+         * 
+         * @param name name that has not been previously seen.
+         */
+        void onDistributedNameFound(Collection<String> name);
 
-	/**
-	 * Class that is dedicated to interpret found and lost advertised names 
-	 * and pass back to all listener
-	 * @author Michael Hotan, mhotan@quicinc.com
-	 */
-	private static class TriumphBusListener extends BusListener {
+        /**
+         * Notifies the listener a local DBus service has 
+         * been identified.
+         * 
+         * @param name Name of the service.
+         */
+        void onLocalNameFound(Collection<String> name);
 
-		//		private long lastFlushTime;
-		//		
-		/**
-		 * two Buffers we use to keep track of 
-		 * all the names we find and loose
-		 */
-		private final Set<String> mNameFoundBuffer, mNameLostBuffer;
+        /**
+         * Name that we were previously tracking was losted.
+         * @param name Name that was lost 
+         */
+        void onNameLost(Collection<String> name);	
+    }
 
-		/**
-		 * Single instance of an application specific listener
-		 * that just cares about incoming available names.
-		 */
-		private final BusObserverListener mListener;
+    /**
+     * Class that is dedicated to interpret found and lost advertised names 
+     * and pass back to all listener
+     * @author Michael Hotan, mhotan@quicinc.com
+     */
+    private static class TriumphBusListener extends BusListener {
 
-		/**
-		 * DBus proxy object to handle getting Dbus names
-		 */
-		private final DBusProxyObj mDBusProxy;
+        //		private long lastFlushTime;
+        //		
+        /**
+         * two Buffers we use to keep track of 
+         * all the names we find and loose
+         */
+        private final Set<String> mNameFoundBuffer, mNameLostBuffer;
 
-		/**
-		 * Creates an alljoyn specific listener for managing name discovery
-		 * 
-		 * @param list Listener that will receive found and lost name callbacks 
-		 */
-		public TriumphBusListener(BusObserverListener list, DBusProxyObj dbusproxy) {
-			assert list != null: "TriumphBusListener, Illlegal Null listener on creation!";
-			this.mListener = list;
-			mNameFoundBuffer = new HashSet<String>();
-			mNameLostBuffer = new HashSet<String>();
+        /**
+         * Single instance of an application specific listener
+         * that just cares about incoming available names.
+         */
+        private final BusObserverListener mListener;
 
-			mDBusProxy = dbusproxy;
+        /**
+         * DBus proxy object to handle getting Dbus names
+         */
+        private final DBusProxyObj mDBusProxy;
 
-			Timeline threeSecondCacheFlush = new Timeline(
-					new KeyFrame(Duration.seconds(SECONDS_PER_FLUSH), new EventHandler<ActionEvent>(){
+        /**
+         * Creates an alljoyn specific listener for managing name discovery
+         * 
+         * @param list Listener that will receive found and lost name callbacks 
+         */
+        public TriumphBusListener(BusObserverListener list, DBusProxyObj dbusproxy) {
+            assert list != null: "TriumphBusListener, Illlegal Null listener on creation!";
+            this.mListener = list;
+            mNameFoundBuffer = new HashSet<String>();
+            mNameLostBuffer = new HashSet<String>();
 
-						@Override
-						public void handle(ActionEvent event) {
-							// Flush the cache on the UI thread
-							flush();
-						}
+            mDBusProxy = dbusproxy;
 
-					}));
-			threeSecondCacheFlush.setCycleCount(Timeline.INDEFINITE);
-			threeSecondCacheFlush.play();
-		}
+            Timeline threeSecondCacheFlush = new Timeline(
+                    new KeyFrame(Duration.seconds(SECONDS_PER_FLUSH), new EventHandler<ActionEvent>(){
 
-		@Override
-		public void nameOwnerChanged(
-				String busName, String previousOwner, String newOwner) {
-			super.nameOwnerChanged(busName, previousOwner, newOwner);
-			// TODO Verify that no implementation of this is needed.
-			// Because this object is strictly in charge of broadcasting 
-			// names it finds or looses.  This as of right now does not need to do anything.
-		}
+                        @Override
+                        public void handle(ActionEvent event) {
+                            // Flush the cache on the UI thread
+                            flush();
+                        }
 
-		@Override
-		public synchronized void foundAdvertisedName(
-				String name, short transport, String namePrefix) {
-//			LOGGER.info("Found advertised name " + name);
+                    }));
+            threeSecondCacheFlush.setCycleCount(Timeline.INDEFINITE);
+            threeSecondCacheFlush.play();
+        }
 
-			if (name == null || name.length() == 0) {
-				// TODO Log invalid name
-				return;
-			}
-			List<String> l = new ArrayList<String>();
-			l.add(name);
+        @Override
+        public void nameOwnerChanged(
+                String busName, String previousOwner, String newOwner) {
+            super.nameOwnerChanged(busName, previousOwner, newOwner);
+            // TODO Verify that no implementation of this is needed.
+            // Because this object is strictly in charge of broadcasting 
+            // names it finds or looses.  This as of right now does not need to do anything.
+            LOG.info("Name owner changed BusName: " + busName 
+                    + " Previous Owner: " + previousOwner + " New Owner: " + newOwner);
+            
+            // What is found is that when the new owner is found and the new owner is null,
+            // that signifies that the name is lost.
+            // Ignore any unique names.
+            if (newOwner == null && !busName.startsWith(":")) {
+                removeAdvertisedName(busName);
+            }
+            
+            // TODO Handle the management of the name change wellknown service name.
+        }
 
-			LOGGER.info("Found Name: " + name);
-			
-			// throw the found name onto the buffer
-			mNameFoundBuffer.add(name);
-		}
+        @Override
+        public synchronized void foundAdvertisedName(
+                String name, short transport, String namePrefix) {
+            if (name == null || name.length() == 0) {
+                LOG.warning("Invalid advertised found name: " + name);
+                return;
+            }
+            List<String> l = new ArrayList<String>();
+            l.add(name);
 
-		@Override
-		public synchronized void lostAdvertisedName(
-				String name, short transport, String namePrefix) {
-			System.out.println("Lost advertised name " + name);
+            // throw the found name onto the buffer
+            mNameFoundBuffer.add(name);
+        }
 
-			if (name == null || name.length() == 0) {
-				// TODO Log invalid name
-				return;
-			}
-			List<String> l = new ArrayList<String>();
-			l.add(name);
+        @Override
+        public synchronized void lostAdvertisedName(
+                String name, short transport, String namePrefix) {
+            LOG.info("Lost advertised name " + name);
 
-			// Make sure we remove the name if it is stored in the
-			// buffer then throw it on the lost buffer to ensure 
-			// that we notify the buffer is lost.
-			mNameFoundBuffer.remove(name);
-			mNameLostBuffer.add(name);
-		}
+            if (name == null || name.length() == 0) {
+                // TODO Log invalid name
+                return;
+            }
+            List<String> l = new ArrayList<String>();
+            l.add(name);
 
-		/**
-		 * Call to flush the current buffer of found and lost buffers.
-		 */
-		public synchronized void flush() {
-			//			slastFlushTime = System.currentTimeMillis();
-			List<String> distFound = new ArrayList<String>(mNameFoundBuffer);
-			List<String> lost = new ArrayList<String>(mNameLostBuffer);
-			mNameFoundBuffer.clear();
-			mNameLostBuffer.clear();
+            removeAdvertisedName(name);
+        }
 
-			try {
-				List<String> localFound = new ArrayList<String>();
-				if (mDBusProxy != null) {
-					for (String name: mDBusProxy.ListNames()) {
-						if (!name.startsWith(":")) {
-							localFound.add(name);
-						}
-					}
-				}
-				mListener.onLocalNameFound(localFound);
-			} catch (BusException e) {
-//				e.printStackTrace();
-				LOGGER.warning("Dbus Proxy caught exception " + e);
-			}
-			
-			// Sort the names
-			Collections.sort(distFound);
-			mListener.onDistributedNameFound(distFound);
-			mListener.onNameLost(lost);
-		}
-	}
+        private void removeAdvertisedName(String name) {
+            // Make sure we remove the name if it is stored in the
+            // buffer then throw it on the lost buffer to ensure 
+            // that we notify the buffer is lost.
+            mNameFoundBuffer.remove(name);
+            mNameLostBuffer.add(name);
+        }
+
+        /**
+         * Call to flush the current buffer of found and lost buffers.
+         */
+        public synchronized void flush() {
+            //			slastFlushTime = System.currentTimeMillis();
+            List<String> distFound = new ArrayList<String>(mNameFoundBuffer);
+            List<String> lost = new ArrayList<String>(mNameLostBuffer);
+            mNameFoundBuffer.clear();
+            mNameLostBuffer.clear();
+
+            try {
+                List<String> localFound = new ArrayList<String>();
+                if (mDBusProxy != null) {
+                    for (String name: mDBusProxy.ListNames()) {
+                        if (!name.startsWith(":")) {
+                            localFound.add(name);
+                        }
+                    }
+                }
+                mListener.onLocalNameFound(localFound);
+            } catch (BusException e) {
+                //				e.printStackTrace();
+                LOG.warning("Dbus Proxy caught exception " + e);
+            }
+
+            // Sort the names
+            Collections.sort(distFound);
+            mListener.onDistributedNameFound(distFound);
+            mListener.onNameLost(lost);
+        }
+    }
 
 
 }

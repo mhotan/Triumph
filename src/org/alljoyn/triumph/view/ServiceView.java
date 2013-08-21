@@ -19,6 +19,8 @@ package org.alljoyn.triumph.view;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -28,7 +30,7 @@ import javafx.scene.layout.HBox;
 
 import org.alljoyn.triumph.model.components.AllJoynService;
 import org.alljoyn.triumph.util.SessionPortStorage;
-import org.alljoyn.triumph.util.ViewLoader;
+import org.alljoyn.triumph.util.loaders.ViewLoader;
 
 /**
  * 
@@ -36,20 +38,20 @@ import org.alljoyn.triumph.util.ViewLoader;
  */
 public class ServiceView extends HBox {
 
-	@FXML
-	private ResourceBundle resources;
+    @FXML
+    private ResourceBundle resources;
 
-	@FXML
-	private URL location;
+    @FXML
+    private URL location;
 
-	@FXML
-	private TextField mInputField;
+    @FXML
+    private Label mError;
 
-	@FXML
-	private Label mLabel;
-	
-	@FXML
-	private Button mSaveButton;
+    @FXML
+    private TextField mInputField;
+
+    @FXML
+    private Label mLabel;
 
 	private final AllJoynService mService;
 	
@@ -57,34 +59,70 @@ public class ServiceView extends HBox {
 		ViewLoader.loadView("ServiceView.fxml", this);
 		mService = service;
 		mLabel.setText(service.getName());
+		mInputField.setText("" + SessionPortStorage.getPort(service.getName()));
+		
+		// Only allow change in ports for remote objects
+		switch (service.getServiceType()) {
+		case LOCAL:
+		    mInputField.setEditable(false);
+		    break;
+		case REMOTE:
+		    mInputField.setEditable(true);
+            break;
+		}
+		
+		hideError();
+		
+		mInputField.textProperty().addListener(new ChangeListener<String>() {
+
+            @Override
+            public void changed(ObservableValue<? extends String> observable,
+                    String oldValue, String newValue) {
+                if (newValue == null) return;
+                savePort(newValue);
+            }
+        
+		});
 	}
 	
 	@FXML
 	void onPortSet(ActionEvent event) {
-		onSave(event);
+	    savePort(mInputField.getText().trim());
 	}
 
-	@FXML
-	void onSave(ActionEvent event) {
-		String text = mInputField.getText();
-		
+	private void savePort(String portString) {
+	    hideError(); // Attempt to hide error
+	    
+		String text = portString;
 		Short portNum;
 		try {
 			portNum = Short.valueOf(text);
 			if (portNum < 0) 
 				portNum = 0;
+			mInputField.setText("" + portNum);
+	        SessionPortStorage.savePort(mService.getName(), portNum);
 		} catch (NumberFormatException e) {
-			portNum = 0;
+			showError();
 		}
-		
-		mInputField.setText("" + portNum);
-		SessionPortStorage.savePort(mService.getName(), portNum);
+	}
+	
+	private void hideError() {
+	    mError.setVisible(false);
+	    getChildren().remove(mError);
+	}
+	
+	private void showError() {
+	    if (getChildren().contains(mError))
+	        return;
+	    mError.setVisible(true);
+	    getChildren().add(mError);
 	}
 
 	@FXML
 	void initialize() {
-		assert mInputField != null : "fx:id=\"mInputField\" was not injected: check your FXML file 'ServiceView.fxml'.";
-		assert mSaveButton != null : "fx:id=\"mSaveButton\" was not injected: check your FXML file 'ServiceView.fxml'.";
-	}
+	    assert mError != null : "fx:id=\"mError\" was not injected: check your FXML file 'ServiceView.fxml'.";
+        assert mInputField != null : "fx:id=\"mInputField\" was not injected: check your FXML file 'ServiceView.fxml'.";
+        assert mLabel != null : "fx:id=\"mLabel\" was not injected: check your FXML file 'ServiceView.fxml'.";
+}
 
 }

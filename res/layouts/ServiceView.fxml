@@ -17,7 +17,6 @@
  *    limitations under the license.
  ******************************************************************************/
  -->
-
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import javafx.scene.control.*?>
@@ -25,20 +24,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.HBox?>
 
-<fx:root type="HBox" maxWidth="1.7976931348623157E308" styleClass="root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<fx:root type="HBox" id="mRootContainer" maxWidth="1.7976931348623157E308" styleClass="root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
   <children>
     <Label fx:id="mLabel" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" text="Service Name" HBox.hgrow="NEVER" />
-    <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
-    <TextField id="mInputPane" fx:id="mInputField" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" onAction="#onPortSet" prefWidth="-1.0" promptText="Session Port Unsigned Short" HBox.hgrow="NEVER" />
-    <Button fx:id="mSaveButton" contentDisplay="GRAPHIC_ONLY" graphicTextGap="1.0" minHeight="-1.0" minWidth="-Infinity" mnemonicParsing="false" mouseTransparent="false" onAction="#onSave" prefHeight="-1.0" prefWidth="24.0" text="" visible="true" HBox.hgrow="NEVER">
-      <graphic>
-        <ImageView fitHeight="20.0" fitWidth="20.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
-          <image>
-            <Image url="@../../../../../res/save_icon.jpg" />
-          </image>
-        </ImageView>
-      </graphic>
-    </Button>
+    <Pane id="mFiller" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="-1.0" prefWidth="10.0" styleClass="filler" HBox.hgrow="NEVER" />
+    <Label maxHeight="1.7976931348623157E308" text="Port:" />
+    <TextField id="mInputPane" fx:id="mInputField" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" onAction="#onPortSet" prefWidth="120.0" promptText="Unsigned Short" HBox.hgrow="NEVER" />
+    <Label fx:id="mError" maxHeight="1.7976931348623157E308" minHeight="-1.0" prefHeight="-1.0" styleClass="error" text="Invalid Port" HBox.hgrow="NEVER" />
   </children>
   <stylesheets>
     <URL value="@ServiceView.css" />

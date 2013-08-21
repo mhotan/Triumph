@@ -16,14 +16,8 @@
 
 package org.alljoyn.triumph.view.argview;
 
-import java.io.IOException;
-
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.layout.HBox;
 
 import org.alljoyn.triumph.model.components.arguments.BooleanArgument;
 
@@ -34,67 +28,62 @@ import org.alljoyn.triumph.model.components.arguments.BooleanArgument;
  */
 public class BooleanArgumentView extends ArgumentView<Boolean> {
 
-	private static final String TRUE = "True"; //TODO Internationalize
-	private static final String FALSE = "False";
+    /**
+     * Input variable for this
+     */
+    @FXML private ToggleButton mBoolToggle;
 
-	/**
-	 * Input variable for this
-	 */
-	@FXML private ToggleButton mBoolToggle;
+    /**
+     * Attempt to load a view based off an FXML document.
+     * @param arg Boolean Argument to assign to this view.
+     */
+    public BooleanArgumentView(BooleanArgument arg) {
+        super(arg);
+        //		ViewLoader.loadView("BooleanArgView.fxml", this);
 
-	/**
-	 * Attempt to load a view based off an FXML document.
-	 * @param arg Boolean Argument to assign to this view.
-	 */
-	public BooleanArgumentView(BooleanArgument arg) {
-		super(arg);
-		
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("BooleanArgView.fxml"));
-		fxmlLoader.setRoot(this);
-		fxmlLoader.setController(this);
+        Boolean value = getValue();
+        if (value == null) return;
 
-		try {
-			fxmlLoader.load();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+        mBoolToggle.setSelected(value);
+        mBoolToggle.setText(value ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
+    }
 
-		if (!isInputArg()) {
-			mBoolToggle.setDisable(true);
-			boolean bValue = getValue();
-			mBoolToggle.setSelected(bValue);
-			mBoolToggle.setText(bValue ? TRUE : FALSE);
-		}
-	}
+    @Override
+    protected String getFXMLFileName() {
+        return "BooleanArgView.fxml";
+    }
 
-	@FXML
-	void onToggled() {
-		mBoolToggle.setText(getString(mBoolToggle.isSelected()));
-		setValue(mBoolToggle.isSelected());
-	}
+    @FXML
+    void onToggled() {
+        mBoolToggle.setText(getString(mBoolToggle.isSelected()));
+        // Sets the argument value to add.
+        setValue(mBoolToggle.isSelected());
+    }
 
-	/**
-	 * Using this method can eventually lead to the
-	 * internationalization of this app.
-	 * @param bool Boolean value to return string of
-	 * @return String String representation
-	 */
-	private static String getString(boolean bool) {
-		// TODO Implement Localization and Internationalization.
-		return bool ? TRUE : FALSE;
-	}
+    /**
+     * Using this method can eventually lead to the
+     * internationalization of this app.
+     * @param bool Boolean value to return string of
+     * @return String String representation
+     */
+    private static String getString(boolean bool) {
+        return bool ? Boolean.TRUE.toString() : Boolean.FALSE.toString();
+    }
 
-	/**
-	 * Return the current value of the Boolean argument
-	 * @return True if 
-	 */
-	public Boolean getValue() {
-		return mBoolToggle.isSelected();
-	}
+    @Override
+    public String onSaveCurrentValue() {
+        onToggled();
+        return null; // can never have error
+    }
 
-	@Override
-	public void onSaveCurrentValue() {
-		onToggled();
-	}
+    @Override
+    public void setEditable(boolean editable) {
+        mBoolToggle.setDisable(!editable);
+    }
+
+    @Override
+    protected boolean isEditable() {
+        return mBoolToggle.isDisabled();
+    }
 
 }

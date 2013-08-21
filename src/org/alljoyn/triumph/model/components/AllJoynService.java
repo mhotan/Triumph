@@ -19,6 +19,8 @@ package org.alljoyn.triumph.model.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.alljoyn.bus.ProxyBusObject;
+
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 
@@ -32,6 +34,12 @@ public class AllJoynService extends AllJoynComponent {
 
 	
 	private final List<AllJoynObject> mObjects;
+	
+	public enum SERVICE_TYPE {
+	    LOCAL, REMOTE
+	}
+	
+	private SERVICE_TYPE mServiceType;
 	
 	/**
 	 * Creates an empty Service with no objects
@@ -59,6 +67,20 @@ public class AllJoynService extends AllJoynComponent {
 		// of objects.  No big deal.... I think
 		mObjects = objects == null ? new ArrayList<AllJoynObject>() 
 				: new ArrayList<AllJoynObject>(objects);
+	}
+	
+	/**
+	 * Assign the type of this service.
+	 * @param type Type of service to assign to this
+	 */
+	public void setServiceType(SERVICE_TYPE type) {
+	    if (type != null) {
+	        mServiceType = type;
+	    }
+	}
+	
+	public SERVICE_TYPE getServiceType() {
+	    return mServiceType;
 	}
 	
 	/**
@@ -148,4 +170,21 @@ public class AllJoynService extends AllJoynComponent {
 	public int hashCode() {
 		return getName().hashCode();
 	}
+
+	private ProxyBusObject mStandardProxy;
+	
+	/**
+	 * Saves Proxy bus object for standard object.
+	 * @param proxy Proxy to save
+	 */
+    public void saveBusPeerProxy(ProxyBusObject proxy) {
+        if (!proxy.getObjPath().equals("org/alljoyn/Bus/Peer")) {
+            throw new IllegalArgumentException("saveBusPeerProxy() proxy object path not org/alljoyn/Bus/Peer");
+        }
+        mStandardProxy = proxy;
+    }
+    
+    public ProxyBusObject getBusPeerProxy() {
+        return mStandardProxy;
+    }
 }

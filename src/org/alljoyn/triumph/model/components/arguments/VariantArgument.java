@@ -16,7 +16,13 @@
 
 package org.alljoyn.triumph.model.components.arguments;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.alljoyn.bus.BusException;
 import org.alljoyn.bus.Variant;
+import org.alljoyn.triumph.MainApplication;
 import org.alljoyn.triumph.util.AJConstant;
 import org.alljoyn.triumph.view.argview.ArgumentView;
 import org.alljoyn.triumph.view.argview.VariantArgumentView;
@@ -28,28 +34,98 @@ import org.w3c.dom.Node;
  */
 public class VariantArgument extends Argument<Variant> {
 
-	VariantArgument(Node node, DIRECTION defaultDirection) {
-		super(node, defaultDirection);
-	}
-	
-	VariantArgument(String name, DIRECTION isInput) {
-		super(name, isInput);
-	}
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -4225584971504006014L;
 
-	@Override
-	protected ArgumentView<Variant> createJavaFXNode() {
-		// TODO Auto-generated method stub
-		return new VariantArgumentView(this);
-	}
+    VariantArgument(Node node, DIRECTION defaultDirection) {
+        super(node, defaultDirection);
+    }
 
-	@Override
-	public String getSignature() {
-		return "Variant " + getName();
-	}
+    VariantArgument(String name, DIRECTION isInput) {
+        super(name, isInput);
+    }
 
-	@Override
-	protected String getAJSignature() {
-		return "" + AJConstant.ALLJOYN_VARIANT;
-	}
+    @Override
+    protected ArgumentView<Variant> createJavaFXNode() {
+        // TODO Auto-generated method stub
+        return new VariantArgumentView(this);
+    }
+
+    @Override
+    public String getSignature() {
+        return "Variant " + getName();
+    }
+
+    @Override
+    protected String getAJSignature() {
+        return "" + AJConstant.ALLJOYN_VARIANT;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    //////  Methods that are used for Serialization.
+    //////  
+    //////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * As implemented regarding by interface Serializable.
+     * This method requires this exact signature.
+     * <br> This method is called from serialization to write out internal 
+     * fields to a file storage.
+     * 
+     * @param out ObjectOutputStream to write the file out to.
+     * @throws IOException Exception occured while writing a file.
+     */
+    private void writeObject(java.io.ObjectOutputStream out)
+            throws IOException {
+        writeOut(out);
+    }
+
+    /**
+     * As implemented regarding by interface Serializable.
+     * This method requires this exact signature.
+     * <br> This method is called when reading an object from file storage.
+     * 
+     * @param in ObjectInputStream to read in from
+     * @throws IOException Error occured accessing file
+     * @throws ClassNotFoundException unable to load default values.
+     */
+    private void readObject(java.io.ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
+        readIn(in);
+    }
+
+    @Override
+    protected void writeOut(ObjectOutputStream out) throws IOException {
+        super.writeOut(out);
+        Variant v = getValue();
+        try {
+            Object o;
+            if (v == null || (o = v.getObject(Object.class)) == null) {
+                out.write((byte) 0);
+                return;
+            }
+            out.write((byte) 1);
+            out.writeUTF(v.getSignature());
+            out.writeObject(o);
+        } catch (BusException e) {
+            // Unable to save Varaint
+            MainApplication.getLogger().warning("Unable to save varirant " + v);
+            out.write((byte) 0);
+            return;
+        }
+        
+    }
+
+    @Override
+    protected void readIn(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readIn(in);
+        byte hasValue = in.readByte();
+        if (hasValue == 0) return;
+        String sig = in.readUTF();
+        Object o = in.readObject();
+        setValue(new Variant(o, sig));
+    }
 
 }

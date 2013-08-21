@@ -33,7 +33,7 @@ import org.alljoyn.triumph.model.components.AllJoynObject;
 import org.alljoyn.triumph.model.components.AllJoynService;
 import org.alljoyn.triumph.model.components.Annotation;
 import org.alljoyn.triumph.model.components.Member;
-import org.alljoyn.triumph.util.ViewLoader;
+import org.alljoyn.triumph.util.loaders.ViewLoader;
 
 /**
  * Creates title view for this Member to be invoked.

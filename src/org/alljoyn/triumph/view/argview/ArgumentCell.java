@@ -42,6 +42,7 @@ public class ArgumentCell extends ListCell<Argument<?>> {
 			// TODO Instead of the getView method.
 			// Give each argument an identifier or use a current one.
 			// Then create a factory that returns the appropiate ArgumentView for the argument.
+			setMaxWidth(Double.MAX_VALUE);
 			setGraphic(item.getView());
 		} else 
 			setText(""); // No item

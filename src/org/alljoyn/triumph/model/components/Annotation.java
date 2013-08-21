@@ -183,10 +183,7 @@ public class Annotation implements Attributable {
 	}
 	
 	
-	/**
-	 * Returns a list of all the attributes of this annotation.
-	 * @return
-	 */
+	@Override
 	public List<Attribute> getAttributes() {
 		return new ArrayList<Attribute>(mAttributes);
 	}
@@ -199,6 +196,11 @@ public class Annotation implements Attributable {
 		}
 		mAttributes.add(attr);
 	}
+	
+	@Override
+    public void removeAttribute(Attribute attr) {
+	    mAttributes.remove(attr);
+    }
 	
 	@Override
 	public String toString() {
@@ -214,4 +216,5 @@ public class Annotation implements Attributable {
 		}
 		return buf.toString().trim();
 	}
+
 }

@@ -18,6 +18,7 @@ package org.alljoyn.triumph.view.argview;
 
 import java.util.List;
 
+import org.alljoyn.triumph.TriumphException;
 import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
 import org.alljoyn.triumph.model.components.arguments.ArrayArgument;
 import org.alljoyn.triumph.model.components.arguments.DoubleArgument;
@@ -27,6 +28,28 @@ public class DoubleArrayArgumentView extends ArrayArgumentView<double[]> {
 
 	public DoubleArrayArgumentView(ArrayArgument<double[]> arg) {
 		super(arg);
+		
+		// Check for any current values.
+		double[] values = getValue();
+        if (values == null) return;
+        
+        // Now that we have current values.
+        // Populate the current view.
+        try {
+            ArgumentView<?>[] views = new ArgumentView<?>[values.length];
+            for (int i = 0; i < values.length; ++i) {
+                views[i] = ArgumentFactory.getArgument(
+                        getInternalArgumentName(i+1), 
+                        arg.getInnerElementType(), values[i]).getView();
+            }
+            // If there any current values then populate the view.
+            for (int i = 0; i < values.length; ++i) {
+                addNewElem(views[i]);
+            }
+        } catch (TriumphException e) {
+            showError("Unable to unpack " + values.getClass().getSimpleName() 
+                    + " because of " + e.getMessage());
+        }
 	}
 
 	@Override
@@ -36,7 +59,6 @@ public class DoubleArrayArgumentView extends ArrayArgumentView<double[]> {
 		DoubleArgument arg = (DoubleArgument) ArgumentFactory.getArgument(
 				"" + AJConstant.ALLJOYN_DOUBLE, "",  getArgDirection());
 		DoubleArgumentView view = new DoubleArgumentView(arg);
-		view.hideSaveOption();
 		return view;
 	}
 

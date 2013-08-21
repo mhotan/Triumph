@@ -18,6 +18,7 @@ package org.alljoyn.triumph.view.argview;
 
 import java.util.List;
 
+import org.alljoyn.triumph.TriumphException;
 import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
 import org.alljoyn.triumph.model.components.arguments.BooleanArgument;
 import org.alljoyn.triumph.model.components.arguments.BooleanArrayArgument;
@@ -29,48 +30,69 @@ import org.alljoyn.triumph.util.AJConstant;
  */
 public class BooleanArrayArgumentView extends ArrayArgumentView<boolean[]> {
 
-	/**
-	 * Creates a view that presents a Boolean Array argument
-	 * @param arg 
-	 */
-	public BooleanArrayArgumentView(BooleanArrayArgument arg) {
-		super(arg);
-	}
+    /**
+     * Creates a view that presents a Boolean Array argument
+     * @param arg 
+     */
+    public BooleanArrayArgumentView(BooleanArrayArgument arg) {
+        super(arg);
 
-	@Override
-	protected ArgumentView<?> getBlankElement() {
-		// The way this is designed this casting to byte argument
-		// is the only unstable process.
-		BooleanArgument arg = (BooleanArgument) ArgumentFactory.getArgument(
-				"" + AJConstant.ALLJOYN_BOOLEAN, "",  getArgDirection());
-		BooleanArgumentView view = new BooleanArgumentView(arg);
-		view.hideSaveOption();
-		return view;
-	}
+        // Check for any current values.
+        boolean[] values = getValue();
+        if (values == null) return;
+        
+        // Now that we have current values.
+        // Populate the current view.
+        try {
+            ArgumentView<?>[] views = new ArgumentView<?>[values.length];
+            for (int i = 0; i < values.length; ++i) {
+                views[i] = ArgumentFactory.getArgument(
+                        getInternalArgumentName(i+1), 
+                        arg.getInnerElementType(), values[i]).getView();
+            }
+            // If there any current values then populate the view.
+            for (int i = 0; i < values.length; ++i) {
+                addNewElem(views[i]);
+            }
+        } catch (TriumphException e) {
+            showError("Unable to unpack " + values.getClass().getSimpleName() 
+                    + " because of " + e.getMessage());
+        }
+    }
 
-	@Override
-	public boolean[] getCurrentElements(StringBuffer buf) {
-		List<ArgumentView<?>> currentViews = getArgViews();
-		boolean[] array = new boolean[currentViews.size()];
+    @Override
+    protected ArgumentView<?> getBlankElement() {
+        // The way this is designed this casting to byte argument
+        // is the only unstable process.
+        BooleanArgument arg = (BooleanArgument) ArgumentFactory.getArgument(
+                "" + AJConstant.ALLJOYN_BOOLEAN, "",  getArgDirection());
+        BooleanArgumentView view = new BooleanArgumentView(arg);
+        return view;
+    }
 
-		// For every one of the views cast it into a byte argument to extract the value.
-		for (int i = 0; i < currentViews.size(); ++i) {
+    @Override
+    public boolean[] getCurrentElements(StringBuffer buf) {
+        List<ArgumentView<?>> currentViews = getArgViews();
+        boolean[] array = new boolean[currentViews.size()];
 
-			// Cast down to the correct argument view.
-			BooleanArgumentView bView = (BooleanArgumentView) currentViews.get(i);
+        // For every one of the views cast it into a byte argument to extract the value.
+        for (int i = 0; i < currentViews.size(); ++i) {
 
-			// Extract the value if it exists.
-			Boolean val =  bView.getValue();
+            // Cast down to the correct argument view.
+            BooleanArgumentView bView = (BooleanArgumentView) currentViews.get(i);
 
-			// if it doesn't exists notify the error.
-			if (val == null) {
-				if (buf != null)
-					buf.append("Null value at index " + i);
-				return null;
-			}
+            // Extract the value if it exists.
+            Boolean val =  bView.getValue();
 
-			array[i] = val;
-		}
-		return array;
-	}
+            // if it doesn't exists notify the error.
+            if (val == null) {
+                if (buf != null)
+                    buf.append("Null value at index " + i);
+                return null;
+            }
+
+            array[i] = val;
+        }
+        return array;
+    }
 }
