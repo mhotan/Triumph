@@ -31,6 +31,7 @@ import org.alljoyn.triumph.model.components.AllJoynService;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.Signal;
+import org.alljoyn.triumph.model.components.SignalContext;
 import org.alljoyn.triumph.util.loaders.ImageLoader;
 import org.alljoyn.triumph.view.MainView.MainViewInterface;
 
@@ -56,8 +57,17 @@ public class MainController implements TriumphViewable, MainViewInterface {
      * The current busview the user is looking at
      */
     private BusView mCurrentView;
+    
+    /**
+     * Views to show the different types of buses
+     */
     private final BusView mDistributedBusView, mLocalBusView;
 
+    /**
+     * Main view.
+     */
+    private final MainView mMain;
+    
     /**
      * Easy reference to the underlying model instance.
      */
@@ -87,7 +97,7 @@ public class MainController implements TriumphViewable, MainViewInterface {
         mLocalBusView = new BusView();
 
         // Create the main view and set up the JavaFX Scene.
-        MainView mMain = new MainView(this, mDistributedBusView, mLocalBusView);
+        mMain = new MainView(this, mDistributedBusView, mLocalBusView);
         Scene scene = new Scene(mMain);
         mPrimaryStage.setScene(scene);
         mPrimaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -113,12 +123,18 @@ public class MainController implements TriumphViewable, MainViewInterface {
     @Override
     public void update() {
 
-        // TODO Place Logic for what to show in the partiuclar Views.
+        // this represents a pull model.  Everytime the controller 
+        // Needs to update the state of itself it pulls the data from the model.
+        
+        // Update the Distributed bus views
         List<AllJoynService> distributed = mModel.getDistributedServices();
         mDistributedBusView.updateState(distributed);	
 
+        // Update the list of local services.
         List<AllJoynService> locals = mModel.getLocalServices();
         mLocalBusView.updateState(locals);
+        
+        // etc... add more services.
     }
 
     @Override
@@ -149,6 +165,11 @@ public class MainController implements TriumphViewable, MainViewInterface {
     }
 
     @Override
+    public void showSignalReceived(SignalContext signalReceived) {
+        mMain.showNewSignalReceived(signalReceived);
+    }
+    
+    @Override
     public void onAbout() {
         // TODO Auto-generated method stub
 
@@ -170,4 +191,6 @@ public class MainController implements TriumphViewable, MainViewInterface {
     public void onBusViewChanged(BusView newView) {
         mCurrentView = newView;
     }
+
+    
 }

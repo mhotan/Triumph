@@ -137,7 +137,7 @@ public class PropertyView extends BorderPane {
      */
     private void setProperty() {
         try {
-            mCurrentArgument.onSaveCurrentValue();
+            mCurrentArgument.onSetCurrentValue();
             TriumphModel.getInstance().setProperty(mProperty, mCurrentArgument.getArgument());
         } catch (Exception e) {
             showError(e.getMessage());

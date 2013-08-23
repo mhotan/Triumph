@@ -65,7 +65,7 @@ public abstract class Argument<T extends Object> implements Attributable, Serial
      * Name of the argument.
      */
     private String mName;
-    private String mType;
+    private String mAJSignature;
 
     /**
      * If null then this argument was never saved
@@ -118,7 +118,7 @@ public abstract class Argument<T extends Object> implements Attributable, Serial
         mName = name;
         mAttr = new ArrayList<Attribute>();
         mDirection = direction;
-        mType = null;
+        mAJSignature = null;
     }
 
     /**
@@ -162,12 +162,15 @@ public abstract class Argument<T extends Object> implements Attributable, Serial
             if (DIRECTION_LABEL.equals(nodeName)) {
                 tmpDir = "in".equals(n.getNodeValue()) ? DIRECTION.IN: DIRECTION.OUT;
             }
+            
+            if (SIGNATURE.equals(nodeName)) {
+                mAJSignature = n.getNodeValue();
+            }
 
             // Add the argument attribute
             addAttribute(new Attribute(n));
         }
 
-        mType = getDBusTypeSignature();
         mDirection = tmpDir;
     }
 
@@ -209,24 +212,11 @@ public abstract class Argument<T extends Object> implements Attributable, Serial
      * 
      * @return String name of the type of this, or null if no type is defined
      */
-    public String getType() {
-        if (mType == null) {
+    public String getDBusSignature() {
+        if (mAJSignature == null) {
             return getAJSignature();
         }
-        return mType;
-    }
-
-    /**
-     * Returns the DBus defined type signature of this argument
-     * @return Type signature if it is found in the attributes of this argument, null if can't be found.
-     */
-    protected String getDBusTypeSignature() {
-        for (Attribute a: mAttr) {
-            if (SIGNATURE.equals(a.getKey())) {
-                return a.getValue();
-            }
-        }
-        return null;
+        return mAJSignature;
     }
 
     /**
@@ -345,12 +335,12 @@ public abstract class Argument<T extends Object> implements Attributable, Serial
         if (o == null) return false;
         if (!getClass().equals(o.getClass())) return false;
         Argument<T> a = (Argument<T>) o;
-        return a.mName.equals(mName) && a.getType().equals(getType());
+        return a.mName.equals(mName) && a.getDBusSignature().equals(getDBusSignature());
     }
     
     @Override
     public int hashCode() {
-        return mName.hashCode() * getType().hashCode();
+        return mName.hashCode() * getDBusSignature().hashCode();
     }
     
     //////////////////////////////////////////////////////////////////////////////////////
@@ -394,7 +384,7 @@ public abstract class Argument<T extends Object> implements Attributable, Serial
      */
     protected void writeOut(java.io.ObjectOutputStream out) throws IOException {
         out.writeUTF(mName); // write the name of the argument.
-        out.writeUTF(getType());
+        out.writeUTF(getDBusSignature());
         out.writeObject(mAttr.toArray());
         out.writeObject(mDirection);
         timeLastSaved = new Date();
@@ -410,7 +400,7 @@ public abstract class Argument<T extends Object> implements Attributable, Serial
      */
     protected void readIn(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         this.mName = in.readUTF();
-        this.mType = in.readUTF();
+        this.mAJSignature = in.readUTF();
         Object[] array = (Object[]) in.readObject();
         mAttr = new ArrayList<Attribute>(array.length);
         for (Object a: array)

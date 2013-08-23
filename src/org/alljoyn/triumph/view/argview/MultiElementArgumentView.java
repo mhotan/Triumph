@@ -82,11 +82,11 @@ public abstract class MultiElementArgumentView<T> extends ArgumentView<T> {
     }
 
     @Override
-    public String onSaveCurrentValue() {
+    public String onSetCurrentValue() {
         StringBuffer buf = new StringBuffer();
 
         for (ArgumentView<?> argView: mArgViews) {
-            String tmp = argView.onSaveCurrentValue();
+            String tmp = argView.onSetCurrentValue();
             if (tmp != null) {
                 if (buf.length() != 0) 
                     buf.append("\n");
@@ -112,7 +112,7 @@ public abstract class MultiElementArgumentView<T> extends ArgumentView<T> {
     }
 
     @FXML void onSave() {
-        onSaveCurrentValue();
+        onSetCurrentValue();
     }
 
     /**

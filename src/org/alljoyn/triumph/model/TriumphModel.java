@@ -42,6 +42,7 @@ import org.alljoyn.triumph.model.components.AllJoynComponent;
 import org.alljoyn.triumph.model.components.AllJoynInterface;
 import org.alljoyn.triumph.model.components.AllJoynObject;
 import org.alljoyn.triumph.model.components.AllJoynService;
+import org.alljoyn.triumph.model.components.SignalContext;
 import org.alljoyn.triumph.model.components.SignalHandlerManager;
 import org.alljoyn.triumph.model.components.AllJoynService.SERVICE_TYPE;
 import org.alljoyn.triumph.model.components.Method;
@@ -50,6 +51,7 @@ import org.alljoyn.triumph.model.components.Signal;
 import org.alljoyn.triumph.model.components.SignalHandler.SignalListener;
 import org.alljoyn.triumph.model.components.TriumphAJParser;
 import org.alljoyn.triumph.model.components.arguments.Argument;
+import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
 import org.alljoyn.triumph.model.session.Session;
 import org.alljoyn.triumph.model.session.SessionManager;
 import org.alljoyn.triumph.util.SessionPortStorage;
@@ -73,7 +75,7 @@ import org.alljoyn.triumph.view.TriumphViewable;
  */
 public class TriumphModel implements BusObserverListener, SignalListener, Destroyable {
 
-    private static final Logger LOGGER = MainApplication.getLogger();
+    private static final Logger LOG = MainApplication.getLogger();
 
     /**
      * Application name to register for bus attachment
@@ -128,7 +130,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      * Our Standalone bus object for sending out signals.
      */
     private final SignalSource mSignalBusObject;
-    
+
     /**
      * Manages all the signal handlers
      */
@@ -195,7 +197,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         // Connect Bus attachment to the Virtual Distributed Bus
         org.alljoyn.bus.Status status = bus.connect();
         if (status != org.alljoyn.bus.Status.OK) {
-            LOGGER.log(Level.SEVERE, "SessionManager, Unable to connect to bus");
+            LOG.log(Level.SEVERE, "SessionManager, Unable to connect to bus");
             return false;
         }
         return true;
@@ -266,7 +268,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         mDistributedServices.removeAll(names);
         mLocalServices.removeAll(names);
         for (String name: names) {
-            LOGGER.info("Service lost: " + name);
+            LOG.info("Service lost: " + name);
         }
         broadcastUpdate();
     }
@@ -504,7 +506,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
 
         return TriumphCPPAdapter.getProperty(mBus, proxy, ifaceName, propertyName);
     }
-    
+
     /* ********************************************************* */
     /*  Components for receiving and sending signals             */
     /* ********************************************************* */
@@ -520,11 +522,26 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
     }
 
     @Override
-    public void onSignalReceived(Signal signal, Object... args) {
-        LOGGER.info("Signal " + signal + " received " + args);
-        // TODO Broadcast that a signal was received.
+    public void onSignalReceived(Signal signal, Object[] objArgs) {
+        List<Argument<?>> outargs = signal.getOutputArguments();
+        if (objArgs.length != outargs.size()) {
+            LOG.warning("Incorrect signal amount received for " + signal + " Expected: " + outargs.size() + " Actual " + objArgs.length);
+            return;
+        }
+        try {
+            Argument<?>[] args = new Argument<?>[objArgs.length];
+            for (int i = 0; i < args.length; ++i) {
+                Argument<?> outArg = outargs.get(i);
+                String name = outArg.getName();
+                String sig = outArg.getDBusSignature();
+                args[i] = ArgumentFactory.getArgument(name, sig, objArgs[i]);
+            }
+            broadcastSignalReceived(new SignalContext(signal, args));
+        } catch (TriumphException e) {
+            LOG.warning("Exception caught when when receiving signal " + signal + " Exception: " + e.getMessage());
+        }
     }
-    
+
     /**
      * Returns the Signal Handler Manager that is in charge of Signal Handlers.
      * 
@@ -574,8 +591,20 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
     }
 
     /**
+     * For a given received signal, broadcast to all the views to show this signalContext.
      * 
-     * @param property
+     * @param signalReceived Context of the received signal.
+     */
+    private void broadcastSignalReceived(SignalContext signalReceived) {
+        assert signalReceived != null : "Signal Context cannot be null"; 
+        for (TriumphViewable view: mViewables)
+            view.showSignalReceived(signalReceived);
+    }
+
+    /**
+     * Broadcast to all the views that the property wishes to be shown.
+     * 
+     * @param property  Property to show
      */
     private void broadcastProperty(Property property) {
         assert property != null: "Signal to show cannot be null";
@@ -592,7 +621,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         for (TriumphViewable view: mViewables)
             view.showError(message);
     }
-    
+
     /**
      * Broadcast to all the views to hide error message
      */
@@ -633,7 +662,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      * @throws TriumphException
      */
     private AllJoynService buildService(AllJoynService service, short sessionPort) throws TriumphException {
-        LOGGER.fine("Building Service Via Introspection: " + service);
+        LOG.fine("Building Service Via Introspection: " + service);
 
         // Attempt to create a session
         Session session = mSessionManager.getSession(service.getName());
@@ -660,5 +689,5 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         return buildService(service, sessionPort).toTree();
     }
 
-   
+
 }

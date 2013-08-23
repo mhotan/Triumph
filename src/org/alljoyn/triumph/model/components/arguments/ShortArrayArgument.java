@@ -28,7 +28,7 @@ import org.w3c.dom.Node;
  */
 public class ShortArrayArgument extends NumberArrayArgument<short[]> {
 
-	/**
+    /**
      * 
      */
     private static final long serialVersionUID = -8723213085252764027L;

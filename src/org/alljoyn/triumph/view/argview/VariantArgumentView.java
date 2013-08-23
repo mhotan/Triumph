@@ -127,7 +127,7 @@ public class VariantArgumentView extends ArgumentView<Variant>  {
 	private void setVariant(Argument<?> arg) {
 		// Get the alljoyn type signature
 	    mLabel.setText(arg.getSignature());
-		mArgSignature = arg.getType();
+		mArgSignature = arg.getDBusSignature();
 		mCurrentValue = arg.getView();
 		mCurrentValue.hideSaveButton();
 		mComponentPane.setCenter(mCurrentValue);
@@ -165,10 +165,10 @@ public class VariantArgumentView extends ArgumentView<Variant>  {
 
 	@Override
 	@FXML
-	public String onSaveCurrentValue() {
+	public String onSetCurrentValue() {
 		if (mCurrentValue == null) return null;
 		
-		String error = mCurrentValue.onSaveCurrentValue();
+		String error = mCurrentValue.onSetCurrentValue();
 		if (error != null) return error;
 		
 		// Set the value to the variant

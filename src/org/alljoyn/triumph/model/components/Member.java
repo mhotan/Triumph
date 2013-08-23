@@ -186,7 +186,7 @@ public abstract class Member extends AllJoynComponent {
 	public String getInputSignature() {
 		StringBuffer buf = new StringBuffer();
 		for (Argument<?> arg: mInArguments)
-			buf.append(arg.getType());
+			buf.append(arg.getDBusSignature());
 		return buf.toString();
 	}
 	
@@ -198,7 +198,7 @@ public abstract class Member extends AllJoynComponent {
 	public String getOutputSignature() {
 		StringBuffer buf = new StringBuffer();
 		for (Argument<?> arg: mOutArguments)
-			buf.append(arg.getType());
+			buf.append(arg.getDBusSignature());
 		return buf.toString();
 	}
 	

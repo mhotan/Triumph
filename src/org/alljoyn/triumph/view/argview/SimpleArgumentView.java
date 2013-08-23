@@ -73,7 +73,8 @@ public abstract class SimpleArgumentView<T> extends ArgumentView<T> {
      * Save the current value.
      */
     @FXML
-    public String onSaveCurrentValue() {
+    @Override
+    public String onSetCurrentValue() {
         // hide any current error message
         return attemptToSet(mInput.getText());
     }

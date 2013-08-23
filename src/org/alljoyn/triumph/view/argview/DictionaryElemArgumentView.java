@@ -86,14 +86,14 @@ public class DictionaryElemArgumentView extends ArgumentView<Map.Entry<?, ?>> {
 
 	@Override
 	@FXML
-	public String onSaveCurrentValue() {
+	public String onSetCurrentValue() {
 		StringBuffer buf = new StringBuffer();
 		String temp;
-		temp = mKeyArgView.onSaveCurrentValue();
+		temp = mKeyArgView.onSetCurrentValue();
 		if (temp != null)
 			buf.append("Key " + temp);
 		
-		temp = mValArgView.onSaveCurrentValue();
+		temp = mValArgView.onSetCurrentValue();
 		if (temp != null) 
 			buf.append("Value " + temp);
 		

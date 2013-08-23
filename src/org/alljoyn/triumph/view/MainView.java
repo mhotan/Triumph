@@ -25,11 +25,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 
+import org.alljoyn.triumph.model.components.SignalContext;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 
 /**
@@ -55,11 +57,16 @@ public class MainView extends BorderPane {
 
 	@FXML
 	private Button mRefreshButton;
-
-	private final MainViewInterface mViewHandler;
 	
+	@FXML
+    private ScrollPane mSignalReceivedPane;
+	private final SignalReceivedView mReceiveSignalView;
+	
+	//
+	private final MainViewInterface mViewHandler;
 	private BusView mDistributedBusView, mLocalBusView;
 
+	
 	/**
 	 * Prepares the main view to be used.
 	 * @param Must have handler for view callbacks
@@ -91,6 +98,11 @@ public class MainView extends BorderPane {
 		// Set the selected tab to be the Distributed Pane.
 		SingleSelectionModel<Tab> selectionModel = mTabPane.getSelectionModel();
 		selectionModel.select(mDistributedTab);
+		
+		// Set up the view that handles the display for incoming signals.
+		mReceiveSignalView = new SignalReceivedView();
+		mReceiveSignalView.setPrefWidth(mSignalReceivedPane.getWidth());
+		mSignalReceivedPane.setContent(mReceiveSignalView);
 	}
 
 	public MainView(MainViewInterface handler, BusView distributed, BusView local) {
@@ -114,6 +126,15 @@ public class MainView extends BorderPane {
 		if (current.equals(mLocalTab))
 			return mLocalBusView;
 		throw new RuntimeException("Unable to find view for tab '" + current.getText() + "'");
+	}
+	
+	/**
+	 * Shows the 
+	 * @param context
+	 */
+	public void showNewSignalReceived(SignalContext context) {
+	    if (context == null) return;
+	    mReceiveSignalView.addSignal(context);
 	}
 	
 	/**
@@ -179,7 +200,7 @@ public class MainView extends BorderPane {
 	}
 
 	/**
-	 * Interface that allows the 
+	 * Interface that allows the Main view of the application to communivate back to any model
 	 * 
 	 * @author mhotan
 	 */

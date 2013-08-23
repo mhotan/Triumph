@@ -85,8 +85,8 @@ public class MainApplication extends Application {
 		
 		primaryStage.setTitle(TITLE);		
 		TriumphModel model = TriumphModel.getInstance();
-		MainController viewManager = new MainController(primaryStage);
-		model.addView(viewManager);
+		MainController controller = new MainController(primaryStage);
+		model.addView(controller);
 		
 	/*	long ptr = TriumphCPPAdapter.marshal("s", new String("Hello World"));
 		LOGGER.info("Test result: " + TriumphCPPAdapter.test(ptr));

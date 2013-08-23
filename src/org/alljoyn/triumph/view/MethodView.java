@@ -61,7 +61,7 @@ public class MethodView extends MemberView {
         StringBuffer buf = new StringBuffer();
         for (ArgumentView<?> view : mInputArgs) {
             // If there is an error on save
-            String error = view.onSaveCurrentValue();
+            String error = view.onSetCurrentValue();
             if (error == null) continue;
            
             buf.append(error);

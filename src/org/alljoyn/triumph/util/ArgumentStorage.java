@@ -101,7 +101,7 @@ public class ArgumentStorage {
      * @param arg Argument to save
      */
     public void saveArgument(Argument<?> arg) {
-        String dbusSignature = arg.getType();
+        String dbusSignature = arg.getDBusSignature();
         InternalArgumentStorage storage = getStorage(dbusSignature);
         storage.saveArgument(arg);
     }
@@ -114,7 +114,7 @@ public class ArgumentStorage {
      * @return whether the Argument already exists
      */
     public boolean hasArgument(Argument<?> arg) {
-        String dbusSignature = arg.getType();
+        String dbusSignature = arg.getDBusSignature();
         InternalArgumentStorage storage = getStorage(dbusSignature);
         return storage.hasArgument(arg.getSaveByName());
     }

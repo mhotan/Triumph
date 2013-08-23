@@ -71,7 +71,7 @@ public class BooleanArgumentView extends ArgumentView<Boolean> {
     }
 
     @Override
-    public String onSaveCurrentValue() {
+    public String onSetCurrentValue() {
         onToggled();
         return null; // can never have error
     }

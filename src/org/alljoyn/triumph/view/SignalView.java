@@ -109,7 +109,7 @@ public class SignalView extends MemberView {
         
         StringBuffer buf = new StringBuffer();
         for (ArgumentView<?> view : mOutputArgs) {
-            String error = view.onSaveCurrentValue();
+            String error = view.onSetCurrentValue();
             if (error == null) continue;
             buf.append(error);
             buf.append("\n");

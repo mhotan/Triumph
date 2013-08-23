@@ -280,7 +280,7 @@ public abstract class ArgumentView<T> extends HBox {
      * 
      * @return null on success, else Error message
      */
-    @FXML public abstract String onSaveCurrentValue();
+    @FXML public abstract String onSetCurrentValue();
 
     /**
      * Set the ability to edit this argument.

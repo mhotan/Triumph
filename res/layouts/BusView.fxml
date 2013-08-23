@@ -24,9 +24,6 @@
 <?import javafx.scene.layout.BorderPane?>
 
 <fx:root type="BorderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" xmlns:fx="http://javafx.com/fxml">
-  <bottom>
-    <TextArea maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="-1.0" text="TODO: Recieved Signals will probably end up here if this layout is kept." wrapText="true" />
-  </bottom>
   <center>
     <SplitPane dividerPositions="0.34936479128856623" focusTraversable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0">
       <items>
@@ -39,13 +36,13 @@
                 <TextField id="mFilterLabel" fx:id="mFilterInput" maxHeight="1.7976931348623157E308" maxWidth="-1.0" minHeight="-1.0" onAction="#filterServices" prefWidth="200.0" promptText="Name Prefix" HBox.hgrow="ALWAYS" />
               </children>
             </HBox>
-            <TreeView fx:id="mServiceTree" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" showRoot="false" VBox.vgrow="ALWAYS" />
-            <AnchorPane fx:id="mPaneForTree" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
-            <Label fx:id="mError" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="error-message" text="" wrapText="true" VBox.vgrow="ALWAYS">
+            <Label fx:id="mError" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="error-message" text="" wrapText="true">
               <graphic>
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="error-label" text="Error:" wrapText="true" />
               </graphic>
             </Label>
+            <TreeView fx:id="mServiceTree" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" showRoot="false" VBox.vgrow="ALWAYS" />
+            <AnchorPane fx:id="mPaneForTree" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
           </children>
         </VBox>
         <ScrollPane id="mComponentPane" fx:id="mScrollPane" content="$null" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="800.0" />

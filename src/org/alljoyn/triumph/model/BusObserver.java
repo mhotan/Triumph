@@ -34,6 +34,7 @@ import javafx.util.Duration;
 import org.alljoyn.bus.BusAttachment;
 import org.alljoyn.bus.BusException;
 import org.alljoyn.bus.BusListener;
+import org.alljoyn.bus.SessionOpts;
 import org.alljoyn.bus.Status;
 import org.alljoyn.bus.ifaces.DBusProxyObj;
 
@@ -103,7 +104,8 @@ public class BusObserver implements Destroyable {
 
         // Attempt to find all the the advertised bus names on
         // the distributed bus network.
-        Status status = mBus.findAdvertisedName(WILDCARD_PREFIX);
+        
+        Status status = mBus.findAdvertisedNameByTransport(WILDCARD_PREFIX, (short)(SessionOpts.TRANSPORT_ANY & ~SessionOpts.TRANSPORT_ICE));
         if (status != org.alljoyn.bus.Status.OK) {
             LOG.severe("Unable to initiate call to query to find all names");
             return;
@@ -231,20 +233,12 @@ public class BusObserver implements Destroyable {
         public void nameOwnerChanged(
                 String busName, String previousOwner, String newOwner) {
             super.nameOwnerChanged(busName, previousOwner, newOwner);
-            // TODO Verify that no implementation of this is needed.
-            // Because this object is strictly in charge of broadcasting 
-            // names it finds or looses.  This as of right now does not need to do anything.
-            LOG.info("Name owner changed BusName: " + busName 
-                    + " Previous Owner: " + previousOwner + " New Owner: " + newOwner);
-            
             // What is found is that when the new owner is found and the new owner is null,
             // that signifies that the name is lost.
             // Ignore any unique names.
             if (newOwner == null && !busName.startsWith(":")) {
                 removeAdvertisedName(busName);
             }
-            
-            // TODO Handle the management of the name change wellknown service name.
         }
 
         @Override
@@ -286,6 +280,8 @@ public class BusObserver implements Destroyable {
 
         /**
          * Call to flush the current buffer of found and lost buffers.
+         * 
+         * JavaFX Thread
          */
         public synchronized void flush() {
             //			slastFlushTime = System.currentTimeMillis();

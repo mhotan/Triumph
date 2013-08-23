@@ -55,7 +55,7 @@ public class SignalHandler {
      * 
      * @param args Arguments of the received signal
      */
-    public void handle(Object... args) {
+    public void handle(Object[] args) {
         if (mListener == null) return;
         mListener.onSignalReceived(mSignal, args);
     }
@@ -101,7 +101,7 @@ public class SignalHandler {
          * @param signal Signal that was received 
          * @param args The arguments of the signal.
          */
-        public void onSignalReceived(Signal signal, Object... args);
+        public void onSignalReceived(Signal signal, Object[] args);
         
     }
     

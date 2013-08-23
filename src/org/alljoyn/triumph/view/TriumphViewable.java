@@ -19,6 +19,7 @@ package org.alljoyn.triumph.view;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.Signal;
+import org.alljoyn.triumph.model.components.SignalContext;
 
 /**
  * Interface that allows the viewable elements
@@ -67,11 +68,10 @@ public interface TriumphViewable {
 	 */
 	public void showProperty(Property property);
 
-/*	*//**
-	 * Shows the result of a particular method.
-	 * @param result result of a recent invocation.
-	 *//*
-	public void showResult(Object result);*/
-	
-	
+	/**
+	 * This is the notification to the view that a signal has been recieved.
+	 * 
+	 * @param signalReceived The signal context that has been recieved
+	 */
+	public void showSignalReceived(SignalContext signalReceived);
 }
