@@ -87,6 +87,7 @@ public class AllJoynComponentTreeClickHandler implements EventHandler<MouseEvent
 		Property prop = element.toProperty();
 
 		TriumphModel model = TriumphModel.getInstance();
+		model.hideError();
 		
 		// Tell the model that the component was selected.
 		if (service != null)

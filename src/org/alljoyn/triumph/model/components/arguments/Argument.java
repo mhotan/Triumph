@@ -174,7 +174,7 @@ public abstract class Argument<T extends Object> implements Attributable, Serial
     public String getName() {
         return mName == null 
                 || mName.equals("") 
-                ? "<Unknown Name>": mName;
+                ? "": mName;
     }
 
     /**
