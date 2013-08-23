@@ -35,7 +35,7 @@
         <Insets left="3.0" />
       </HBox.margin>
     </Label>
-    <TextField fx:id="mInput" onAction="#onSaveCurrentValue" prefHeight="27.0" prefWidth="-1.0" promptText="Enter value or &lt;null&gt; for Null" HBox.hgrow="ALWAYS" />
+    <TextField fx:id="mInput" onAction="#onSetCurrentValue" prefHeight="27.0" prefWidth="-1.0" promptText="Enter value or &lt;null&gt; for Null" HBox.hgrow="ALWAYS" />
     <Label fx:id="mError" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="error-message" text="Error" textAlignment="RIGHT" textFill="RED" HBox.hgrow="NEVER">
       <HBox.margin>
         <Insets right="3.0" />

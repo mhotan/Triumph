@@ -101,7 +101,7 @@ public class MainView extends BorderPane {
 		
 		// Set up the view that handles the display for incoming signals.
 		mReceiveSignalView = new SignalReceivedView();
-		mReceiveSignalView.setPrefWidth(mSignalReceivedPane.getWidth());
+		mReceiveSignalView.setPrefWidth(Double.MAX_VALUE);
 		mSignalReceivedPane.setContent(mReceiveSignalView);
 	}
 
