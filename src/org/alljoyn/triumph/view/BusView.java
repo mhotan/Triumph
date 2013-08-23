@@ -38,6 +38,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -94,6 +95,9 @@ public class BusView extends BorderPane implements OnClickListener {
     @FXML
     private Label mTitle;
 
+    @FXML
+    private AnchorPane mPaneForTree;
+
     /**
      * A cache to hold the state of old views.  
      */
@@ -135,6 +139,8 @@ public class BusView extends BorderPane implements OnClickListener {
         ViewLoader.loadView("BusView.fxml", this);
         initialize();
 
+        mError.managedProperty().bind(mError.visibleProperty());
+        
         // Map of Member and MemberViews
         mMemberViewCache = new HashMap<Member, MemberView>();
         mPropertyViewCache = new HashMap<Property, PropertyView>();
@@ -166,15 +172,7 @@ public class BusView extends BorderPane implements OnClickListener {
         // Register the handler clicks on the tree.
         new AllJoynComponentTreeClickHandler(mServiceTree).addClickListener(this);
 
-        // Handle the drawing of the Object Attributes
-        mServiceTree.setCellFactory(new Callback<TreeView<AllJoynComponent>, TreeCell<AllJoynComponent>>() {
-
-            @Override
-            public TreeCell<AllJoynComponent> call(TreeView<AllJoynComponent> param) {
-                return new AllJoynComponentTreeCell();
-            }
-        });
-
+        mServiceTree.setCellFactory(new AllJoynTreeCellFactory());
         hideError();
     }
 
@@ -338,7 +336,12 @@ public class BusView extends BorderPane implements OnClickListener {
      * @param listToSort List to sort.
      */
     private void sort(List<TreeItem<AllJoynComponent>> listToSort) {
-        Collections.sort(listToSort, mComparator);
+        /**
+         * Note: Collections.sort creates a UI error where the display of
+         * some 
+         */
+
+        //        Collections.sort(listToSort, mComparator);
     }
 
     @FXML
@@ -399,14 +402,12 @@ public class BusView extends BorderPane implements OnClickListener {
     }
 
     public void hideError() {
-        mServicesPane.getChildren().remove(mError);
+        mError.setVisible(false);
     }
 
     public void showError(String message) {
         mError.setText(message);
-        if (!mServicesPane.getChildren().contains(mError)) {
-            mServicesPane.getChildren().add(mError);
-        }
+        mError.setVisible(true);
     }
 
     @Override

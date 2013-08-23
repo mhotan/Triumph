@@ -40,7 +40,7 @@ import org.alljoyn.bus.ifaces.Properties;
 public class Session extends SessionListener {
 
 	/**
-	 * Session Port number fir connecting to specific Alljoyn Bus 
+	 * Session Port number for connecting to specific Alljoyn Bus endpoint
 	 */
 	private final short mPortNum;
 
@@ -109,15 +109,16 @@ public class Session extends SessionListener {
 				i.Introspect();
 				return; // Success we got introspection
 			} catch (BusException e) {
-				throw new IllegalStateException("Unable to establish a logical connection with " + name);
+				throw new IllegalStateException("Unable to connect to '" + name + "'. Check your port number");
 			}
 		}
 		
 		// joining with a REMOTE advertised name
 		// Attempt to join a session if there is a valid port number to do so.
-		if (join() != Status.OK)
-			throw new IllegalStateException("Unable to join session with the Endpoint: " + name 
-			        + " please check your port number");
+		Status status = join();
+		if (status != Status.OK)
+			throw new IllegalStateException("Unable to join session with: '" + name 
+			        + "' Status:" + status + ". Check your port number");
 	}
 
 	/**
@@ -233,28 +234,29 @@ public class Session extends SessionListener {
 		return proxy;
 	}
 
-	/**
-	 * Details of the session port listener.
-	 */
-	private static class SessionDetails {
-	    
-	    public short mPortNum;
-	    public String mEndPointName;
-	    
-	    public SessionDetails() {
-	        mPortNum = 0;
-	        mEndPointName = null;
-	    }
-	    
-	    /**
-	     * 
-	     * @param endpoint Endpoint 
-	     * @param port Port to associate 
-	     */
-	    public SessionDetails(String endpoint, short port) {
-	        mPortNum = port;
-	        mEndPointName = endpoint;
-	    }
-	}
+	// Possibly use this later to save the session data
+//	/**
+//	 * Details of the session port listener.
+//	 */
+//	private static class SessionDetails {
+//	    
+//	    public short mPortNum;
+//	    public String mEndPointName;
+//	    
+//	    public SessionDetails() {
+//	        mPortNum = 0;
+//	        mEndPointName = null;
+//	    }
+//	    
+//	    /**
+//	     * 
+//	     * @param endpoint Endpoint 
+//	     * @param port Port to associate 
+//	     */
+//	    public SessionDetails(String endpoint, short port) {
+//	        mPortNum = port;
+//	        mEndPointName = endpoint;
+//	    }
+//	}
 	
 }

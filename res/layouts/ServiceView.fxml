@@ -24,7 +24,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.HBox?>
 
-<fx:root type="HBox" id="mRootContainer" maxWidth="1.7976931348623157E308" styleClass="root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<fx:root type="HBox" id="mRootContainer" maxWidth="-1.0" styleClass="root" xmlns:fx="http://javafx.com/fxml">
   <children>
     <Label fx:id="mLabel" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" text="Service Name" HBox.hgrow="NEVER" />
     <Pane id="mFiller" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="-1.0" prefWidth="10.0" styleClass="filler" HBox.hgrow="NEVER" />

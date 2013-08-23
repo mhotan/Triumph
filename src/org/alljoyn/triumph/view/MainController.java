@@ -79,19 +79,12 @@ public class MainController implements TriumphViewable, MainViewInterface {
             LOG.warning("Unable to load Icon, Exception caught: " + e.getMessage());
         }
 
-        // Expand the window to maximum screen.
-        /*Screen screen = Screen.getPrimary();
-		Rectangle2D bounds = screen.getVisualBounds();
-		primaryStage.setX(bounds.getMinX());
-		primaryStage.setY(bounds.getMinY());*/
         primaryStage.setWidth(800);
         primaryStage.setHeight(600);
 
         // Create the two base view
         mDistributedBusView = new BusView();
         mLocalBusView = new BusView();
-
-//        view2 = new MainView2(mPrimaryStage);
 
         // Create the main view and set up the JavaFX Scene.
         MainView mMain = new MainView(this, mDistributedBusView, mLocalBusView);
@@ -130,8 +123,11 @@ public class MainController implements TriumphViewable, MainViewInterface {
 
     @Override
     public void showError(String message) {
-        LOG.severe("Triumph Error: " + message);
-        mCurrentView.showError(message);
+        if (message == null) { // hide the error
+            mDistributedBusView.hideError();
+            mLocalBusView.hideError();
+        } else 
+            mCurrentView.showError(message);
     }
 
     @Override

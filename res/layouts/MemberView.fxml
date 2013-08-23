@@ -27,10 +27,9 @@
 <fx:root type="VBox" fx:id="mCompletePane" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased" prefHeight="-1.0" prefWidth="800.0" styleClass="genlabel" xmlns:fx="http://javafx.com/fxml">
   <children>
     <HBox fx:id="mTitlePane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="NEVER" />
-    <HBox fx:id="mButtonBar" alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="genlabel" VBox.vgrow="NEVER">
+    <HBox fx:id="mButtonBar" alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" spacing="5.0" styleClass="genlabel" VBox.vgrow="NEVER">
       <children>
         <Button fx:id="mInvokeButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#onInvokeButtonPressed" styleClass="buttonbar-element" text="Invoke" />
-        <Pane maxHeight="1.7976931348623157E308" prefHeight="-1.0" prefWidth="10.0" />
         <Label maxHeight="1.7976931348623157E308" text="or Press Shift+Enter" />
       </children>
       <padding>

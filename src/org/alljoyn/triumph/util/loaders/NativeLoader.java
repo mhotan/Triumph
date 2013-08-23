@@ -63,7 +63,7 @@ public class NativeLoader {
      * String representation for the native library directory for Linux AMD 64 bit architecture.
      * <p>  This string is vital important for this loader.
      */
-    public static final String DIRECTORY_AMD64 = "linux-x86_64";
+    public static final String DIRECTORY_AMD64 = "linux-amd64";
 
     /**
      * String representation for the native library directory for 64-bit linux on itanium architecture
@@ -79,15 +79,12 @@ public class NativeLoader {
 
     private final String mLibPath;
 
-    private boolean relativeToClass;
-
     /**
      * Loads the library relative to the location of this
      * NativeLoader.class location.
      */
     public NativeLoader() {
         mLibPath = "/lib/";
-        relativeToClass = true;
     }
 
     /**
@@ -95,7 +92,7 @@ public class NativeLoader {
      * <br>
      * <br>--<project folder>/libraryPaths
      * <br>----NativeLoader.DIRECTORY_X86 or win-x86
-     * <br>----NativeLoader.DIRECTORY_AMD64 or linux-x86_64
+     * <br>----NativeLoader.DIRECTORY_AMD64 or linux-amd64
      * <br>----NativeLoader.DIRECTORY_IA64 or linux-ia64
      * <br>----NativeLoader.DIRECTORY_I386 or linux-x86
      * 
@@ -117,8 +114,6 @@ public class NativeLoader {
         if (!file.isDirectory()) {
             throw new IllegalArgumentException("Library path " + mLibPath);
         }
-
-        relativeToClass = false;
     }
 
     /**

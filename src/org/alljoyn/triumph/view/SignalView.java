@@ -18,13 +18,20 @@ package org.alljoyn.triumph.view;
 
 import java.util.List;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 
 import org.alljoyn.bus.BusException;
+import org.alljoyn.bus.Status;
 import org.alljoyn.triumph.model.TriumphModel;
 import org.alljoyn.triumph.model.components.Signal;
+import org.alljoyn.triumph.model.components.SignalHandlerManager;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.view.argview.ArgumentView;
+
+import com.sun.istack.internal.logging.Logger;
 
 /**
  * The view that represents a single Signal member of the interface. 
@@ -33,11 +40,17 @@ import org.alljoyn.triumph.view.argview.ArgumentView;
  */
 public class SignalView extends MemberView {
 
+    private static final Logger LOG = Logger.getLogger(SignalView.class);
+    
     /**
      * Internal Signal reference to the view.
      */
     private final Signal mSignal;
 
+    private final CheckBox sessionlessBox, receiveBox;
+    
+    private final SignalHandlerManager mManager;
+    
     /**
      * Create's a signal view for the signal instance.
      * 
@@ -46,11 +59,48 @@ public class SignalView extends MemberView {
     public SignalView(Signal signal) {
         super(signal);
         mSignal = signal;
-
+     // get the manager for signals.
+        mManager = TriumphModel.getInstance().getSignalHandlerManager();
+        boolean hasSignalHandler = mManager.hasSignalHandler(mSignal);
+        
         // Make sure output arguments are not editable 
         // and input argument are editable
         setIntputArgumentEditability(false);
         setOutputArgumentEditability(true);
+        
+        // Add all additional Ui elements.
+        sessionlessBox = new CheckBox("Send Sessionless");
+        sessionlessBox.setSelected(false);
+        mButtonBar.getChildren().add(sessionlessBox);
+        
+        receiveBox = new CheckBox("Receive Signal");
+        // If there exists a signal handler for this signal
+        // Make sure we notify the user.
+        receiveBox.setSelected(hasSignalHandler);
+        receiveBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable,
+                    Boolean oldValue, Boolean newValue) {
+                if (newValue == null) return;
+                
+                // If the user wishes to recieve signals notify the user
+                boolean receiveSignals = newValue.booleanValue();
+                if (receiveSignals) {
+                    // Attempt to add the signal handler
+                    Status status = mManager.addSignalHandler(mSignal);
+                    if (status != Status.OK) {
+                        // Something wrong happened
+                        LOG.severe("Unable add Signal handler for " + mSignal + " Status: " + status);
+                        receiveBox.setSelected(false);
+                    }
+                } else {
+                    // remove the signal handler if it exists.
+                    mManager.removeSignalHandler(mSignal);
+                }
+            }
+        });
+        mButtonBar.getChildren().add(receiveBox);
     }
 
     @Override
@@ -73,6 +123,6 @@ public class SignalView extends MemberView {
         // Use the model as the call back to emit the signal
         TriumphModel model = TriumphModel.getInstance();
         List<Argument<?>> args = mSignal.getOutputArguments();
-        model.onEmitSignal(mSignal, args);
+        model.onEmitSignal(mSignal, args, sessionlessBox.selectedProperty().get());
     }
 }

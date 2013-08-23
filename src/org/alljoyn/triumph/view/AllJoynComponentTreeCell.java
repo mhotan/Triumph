@@ -16,13 +16,17 @@
 
 package org.alljoyn.triumph.view;
 
-import org.alljoyn.triumph.model.components.AllJoynComponent;
-import org.alljoyn.triumph.model.components.AllJoynService;
+
+import javafx.scene.control.Label;
 
 import javafx.scene.control.TreeCell;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+
+import org.alljoyn.triumph.model.components.AllJoynComponent;
+import org.alljoyn.triumph.model.components.AllJoynService;
+
 
 /**
  * Tree cell for presenting a specific type in a special way.
@@ -31,91 +35,107 @@ import javafx.scene.text.TextAlignment;
  */
 public class AllJoynComponentTreeCell extends TreeCell<AllJoynComponent> {
 
-	@Override
-	protected void updateItem(AllJoynComponent item, boolean empty) {
-		super.updateItem(item, empty);
+    private final AllJoynTreeCellFactory mFactory;
 
-		setFont(Font.font("Verdana", getFont().getSize()));
-		if (item == null) {
-			setText("NULL Attribute... WTF???");
-			return;
-		}
-		
-		switch (item.getType()) {
-		case SERVICE:
-			drawService(item);
-			break;
-		case OBJECT:
-			// TODO Create a graphic for the this object
-			drawObject(item);
-			break;
-		case METHOD:
-			drawMethod(item);
-			break;
-		case SIGNAL:
-			drawSignal(item);
-			break;
-		case PROPERTY:
-			drawProperty(item);
-			break;
-		case INTERFACE:
-			drawInterface(item);
-			break;
-		default: // LABEL
-			drawLabel(item);
-		}
-	}
+    public AllJoynComponentTreeCell(AllJoynTreeCellFactory factory) {
+        mFactory = factory;
+    }
 
-	/**
-	 * Draws an interface for this Component
-	 * @param item
-	 */
-	private void drawInterface(AllJoynComponent item) {
-		// Handle the presentation for the interface.
-		setText(item.getString());
-		setTextFill(Color.RED);
-	}
+    public AllJoynComponentTreeCell() {
+        mFactory = null;
+    }
+    @Override
+    protected void updateItem(AllJoynComponent item, boolean empty) {
+        super.updateItem(item, empty);
 
-	private void drawLabel(AllJoynComponent item) {
-		// Present a general label
-		setText(item.getString());
-		setTextFill(Color.BLACK);
-		setTextAlignment(TextAlignment.CENTER);
-	}
+        setFont(Font.font("Verdana", getFont().getSize()));
+        if (item == null) {
+            setText("NULL AllJoynComponent... ???");
+            return;
+        }
 
-	private void drawProperty(AllJoynComponent item) {
-		// TODO Complete with actual Representation
-	    setTextFill(Color.BLACK);
-	    setText(item.getString());
-	}
+        switch (item.getType()) {
+        case SERVICE:
+            drawService(item);
+            break;
+        case OBJECT:
+            // TODO Create a graphic for the this object
+            drawObject(item);
+            break;
+        case METHOD:
+            drawMethod(item);
+            break;
+        case SIGNAL:
+            drawSignal(item);
+            break;
+        case PROPERTY:
+            drawProperty(item);
+            break;
+        case INTERFACE:
+            drawInterface(item);
+            break;
+        default: // LABEL
+            drawLabel(item);
+        }
+    }
 
-	private void drawSignal(AllJoynComponent item) {
-		// TODO Complete with actual Representation
-	    setTextFill(Color.BLACK);
-	    setText(item.getString());
-	}
+    /**
+     * Draws an interface for this Component
+     * @param item
+     */
+    private void drawInterface(AllJoynComponent item) {
+        // Handle the presentation for the interface.
+        setText(item.getString());
+        setTextFill(Color.RED);
+    }
 
-	private void drawMethod(AllJoynComponent item) {
-		// TODO Complete with actual Representation
-	    setTextFill(Color.BLACK);
-	    setText(item.getString());
-	}
+    private void drawLabel(AllJoynComponent item) {
+        // Present a general label
+        setText(item.getString());
+        setTextFill(Color.BLACK);
+        setTextAlignment(TextAlignment.CENTER);
+    }
 
-	/**
-	 * 
-	 * @param item
-	 */
-	private void drawObject(AllJoynComponent item) {
-		// TODO Complete with actual Representation
-		setText(item.getString());
-		setTextFill(Color.GREEN);
-	}
+    private void drawProperty(AllJoynComponent item) {
+        // TODO Complete with actual Representation
+        setTextFill(Color.BLACK);
+        setText(item.getString());
+    }
 
-	/**
-	 * Draws the service.
-	 * @param item
-	 */
-	private void drawService(AllJoynComponent item) {
-		setGraphic(new ServiceView((AllJoynService)item));
-	}
+    private void drawSignal(AllJoynComponent item) {
+        // TODO Complete with actual Representation
+        setTextFill(Color.BLACK);
+        setText(item.getString());
+    }
+
+    private void drawMethod(AllJoynComponent item) {
+        // TODO Complete with actual Representation
+        setTextFill(Color.BLACK);
+        setText(item.getString());
+    }
+
+    /**
+     * 
+     * @param item
+     */
+    private void drawObject(AllJoynComponent item) {
+        // TODO Complete with actual Representation
+        setText(item.getString());
+        setTextFill(Color.GREEN);
+    }
+
+    /**
+     * Draws the service.
+     * @param item
+     */
+    private void drawService(AllJoynComponent item) {
+        ServiceView view = new ServiceView((AllJoynService)item);
+        setGraphic(view);
+        Label label = view.getLabel();
+        double width = label.getPrefWidth();
+        if (width > mFactory.getMaxWidth()) {
+            mFactory.setMaxWidth(width);
+        }
+        label.setPrefWidth(mFactory.getMaxWidth());
+    }
 }
