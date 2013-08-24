@@ -105,7 +105,7 @@ public class BusObserver implements Destroyable {
         // Attempt to find all the the advertised bus names on
         // the distributed bus network.
         
-        Status status = mBus.findAdvertisedNameByTransport(WILDCARD_PREFIX, (short)(SessionOpts.TRANSPORT_ANY & ~SessionOpts.TRANSPORT_ICE));
+        Status status = mBus.findAdvertisedName(WILDCARD_PREFIX);
         if (status != org.alljoyn.bus.Status.OK) {
             LOG.severe("Unable to initiate call to query to find all names");
             return;

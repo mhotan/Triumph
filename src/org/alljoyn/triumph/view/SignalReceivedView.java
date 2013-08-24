@@ -19,6 +19,7 @@ package org.alljoyn.triumph.view;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
@@ -49,8 +50,10 @@ public class SignalReceivedView extends BorderPane {
 
     public SignalReceivedView() {
         ViewLoader.loadView("SignalsReceivedView.fxml", this);
-        mList = mSignalListView.getItems();
-
+        
+        // Create a list and associate it to the view
+        mList = FXCollections.observableArrayList();
+        mSignalListView.setItems(mList);
         mSignalListView.setCellFactory(new Callback<ListView<SignalContext>, ListCell<SignalContext>>() {
 
             @Override

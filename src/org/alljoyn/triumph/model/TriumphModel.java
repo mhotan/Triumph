@@ -21,10 +21,16 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
+import javafx.util.Duration;
 
 import org.alljoyn.bus.BusAttachment;
 import org.alljoyn.bus.BusAttachment.RemoteMessage;
@@ -42,13 +48,13 @@ import org.alljoyn.triumph.model.components.AllJoynComponent;
 import org.alljoyn.triumph.model.components.AllJoynInterface;
 import org.alljoyn.triumph.model.components.AllJoynObject;
 import org.alljoyn.triumph.model.components.AllJoynService;
-import org.alljoyn.triumph.model.components.SignalContext;
-import org.alljoyn.triumph.model.components.SignalHandlerManager;
 import org.alljoyn.triumph.model.components.AllJoynService.SERVICE_TYPE;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.Signal;
+import org.alljoyn.triumph.model.components.SignalContext;
 import org.alljoyn.triumph.model.components.SignalHandler.SignalListener;
+import org.alljoyn.triumph.model.components.SignalHandlerManager;
 import org.alljoyn.triumph.model.components.TriumphAJParser;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
@@ -77,6 +83,11 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
 
     private static final Logger LOG = MainApplication.getLogger();
 
+    /**
+     * 1s for to update the view.
+     */
+    private static final int PERIOD = 1; 
+    
     /**
      * Application name to register for bus attachment
      */
@@ -135,6 +146,11 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      * Manages all the signal handlers
      */
     private final SignalHandlerManager mSignalHandlerManager;
+    
+    /**
+     * 
+     */
+    private final RecievedSignalBroadcaster mSignalBroadcaster;
 
     /**
      * Returns an instance of the model. 
@@ -163,7 +179,6 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
 
         // Destroyable list
         mDestroyables = new ArrayList<Destroyable>();
-        // List of Views
         mViewables = new ArrayList<TriumphViewable>();
 
         mBus =  new BusAttachment(BUSATTACHMENTNAME, RemoteMessage.Receive);
@@ -185,6 +200,11 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         mDestroyables.add(mBusObserver);
         mDestroyables.add(mSessionManager);
         mDestroyables.add(mSignalHandlerManager);
+        
+        mSignalBroadcaster = new RecievedSignalBroadcaster();
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(PERIOD), mSignalBroadcaster));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
     }
 
     /**
@@ -536,7 +556,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
                 String sig = outArg.getDBusSignature();
                 args[i] = ArgumentFactory.getArgument(name, sig, objArgs[i]);
             }
-            broadcastSignalReceived(new SignalContext(signal, args));
+            mSignalBroadcaster.addSignalContext(new SignalContext(signal, args));
         } catch (TriumphException e) {
             LOG.warning("Exception caught when when receiving signal " + signal + " Exception: " + e.getMessage());
         }
@@ -689,5 +709,40 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         return buildService(service, sessionPort).toTree();
     }
 
+    private class RecievedSignalBroadcaster implements EventHandler<ActionEvent> {
+
+        private final List<SignalContext> mReceivedSignals;
+        
+        RecievedSignalBroadcaster() {
+            mReceivedSignals = new ArrayList<SignalContext>();
+        }
+        
+        /**
+         * Safely adds the signal context to later broadcast
+         * @param context Signal Context to add
+         */
+        synchronized void addSignalContext(SignalContext context) {
+            if (context == null) return;
+            mReceivedSignals.add(context);
+        }
+        
+        /**
+         * Broadcast all the received signals.
+         */
+        private synchronized void broadCast() {
+            if (mReceivedSignals.isEmpty()) return;
+            
+            for (SignalContext context: mReceivedSignals) {
+                broadcastSignalReceived(context);
+            }
+            mReceivedSignals.clear();
+        }
+
+        @Override
+        public void handle(ActionEvent event) {
+            broadCast();
+        }
+        
+    }
 
 }

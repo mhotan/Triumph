@@ -61,7 +61,8 @@ public class SignalContext {
         mTimeRecieved = timeRecieved;
         
         StringBuffer buf = new StringBuffer();
-        buf.append(DateFormat.getDateInstance(DateFormat.FULL).format(mTimeRecieved));
+        buf.append(DateFormat.getDateInstance(DateFormat.SHORT).format(mTimeRecieved));
+        buf.append(" " + DateFormat.getTimeInstance(DateFormat.DEFAULT).format(mTimeRecieved));
         buf.append(" Source: ");
         buf.append(mSignal.getInterface().getObject().getName());
         buf.append(" Data received: ");
