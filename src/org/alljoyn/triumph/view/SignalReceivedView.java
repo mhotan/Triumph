@@ -44,8 +44,7 @@ public class SignalReceivedView extends BorderPane {
     @FXML
     private URL location;
 
-    @FXML
-    private ListView<SignalContext> mSignalListView;
+    private final ListView<SignalContext> mSignalListView;
 
     private final ObservableList<SignalContext> mList;
 
@@ -60,17 +59,8 @@ public class SignalReceivedView extends BorderPane {
         
         // Create a list and associate it to the view
         mList = FXCollections.observableArrayList();
-        mSignalListView.setItems(mList);
-//        mSignalListView.setCellFactory(new Callback<ListView<SignalContext>, ListCell<SignalContext>>() {
-//
-//            @Override
-//            public ListCell<SignalContext> call(ListView<SignalContext> param) {
-//                return new SimpleSignalContextListCell();
-//            }
-//        });
-        
+        mSignalListView = new ListView<SignalContext>(mList);
         mSignalListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        
         mSignalListView.setOnMouseClicked(new EventHandler<Event>() {
 
             @Override
@@ -79,6 +69,7 @@ public class SignalReceivedView extends BorderPane {
                 mListener.onSignalContextSelected(signal);
             }
         });
+        setCenter(mSignalListView);
     }
 
     /**
