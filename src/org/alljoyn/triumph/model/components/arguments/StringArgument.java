@@ -21,8 +21,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.StringArgumentView;
 
 /**
  * Argument that represents a string.
@@ -52,11 +50,6 @@ public class StringArgument extends Argument<String> {
     @Override
     public String getSignature() {
         return String.class.getSimpleName() + " " + getName();
-    }
-
-    @Override
-    protected ArgumentView<String> createJavaFXNode() {
-        return new StringArgumentView(this);
     }
 
     @Override

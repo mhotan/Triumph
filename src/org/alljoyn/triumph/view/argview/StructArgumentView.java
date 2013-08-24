@@ -46,7 +46,7 @@ public class StructArgumentView extends MultiElementArgumentView<Object[]> {
 		// Populate the view with all the internal struct members.
 		Argument<?>[] arguments = mStructArg.getInternalMembers();
 		for (Argument<?> a: arguments) {
-			addNewElem(a.getView());
+			addNewElem(EditableArgumentViewFactory.produceView(a));
 		}
 		
 		hideAddElementButton();

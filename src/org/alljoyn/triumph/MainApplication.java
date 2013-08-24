@@ -82,17 +82,9 @@ public class MainApplication extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws IOException {
-		
 		primaryStage.setTitle(TITLE);		
 		TriumphModel model = TriumphModel.getInstance();
 		MainController controller = new MainController(primaryStage);
 		model.addView(controller);
-		
-	/*	long ptr = TriumphCPPAdapter.marshal("s", new String("Hello World"));
-		LOGGER.info("Test result: " + TriumphCPPAdapter.test(ptr));
-		TriumphCPPAdapter.destroyMsgArg(ptr);*/
 	}
-	
-	
-
 }

@@ -42,9 +42,10 @@ public class IntegerArrayArgumentView extends ArrayArgumentView<int[]> {
         try {
             ArgumentView<?>[] views = new ArgumentView<?>[values.length];
             for (int i = 0; i < values.length; ++i) {
-                views[i] = ArgumentFactory.getArgument(
+                IntegerArgument innerInt = (IntegerArgument) ArgumentFactory.getArgument(
                         getInternalArgumentName(i+1), 
-                        arg.getInnerElementType(), values[i]).getView();
+                        arg.getInnerElementType(), values[i]);
+                views[i] = EditableArgumentViewFactory.produceView(innerInt);
             }
             // If there any current values then populate the view.
             for (int i = 0; i < values.length; ++i) {

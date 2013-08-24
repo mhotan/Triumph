@@ -16,13 +16,7 @@
 
 package org.alljoyn.triumph.model.components.arguments;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.ByteArrayArgumentView;
 import org.w3c.dom.Node;
 
 /**
@@ -49,11 +43,6 @@ public class ByteArrayArgument extends NumberArrayArgument<byte[]> {
 
     ByteArrayArgument(Node node, DIRECTION direction) {
         super(node, direction);
-    }
-
-    @Override
-    protected ArgumentView<byte[]> createJavaFXNode() {
-        return new ByteArrayArgumentView(this); 
     }
 
     @Override

@@ -39,6 +39,7 @@ import org.alljoyn.triumph.model.components.Member;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 import org.alljoyn.triumph.view.argview.ArgumentView;
+import org.alljoyn.triumph.view.argview.EditableArgumentViewFactory;
 
 /**
  * Base view class that is used to present a distinct member instance.
@@ -148,7 +149,7 @@ public abstract class MemberView extends VBox {
 
         // Add the new argument views.
         for (Argument<?> arg: newargs) {
-            ArgumentView<?> argView = arg.getView();
+            ArgumentView<?> argView = EditableArgumentViewFactory.produceView(arg);
             trackingList.add(argView);
             view.getChildren().add(argView);
         }

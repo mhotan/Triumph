@@ -31,14 +31,12 @@ import javafx.scene.layout.Priority;
 
 import org.alljoyn.bus.BusException;
 import org.alljoyn.triumph.model.TriumphModel;
-import org.alljoyn.triumph.model.components.AllJoynInterface;
-import org.alljoyn.triumph.model.components.AllJoynObject;
-import org.alljoyn.triumph.model.components.AllJoynService;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 import org.alljoyn.triumph.view.argview.ArgumentView;
+import org.alljoyn.triumph.view.argview.EditableArgumentViewFactory;
 
 /**
  * View that is used to present a Dbus/Alljoyn property.
@@ -124,7 +122,7 @@ public class PropertyView extends BorderPane {
         try {
             Object o = TriumphModel.getInstance().getProperty(mProperty);
             Argument<?> arg = ArgumentFactory.getArgument(mProperty.getName(), mProperty.getSignature(), o);
-            mCurrentArgument = arg.getView();
+            mCurrentArgument = EditableArgumentViewFactory.produceView(arg);
             mArgumentPane.getChildren().clear();
             mArgumentPane.getChildren().add(mCurrentArgument);
         } catch (BusException e) {

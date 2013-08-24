@@ -289,21 +289,21 @@ public abstract class Argument<T extends Object> implements Attributable, Serial
         return getSignature();
     }
 
-    /**
-     * Returns a JavaFx View representation of this argument.
-     * @return Root node of the view.
-     */
-    public ArgumentView<T> getView() {
-        if (mView == null)
-            mView = createJavaFXNode();
-        return mView;
-    }
-
-    /**
-     * Produce a 'new' view that represents this argument.
-     * @return The view associated with this argument.
-     */
-    protected abstract ArgumentView<T> createJavaFXNode();
+//    /**
+//     * Returns a JavaFx View representation of this argument.
+//     * @return Root node of the view.
+//     */
+//    public ArgumentView<T> getView() {
+//        if (mView == null)
+//            mView = createJavaFXNode();
+//        return mView;
+//    }
+//
+//    /**
+//     * Produce a 'new' view that represents this argument.
+//     * @return The view associated with this argument.
+//     */
+//    protected abstract ArgumentView<T> createJavaFXNode();
 
     /**
      * returns human readable singature.  Allows for easy interpretation

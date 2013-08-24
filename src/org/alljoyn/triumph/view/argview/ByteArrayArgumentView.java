@@ -46,9 +46,10 @@ public class ByteArrayArgumentView extends ArrayArgumentView<byte[]> {
         try {
             ArgumentView<?>[] views = new ArgumentView<?>[values.length];
             for (int i = 0; i < values.length; ++i) {
-                views[i] = ArgumentFactory.getArgument(
+                ByteArgument innerBArg = (ByteArgument) ArgumentFactory.getArgument(
                         getInternalArgumentName(i+1), 
-                        arg.getInnerElementType(), values[i]).getView();
+                        arg.getInnerElementType(), values[i]);
+                views[i] = EditableArgumentViewFactory.produceView(innerBArg);
             }
             // If there any current values then populate the view.
             for (int i = 0; i < values.length; ++i) {

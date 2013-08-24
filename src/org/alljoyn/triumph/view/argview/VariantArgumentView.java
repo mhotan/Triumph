@@ -30,7 +30,6 @@ import org.alljoyn.bus.Variant;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
 import org.alljoyn.triumph.model.components.arguments.VariantArgument;
-import org.alljoyn.triumph.util.loaders.ViewLoader;
 
 /**
  * Class that presents a variant argument to the user.  Allowing the user to  
@@ -128,7 +127,7 @@ public class VariantArgumentView extends ArgumentView<Variant>  {
 		// Get the alljoyn type signature
 	    mLabel.setText(arg.getSignature());
 		mArgSignature = arg.getDBusSignature();
-		mCurrentValue = arg.getView();
+		mCurrentValue = EditableArgumentViewFactory.produceView(arg);
 		mCurrentValue.hideSaveButton();
 		mComponentPane.setCenter(mCurrentValue);
 	}

@@ -24,8 +24,6 @@ import org.alljoyn.bus.BusException;
 import org.alljoyn.bus.Variant;
 import org.alljoyn.triumph.MainApplication;
 import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.VariantArgumentView;
 import org.w3c.dom.Node;
 
 /**
@@ -45,12 +43,6 @@ public class VariantArgument extends Argument<Variant> {
 
     VariantArgument(String name, DIRECTION isInput) {
         super(name, isInput);
-    }
-
-    @Override
-    protected ArgumentView<Variant> createJavaFXNode() {
-        // TODO Auto-generated method stub
-        return new VariantArgumentView(this);
     }
 
     @Override

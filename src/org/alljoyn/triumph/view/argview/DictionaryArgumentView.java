@@ -56,8 +56,7 @@ public class DictionaryArgumentView extends MultiElementArgumentView<Map<?, ?>> 
                 DictionaryEntryArgument entryArg = (DictionaryEntryArgument) ArgumentFactory.getArgument(
                         getInternalArgumentName(i+1), 
                         arg.getInnerElementType(), entryList.get(i));
-                entryArg.setValue(entryList.get(i));
-                views[i] = entryArg.getView();
+                views[i] = EditableArgumentViewFactory.produceView(entryArg);
             }
             // If there any current values then populate the view.
             for (int i = 0; i < size; ++i) {
@@ -71,7 +70,7 @@ public class DictionaryArgumentView extends MultiElementArgumentView<Map<?, ?>> 
 
     @Override
     protected ArgumentView<?> getBlankElement() {
-        return mDictArg.getNewEntry().getView();
+        return EditableArgumentViewFactory.produceView(mDictArg.getNewEntry());
     }
 
     @Override

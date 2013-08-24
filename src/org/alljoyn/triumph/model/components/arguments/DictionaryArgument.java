@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.DictionaryArgumentView;
 import org.w3c.dom.Node;
 
 /**
@@ -95,11 +93,6 @@ public class DictionaryArgument extends ArrayArgument<Map<?, ?>> {
      */
     public DictionaryEntryArgument getNewEntry() {
         return new DictionaryEntryArgument("" , getDirection(), getInnerElementType());
-    }
-
-    @Override
-    protected ArgumentView<Map<?, ?>> createJavaFXNode() {
-        return new DictionaryArgumentView(this);
     }
 
     @Override

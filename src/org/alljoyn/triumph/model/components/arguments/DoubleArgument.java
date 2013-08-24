@@ -17,8 +17,6 @@
 package org.alljoyn.triumph.model.components.arguments;
 
 import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.DoubleArgumentView;
 import org.w3c.dom.Node;
 
 public class DoubleArgument extends NumberArgument<Double> {
@@ -34,11 +32,6 @@ public class DoubleArgument extends NumberArgument<Double> {
 
     DoubleArgument(Node node, boolean isUnsigned, DIRECTION direction) {
         super(node, isUnsigned, direction);
-    }
-
-    @Override
-    protected ArgumentView<Double> createJavaFXNode() {
-        return new DoubleArgumentView(this);
     }
 
     @Override

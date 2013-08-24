@@ -22,7 +22,7 @@ import org.w3c.dom.Node;
 public class SignatureArgument extends StringArgument {
 
 	/**
-     * 
+     * Serialization ID for persisting objects
      */
     private static final long serialVersionUID = 1201865963115602658L;
 

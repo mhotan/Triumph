@@ -16,13 +16,7 @@
 
 package org.alljoyn.triumph.model.components.arguments;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.IntegerArrayArgumentView;
 import org.w3c.dom.Node;
 
 /**
@@ -44,11 +38,6 @@ public class IntegerArrayArgument extends NumberArrayArgument<int[]> {
 
     public IntegerArrayArgument(Node node, DIRECTION defaultDir) {
         super(node, defaultDir);
-    }
-
-    @Override
-    protected ArgumentView<int[]> createJavaFXNode() {
-        return new IntegerArrayArgumentView(this);
     }
 
     @Override

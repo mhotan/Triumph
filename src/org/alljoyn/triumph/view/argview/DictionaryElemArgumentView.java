@@ -16,11 +16,9 @@
 
 package org.alljoyn.triumph.view.argview;
 
-import java.io.IOException;
 import java.util.Map;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.AnchorPane;
 
 import org.alljoyn.triumph.model.components.arguments.DictionaryEntryArgument;
@@ -60,8 +58,8 @@ public class DictionaryElemArgumentView extends ArgumentView<Map.Entry<?, ?>> {
 		setLabel(arg.getSignature());
 		hideError();*/
 		// Extract the view for all 
-		mKeyArgView = mArg.getKey().getView();
-		mValArgView = mArg.getVal().getView();
+		mKeyArgView = EditableArgumentViewFactory.produceView(mArg.getKey());
+		mValArgView = EditableArgumentViewFactory.produceView(mArg.getVal());
 		
 		mKeyArgView.hideSaveButton();
 		mValArgView.hideSaveButton();

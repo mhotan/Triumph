@@ -17,8 +17,6 @@
 package org.alljoyn.triumph.model.components.arguments;
 
 import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.ShortArrayArgumentView;
 import org.w3c.dom.Node;
 
 
@@ -41,11 +39,6 @@ public class ShortArrayArgument extends NumberArrayArgument<short[]> {
 	
 	ShortArrayArgument(Node node, DIRECTION defaultDir) {
 		super(node, defaultDir);
-	}
-
-	@Override
-	protected ArgumentView<short[]> createJavaFXNode() {
-		return new ShortArrayArgumentView(this);
 	}
 
 	@Override

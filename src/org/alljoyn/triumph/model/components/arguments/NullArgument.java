@@ -1,25 +1,19 @@
 package org.alljoyn.triumph.model.components.arguments;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
-import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.NullArgumentView;
 
 /**
- *  
+ *  A Special argument that represents a null pointer.
  */
 public class NullArgument extends Argument<Object> {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8845003753579360204L;
+
     NullArgument(String name, DIRECTION direction) {
         super(name, direction);
-    }
-
-    @Override
-    protected ArgumentView<Object> createJavaFXNode() {
-        return new NullArgumentView(this);
     }
 
     @Override

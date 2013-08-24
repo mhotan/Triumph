@@ -17,8 +17,6 @@
 package org.alljoyn.triumph.model.components.arguments;
 
 import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.IntegerArgumentView;
 import org.w3c.dom.Node;
 
 /**
@@ -38,11 +36,6 @@ public class IntegerArgument extends NumberArgument<Integer> {
 
     IntegerArgument(Node node, boolean isUnsigned, DIRECTION defaultDir) {
         super(node, isUnsigned, defaultDir);
-    }
-
-    @Override
-    protected ArgumentView<Integer> createJavaFXNode() {
-        return new IntegerArgumentView(this);
     }
 
     @Override

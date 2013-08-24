@@ -20,12 +20,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.alljoyn.triumph.TriumphCPPAdapter;
 import org.alljoyn.triumph.TriumphException;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.DictionaryElemArgumentView;
 import org.w3c.dom.Node;
 
 import com.sun.istack.internal.logging.Logger;
@@ -146,11 +143,6 @@ public class DictionaryEntryArgument extends Argument<Map.Entry<?, ?>> {
      */
     public Argument<?> getVal() {
         return mVal;
-    }
-
-    @Override
-    protected ArgumentView<Entry<?, ?>> createJavaFXNode() {
-        return new DictionaryElemArgumentView(this);
     }
 
     @Override

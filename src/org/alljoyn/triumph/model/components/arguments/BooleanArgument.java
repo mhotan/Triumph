@@ -21,8 +21,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.BooleanArgumentView;
 import org.w3c.dom.Node;
 
 /**
@@ -52,11 +50,6 @@ public class BooleanArgument extends Argument<Boolean> {
      */
     BooleanArgument(Node node, DIRECTION defaultDirection) {
         super(node, defaultDirection);
-    }
-
-    @Override
-    public ArgumentView<Boolean> createJavaFXNode() {
-        return new BooleanArgumentView(this);
     }
 
     @Override

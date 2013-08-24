@@ -21,8 +21,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.ObjectArrayArgumentView;
 import org.w3c.dom.Node;
 
 /**
@@ -62,11 +60,6 @@ public class ObjectArrayArgument extends ArrayArgument<Object[]> {
         super(node, defaultDir);
         checkRep();
         mAJSignature = "" + AJConstant.ALLJOYN_ARRAY + getInnerElementType();
-    }
-
-    @Override
-    protected ArgumentView<Object[]> createJavaFXNode() {
-        return new ObjectArrayArgumentView(this);
     }
 
     @Override

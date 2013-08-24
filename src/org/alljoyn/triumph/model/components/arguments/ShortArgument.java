@@ -17,8 +17,6 @@
 package org.alljoyn.triumph.model.components.arguments;
 
 import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.ShortArgumentView;
 
 /**
  * Argument class that represents a short argument.
@@ -38,11 +36,6 @@ public class ShortArgument extends NumberArgument<Short> {
 
 	ShortArgument(org.w3c.dom.Node node, boolean isUnsigned, DIRECTION direction) {
 		super(node, isUnsigned, direction);
-	}
-
-	@Override
-	protected ArgumentView<Short> createJavaFXNode() {
-		return new ShortArgumentView(this);
 	}
 
 	@Override

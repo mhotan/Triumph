@@ -17,8 +17,6 @@
 package org.alljoyn.triumph.model.components.arguments;
 
 import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.ByteArgumentView;
 
 /**
  * Argument that represents a single byte.
@@ -36,11 +34,6 @@ public class ByteArgument extends NumberArgument<Byte> {
 
     ByteArgument(org.w3c.dom.Node node, DIRECTION direction) {
         super(node, false, direction);
-    }
-
-    @Override
-    protected ArgumentView<Byte> createJavaFXNode() {
-        return new ByteArgumentView(this);
     }
 
     @Override

@@ -16,13 +16,7 @@
 
 package org.alljoyn.triumph.model.components.arguments;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.DoubleArrayArgumentView;
 import org.w3c.dom.Node;
 
 /**
@@ -42,11 +36,6 @@ public class DoubleArrayArgument extends NumberArrayArgument<double[]> {
 
     DoubleArrayArgument(Node node, DIRECTION direction) {
         super(node, direction);
-    }
-
-    @Override
-    protected ArgumentView<double[]> createJavaFXNode() {
-        return new DoubleArrayArgumentView(this);
     }
 
     @Override

@@ -29,7 +29,7 @@ import org.alljoyn.triumph.model.components.arguments.Argument;
  * 
  * @author mhotan
  */
-public class ArgumentCell extends ListCell<Argument<?>> {
+public class EditableListArgumentCell extends ListCell<Argument<?>> {
 
 	@Override
 	protected void updateItem(final Argument<?> item, boolean empty) {
@@ -43,7 +43,7 @@ public class ArgumentCell extends ListCell<Argument<?>> {
 			// Give each argument an identifier or use a current one.
 			// Then create a factory that returns the appropiate ArgumentView for the argument.
 			setMaxWidth(Double.MAX_VALUE);
-			setGraphic(item.getView());
+			setGraphic(EditableArgumentViewFactory.produceView(item));
 		} else 
 			setText(""); // No item
 	}

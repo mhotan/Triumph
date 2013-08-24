@@ -50,9 +50,10 @@ public class ObjectArrayArgumentView extends ArrayArgumentView<Object[]> {
         try {
             ArgumentView<?>[] views = new ArgumentView<?>[values.length];
             for (int i = 0; i < values.length; ++i) {
-                views[i] = ArgumentFactory.getArgument(
+                Argument<?> innerArg = ArgumentFactory.getArgument(
                         getInternalArgumentName(i+1), 
-                        arg.getInnerElementType(), values[i]).getView();
+                        arg.getInnerElementType(), values[i]);
+                views[i] = EditableArgumentViewFactory.produceView(innerArg);
             }
             // If there any current values then populate the view.
             for (int i = 0; i < values.length; ++i) {
@@ -77,7 +78,7 @@ public class ObjectArrayArgumentView extends ArrayArgumentView<Object[]> {
         case AJConstant.ALLJOYN_VARIANT:
         case AJConstant.ALLJOYN_DICT_ENTRY_OPEN:
             Argument<?> arg = ArgumentFactory.getArgument(sig, "",  getArgDirection());
-            return arg.getView();
+            return EditableArgumentViewFactory.produceView(arg);
         } 
         throw new RuntimeException("Unsupported object array signature a" + sig);
     }
@@ -100,13 +101,5 @@ public class ObjectArrayArgumentView extends ArrayArgumentView<Object[]> {
         }
 
         return fields.toArray();
-    }
-
-    /**
-     * @param position Position to label field
-     * @return Name that assigns field position
-     */
-    private static String posToName(int position) {
-        return position + ".";
     }
 }

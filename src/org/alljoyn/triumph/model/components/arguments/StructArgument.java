@@ -23,8 +23,6 @@ import java.io.ObjectOutputStream;
 import org.alljoyn.bus.MarshalBusException;
 import org.alljoyn.triumph.TriumphCPPAdapter;
 import org.alljoyn.triumph.TriumphException;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.StructArgumentView;
 import org.w3c.dom.Node;
 
 /**
@@ -171,11 +169,6 @@ public class StructArgument extends Argument<Object[]> {
                     + object == null ? "Null" : object.getClass().getSimpleName() 
                             + " does not conform to the DBus signature " + signature);
         }
-    }
-
-    @Override
-    protected ArgumentView<Object[]> createJavaFXNode() {
-        return new StructArgumentView(this);
     }
 
     @Override

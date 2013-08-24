@@ -17,8 +17,6 @@
 package org.alljoyn.triumph.model.components.arguments;
 
 import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.LongArgumentView;
 import org.w3c.dom.Node;
 
 public class LongArgument extends NumberArgument<Long> {
@@ -34,11 +32,6 @@ public class LongArgument extends NumberArgument<Long> {
 
     LongArgument(Node node, boolean isUnsigned, DIRECTION defaultDir) {
         super(node, isUnsigned, defaultDir);
-    }
-
-    @Override
-    protected ArgumentView<Long> createJavaFXNode() {
-        return new LongArgumentView(this);
     }
 
     @Override
