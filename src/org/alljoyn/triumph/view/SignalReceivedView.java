@@ -21,19 +21,23 @@ import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.util.Callback;
 
 import org.alljoyn.triumph.model.components.SignalContext;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 
 public class SignalReceivedView extends BorderPane {
 
+    
+    
     @FXML
     private ResourceBundle resources;
 
@@ -45,23 +49,36 @@ public class SignalReceivedView extends BorderPane {
 
     private final ObservableList<SignalContext> mList;
 
+    private final SignalReceivedListener mListener;
+    
     @FXML
     private HBox mUtilPane;
 
-    public SignalReceivedView() {
+    public SignalReceivedView(SignalReceivedListener listener) {
         ViewLoader.loadView("SignalsReceivedView.fxml", this);
+        mListener = listener;
         
         // Create a list and associate it to the view
         mList = FXCollections.observableArrayList();
         mSignalListView.setItems(mList);
-        mSignalListView.setCellFactory(new Callback<ListView<SignalContext>, ListCell<SignalContext>>() {
+//        mSignalListView.setCellFactory(new Callback<ListView<SignalContext>, ListCell<SignalContext>>() {
+//
+//            @Override
+//            public ListCell<SignalContext> call(ListView<SignalContext> param) {
+//                return new SimpleSignalContextListCell();
+//            }
+//        });
+        
+        mSignalListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        
+        mSignalListView.setOnMouseClicked(new EventHandler<Event>() {
 
             @Override
-            public ListCell<SignalContext> call(ListView<SignalContext> param) {
-                return new SimpleSignalContextListCell();
+            public void handle(Event event) {
+                SignalContext signal = mSignalListView.getSelectionModel().getSelectedItem();
+                mListener.onSignalContextSelected(signal);
             }
         });
-
     }
 
     /**
@@ -90,6 +107,12 @@ public class SignalReceivedView extends BorderPane {
                 setText(item.getDescription());
             }
         }
+    }
+    
+    public interface SignalReceivedListener {
+        
+        public void onSignalContextSelected(SignalContext context);
+        
     }
 
 }

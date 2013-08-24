@@ -89,4 +89,9 @@ public class SignalContext {
     public String getDescription() {
         return mDescription;
     }
+    
+    @Override 
+    public String toString() {
+        return getDescription();
+    }
 }

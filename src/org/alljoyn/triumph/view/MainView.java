@@ -33,13 +33,14 @@ import javafx.scene.layout.BorderPane;
 
 import org.alljoyn.triumph.model.components.SignalContext;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
+import org.alljoyn.triumph.view.SignalReceivedView.SignalReceivedListener;
 
 /**
  * Constructs the Main View for showing the application
  * 
  * @author mhotan@quicinc.com, Michael Hotan
  */
-public class MainView extends BorderPane {
+public class MainView extends BorderPane implements SignalReceivedListener {
 
 	@FXML
 	private ResourceBundle resources;
@@ -100,7 +101,7 @@ public class MainView extends BorderPane {
 		selectionModel.select(mDistributedTab);
 		
 		// Set up the view that handles the display for incoming signals.
-		mReceiveSignalView = new SignalReceivedView();
+		mReceiveSignalView = new SignalReceivedView(this);
 		mReceiveSignalView.setPrefWidth(Double.MAX_VALUE);
 		mSignalReceivedPane.setContent(mReceiveSignalView);
 	}
@@ -218,5 +219,11 @@ public class MainView extends BorderPane {
 		 */
 		public void onBusViewChanged(BusView newView);
 	}
+
+    @Override
+    public void onSignalContextSelected(SignalContext context) {
+        // TODO Generate a view showing the Signal Context sent.
+        
+    }
 
 }
