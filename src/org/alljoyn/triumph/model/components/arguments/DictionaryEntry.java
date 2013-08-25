@@ -14,7 +14,7 @@
  *    limitations under the license.
  ******************************************************************************/
 
-package org.alljoyn.triumph.util;
+package org.alljoyn.triumph.model.components.arguments;
 
 import java.util.Map;
 

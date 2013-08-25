@@ -25,7 +25,6 @@ import java.util.List;
 import org.alljoyn.triumph.TriumphException;
 import org.alljoyn.triumph.model.components.Attributable;
 import org.alljoyn.triumph.model.components.Attribute;
-import org.alljoyn.triumph.view.argview.ArgumentView;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
@@ -38,6 +37,11 @@ import org.w3c.dom.Node;
  * @param <T> The type associated with the value of this argument
  */
 public abstract class Argument<T extends Object> implements Attributable, Serializable {
+
+    /**
+     * Serialization ID.
+     */
+    private static final long serialVersionUID = -6667997932611267064L;
 
     public enum DIRECTION {
         IN("in"),
@@ -84,11 +88,6 @@ public abstract class Argument<T extends Object> implements Attributable, Serial
      * output argument.
      */
     private DIRECTION mDirection;
-
-    /**
-     * Argument View that represents this argument.
-     */
-    private ArgumentView<T> mView;
 
     /**
      * Payload value of the argument.
@@ -330,6 +329,7 @@ public abstract class Argument<T extends Object> implements Attributable, Serial
     ////// This allows us to store Argument persistantly and maintain the same specifcation
     //////////////////////////////////////////////////////////////////////////////////////
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object o) {
         if (o == null) return false;

@@ -61,13 +61,14 @@ public abstract class AllJoynComponent implements Comparable<AllJoynComponent> {
 	/**
 	 * Creates a skeleton Object Attribute named according to 
 	 * the node passed in. 
-	 * @param node 
-	 * @param type
+	 * @param node Node that represents the XML document
+	 * @param type 
 	 */
 	AllJoynComponent(Node node, TYPE type){
 		String name = TriumphAJParser.findName(node);
 		mName = name == null ? "" : name;
 		mType = type;
+		mNode = node;
 	}
 	
 	/**

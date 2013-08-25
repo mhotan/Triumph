@@ -21,8 +21,8 @@ import java.util.Map;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 
+import org.alljoyn.triumph.model.components.arguments.DictionaryEntry;
 import org.alljoyn.triumph.model.components.arguments.DictionaryEntryArgument;
-import org.alljoyn.triumph.util.DictionaryEntry;
 
 /**
  * View for a specifc Dicitonary element.
@@ -97,15 +97,6 @@ public class DictionaryElemArgumentView extends ArgumentView<Map.Entry<?, ?>> {
 		
 		Object key = mKeyArgView.getValue();
 		Object val = mValArgView.getValue();
-		
-/*		if (key == null) {
-			showError("Invalid key " + key);
-			return;
-		}
-		if (val == null) {
-			showError("Invalid value " + val);
-			return;
-		}*/
 		
 		// TODO Check if this type unsafe behavior will work.
 		// This is a tough situation where we don't enforce 

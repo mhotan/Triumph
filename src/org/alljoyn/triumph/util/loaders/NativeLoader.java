@@ -77,6 +77,11 @@ public class NativeLoader {
      */
     public static final String DIRECTORY_I386 = "linux-x86";
 
+    private static final String LINUX_SUFFIX = ".so";
+    private static final String WINDOWS_SUFFIX = ".dll";
+    private static final String WINDOWS_PREFIX = "win";
+    private static final String LINUX_PREFIX = "linux";
+    
     private final String mLibPath;
 
     /**
@@ -144,34 +149,34 @@ public class NativeLoader {
      * @param includePath true to include the predefined path, false otherwise.
      * @return The path to the library from the base path inputted at NativeLoader init time.
      */
-    private String getOSSpecificLibraryName(String library, boolean includePath) {
+    private String getOSSpecificName(String library, boolean includePath) {
         String osArch = System.getProperty("os.arch");
         String osName = System.getProperty("os.name").toLowerCase();
         String name;
         String path;
 
-        if (osName.startsWith("win")) {
+        if (osName.startsWith(WINDOWS_PREFIX)) {
             if (osArch.equalsIgnoreCase(ARCHITECTURE_X86)) {
-                name = library + ".dll";
+                name = library + WINDOWS_SUFFIX;
                 path = DIRECTORY_X86;
             } else {
-                throw new UnsupportedOperationException("Platform " + osName + ":" + osArch + " not supported");
+                throw new UnsupportedOperationException("Platform " + osName + "_" + osArch + " not supported");
             }
-        } else if (osName.startsWith("linux")) {
+        } else if (osName.startsWith(LINUX_PREFIX)) {
             if (osArch.equalsIgnoreCase(ARCHITECTURE_AMD64)) {
-                name = "lib" + library + ".so";
+                name = "lib" + library + LINUX_SUFFIX;
                 path = DIRECTORY_AMD64;
             } else if (osArch.equalsIgnoreCase(ARCHITECTURE_IA64)) {
-                name = "lib" + library + ".so";
+                name = "lib" + library + LINUX_SUFFIX;
                 path = DIRECTORY_IA64;
             } else if (osArch.equalsIgnoreCase(ARCHITECTURE_I386)) {
-                name = "lib" + library + ".so";
+                name = "lib" + library + LINUX_SUFFIX;
                 path = DIRECTORY_I386;
             } else {
-                throw new UnsupportedOperationException("Platform " + osName + ":" + osArch + " not supported");
+                throw new UnsupportedOperationException("Platform " + osName + "_" + osArch + " not supported");
             }
         } else {
-            throw new UnsupportedOperationException("Platform " + osName + ":" + osArch + " not supported");
+            throw new UnsupportedOperationException("Platform " + osName + "_" + osArch + " not supported");
         }
 
         // Symbolize the file is a directory
@@ -192,15 +197,17 @@ public class NativeLoader {
         OutputStream out = null;
         try {
             // 
-            String libraryName = getOSSpecificLibraryName(libPath, true);
+            String libraryName = getOSSpecificName(libPath, true);
             in = getClass().getResourceAsStream(mLibPath + libraryName);
 
             // This is the case where the library path does not point to the library folder.
             if (in == null) {
                 throw new FileNotFoundException("File at " + mLibPath + libraryName + ". Please make sure the " +
-                        "that the libraries are placed in a lib folder relative to your NativeLoader.java.  Reference README.TXT" +
-                        "for more information.");
+                        "that the libraries are placed in the correct lib folder");
             }
+            
+            int cnt;
+            byte buf[] = new byte[16 * 1024];
 
             // Retrieve the temporary directory name
             String tmpDirName = System.getProperty("java.io.tmpdir");
@@ -213,13 +220,10 @@ public class NativeLoader {
             file.deleteOnExit();
             out = new FileOutputStream(file);
 
-            int cnt;
-            byte buf[] = new byte[16 * 1024];
             // copy until done.
             while ((cnt = in.read(buf)) >= 1) {
                 out.write(buf, 0, cnt);
             }
-            LOG.info("Saved library file: " + file.getAbsoluteFile());
             return file.getAbsolutePath();
         } finally {
             if (in != null) {

@@ -20,7 +20,12 @@ import org.alljoyn.bus.BusException;
 
 public class TriumphException extends BusException {
 
-	public TriumphException() {
+	/**
+     * Serialization ID
+     */
+    private static final long serialVersionUID = -3950377483923106492L;
+
+    public TriumphException() {
 		super("TriumphException");
 	}
 	
