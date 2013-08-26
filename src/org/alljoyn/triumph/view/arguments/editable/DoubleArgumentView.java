@@ -14,28 +14,29 @@
  *    limitations under the license.
  ******************************************************************************/
 
-package org.alljoyn.triumph.view.argview;
+package org.alljoyn.triumph.view.arguments.editable;
 
-import org.alljoyn.triumph.model.components.arguments.ArrayArgument;
+import org.alljoyn.triumph.model.components.arguments.NumberArgument;
 
-/**
- * JavaFX View that represents an Array Argument.
- * 
- * @author mhotan
- *
- * @param <T> Generic array type, like byte[], int[], or Object[]
- */
-public abstract class ArrayArgumentView<T> extends MultiElementArgumentView<T> {
+public class DoubleArgumentView extends NumberArgumentView<Double> {
 
-    /**
-     * @param arg ArrayArgument to associate to.
-     */
-    protected ArrayArgumentView(ArrayArgument<T> arg) {
-        super(arg);
-    }
+	public DoubleArgumentView(NumberArgument<Double> argument) {
+		super(argument);
+	}
 
-    @Override
-    protected String getInternalArgumentName(int position) {
-        return position + ".";
-    }
+	@Override
+	protected boolean setArgument(String raw, StringBuffer errorBuffer) {
+		errorBuffer.setLength(0);
+		
+		try {
+			Double value = Double.valueOf(raw);
+			errorBuffer.append(value);
+			setValue(value);
+			return true;
+		} catch (NumberFormatException e) {
+			errorBuffer.append("Illegal Argument");
+			return false;
+		}
+	}
+
 }

@@ -14,7 +14,7 @@
  *    limitations under the license.
  ******************************************************************************/
 
-package org.alljoyn.triumph.view.argview;
+package org.alljoyn.triumph.view.arguments.editable;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleButton;

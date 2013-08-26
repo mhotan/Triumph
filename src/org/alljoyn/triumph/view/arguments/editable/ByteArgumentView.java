@@ -14,14 +14,22 @@
  *    limitations under the license.
  ******************************************************************************/
 
-package org.alljoyn.triumph.view.argview;
+package org.alljoyn.triumph.view.arguments.editable;
 
-import org.alljoyn.triumph.model.components.arguments.NumberArgument;
-import org.alljoyn.triumph.util.NumberUtil;
+import org.alljoyn.triumph.model.components.arguments.Argument;
 
-public class LongArgumentView extends NumberArgumentView<Long> {
-
-	public LongArgumentView(NumberArgument<Long> argument) {
+/**
+ * Argument View that represents a Byte Argument.
+ * 
+ * @author mhotan@quicinc.com, Michael Hotan
+ */
+public class ByteArgumentView extends SimpleArgumentView<Byte> {
+	
+	/**
+	 * Creates a new Byte argument that represents a single byte
+	 * @param argument Argument to assign to this view.
+	 */
+	public ByteArgumentView(Argument<Byte> argument) {
 		super(argument);
 	}
 
@@ -29,16 +37,22 @@ public class LongArgumentView extends NumberArgumentView<Long> {
 	protected boolean setArgument(String raw, StringBuffer buffer) {
 		buffer.setLength(0);
 		
-		// Attempt to par
-		Long value = NumberUtil.parseLong(raw, mNumArg.isUnsigned());
-		if (value == null) { // Check if the argument was invalid
-			buffer.append("Illegal Argument");
+		// This should really never happen
+		if (raw == null) {
+			buffer.append("Can't have null input");
 			return false;
 		}
 		
-		buffer.append(NumberUtil.getUnsignedRepresentation(value));
-		setValue(value);
-		return true;
+		try {
+			// Attempt to parse the Byte value of the argument.
+			Byte value = Byte.valueOf(raw);
+			setValue(value);
+			buffer.append(value);
+			return true;
+		} catch (NumberFormatException e) {
+			// Unable to 
+			buffer.append("Not a Byte");
+			return false;
+		}
 	}
-
 }

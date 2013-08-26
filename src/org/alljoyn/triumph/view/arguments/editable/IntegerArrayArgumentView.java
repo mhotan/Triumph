@@ -14,26 +14,27 @@
  *    limitations under the license.
  ******************************************************************************/
 
-package org.alljoyn.triumph.view.argview;
+package org.alljoyn.triumph.view.arguments.editable;
 
 import java.util.List;
 
 import org.alljoyn.triumph.TriumphException;
 import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
-import org.alljoyn.triumph.model.components.arguments.LongArgument;
-import org.alljoyn.triumph.model.components.arguments.LongArrayArgument;
+import org.alljoyn.triumph.model.components.arguments.IntegerArgument;
+import org.alljoyn.triumph.model.components.arguments.IntegerArrayArgument;
 import org.alljoyn.triumph.util.AJConstant;
 
-public class LongArrayArgumentView extends ArrayArgumentView<long[]> {
 
-    private final LongArrayArgument mLongArrArg;
+public class IntegerArrayArgumentView extends ArrayArgumentView<int[]> {
 
-    public LongArrayArgumentView(LongArrayArgument arg) {
+    private final IntegerArrayArgument mIntArg;
+
+    public IntegerArrayArgumentView(IntegerArrayArgument arg) {
         super(arg);
-        mLongArrArg = arg;
+        mIntArg = arg;
 
         // Check for any current values.
-        long[] values = getValue();
+        int[] values = getValue();
         if (values == null) return;
 
         // Now that we have current values.
@@ -41,10 +42,10 @@ public class LongArrayArgumentView extends ArrayArgumentView<long[]> {
         try {
             ArgumentView<?>[] views = new ArgumentView<?>[values.length];
             for (int i = 0; i < values.length; ++i) {
-                LongArgument innerBArg = (LongArgument) ArgumentFactory.getArgument(
+                IntegerArgument innerInt = (IntegerArgument) ArgumentFactory.getArgument(
                         getInternalArgumentName(i+1), 
                         arg.getInnerElementType(), values[i]);
-                views[i] = EditableArgumentViewFactory.produceView(innerBArg);
+                views[i] = EditableArgumentViewFactory.produceView(innerInt);
             }
             // If there any current values then populate the view.
             for (int i = 0; i < values.length; ++i) {
@@ -58,26 +59,28 @@ public class LongArrayArgumentView extends ArrayArgumentView<long[]> {
 
     @Override
     protected ArgumentView<?> getBlankElement() {
-        char sig = mLongArrArg.isUnsigned() ? AJConstant.ALLJOYN_UINT64: AJConstant.ALLJOYN_INT64;
-        LongArgument arg = (LongArgument) ArgumentFactory.getArgument(
+        // The way this is designed this casting to byte argument
+        // is the only unstable process.
+        char sig = mIntArg.isUnsigned() ? AJConstant.ALLJOYN_UINT32: AJConstant.ALLJOYN_INT32;
+        IntegerArgument arg = (IntegerArgument) ArgumentFactory.getArgument(
                 "" + sig, "",  getArgDirection());
-        LongArgumentView view = new LongArgumentView(arg);
+        IntegerArgumentView view = new IntegerArgumentView(arg);
         return view;
     }
 
     @Override
-    public long[] getCurrentElements(StringBuffer buf) {
+    public int[] getCurrentElements(StringBuffer buf) {
         List<ArgumentView<?>> currentViews = getArgViews();
-        long[] array = new long[currentViews.size()];
+        int[] array = new int[currentViews.size()];
 
         // For every one of the views cast it into a byte argument to extract the value.
         for (int i = 0; i < currentViews.size(); ++i) {
 
             // Cast down to the correct argument view.
-            LongArgumentView bView = (LongArgumentView) currentViews.get(i);
+            IntegerArgumentView bView = (IntegerArgumentView) currentViews.get(i);
 
             // Extract the value if it exists.
-            Long val =  bView.getValue();
+            Integer val =  bView.getValue();
 
             // if it doesn't exists notify the error.
             if (val == null) {

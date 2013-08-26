@@ -27,7 +27,7 @@ import org.alljoyn.triumph.model.TriumphModel;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
-import org.alljoyn.triumph.view.argview.ArgumentView;
+import org.alljoyn.triumph.view.arguments.editable.ArgumentView;
 
 /**
  * Basic view to represent a Method

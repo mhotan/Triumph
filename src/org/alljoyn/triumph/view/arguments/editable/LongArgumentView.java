@@ -14,19 +14,31 @@
  *    limitations under the license.
  ******************************************************************************/
 
-package org.alljoyn.triumph.view.argview;
+package org.alljoyn.triumph.view.arguments.editable;
 
 import org.alljoyn.triumph.model.components.arguments.NumberArgument;
-import org.alljoyn.triumph.view.argview.SimpleArgumentView;
+import org.alljoyn.triumph.util.NumberUtil;
 
-public abstract class NumberArgumentView<T extends Number> extends SimpleArgumentView<T> {
+public class LongArgumentView extends NumberArgumentView<Long> {
 
-	protected final NumberArgument<T> mNumArg;
-	
-	NumberArgumentView(NumberArgument<T> argument) {
+	public LongArgumentView(NumberArgument<Long> argument) {
 		super(argument);
-		mNumArg = (NumberArgument<T>) argument;
+	}
+
+	@Override
+	protected boolean setArgument(String raw, StringBuffer buffer) {
+		buffer.setLength(0);
+		
+		// Attempt to par
+		Long value = NumberUtil.parseLong(raw, mNumArg.isUnsigned());
+		if (value == null) { // Check if the argument was invalid
+			buffer.append("Illegal Argument");
+			return false;
+		}
+		
+		buffer.append(NumberUtil.getUnsignedRepresentation(value));
+		setValue(value);
+		return true;
 	}
 
 }
-

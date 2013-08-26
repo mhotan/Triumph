@@ -14,14 +14,18 @@
  *    limitations under the license.
  ******************************************************************************/
 
-package org.alljoyn.triumph.view.argview;
+package org.alljoyn.triumph.view.arguments.editable;
 
-import org.alljoyn.triumph.model.components.arguments.NumberArgument;
+import org.alljoyn.triumph.model.components.arguments.ShortArgument;
 import org.alljoyn.triumph.util.NumberUtil;
 
-public class IntegerArgumentView extends NumberArgumentView<Integer> {
+/**
+ * A view that shows a short value.
+ * @author mhotan@quicinc.com
+ */
+public class ShortArgumentView extends NumberArgumentView<Short> {
 
-	public IntegerArgumentView(NumberArgument<Integer> argument) {
+	public ShortArgumentView(ShortArgument argument) {
 		super(argument);
 	}
 
@@ -30,7 +34,7 @@ public class IntegerArgumentView extends NumberArgumentView<Integer> {
 		buffer.setLength(0);
 		
 		// Attempt to par
-		Integer value = NumberUtil.parseInteger(raw, mNumArg.isUnsigned());
+		Short value = NumberUtil.parseShort(raw, mNumArg.isUnsigned());
 		if (value == null) { // Check if the argument was invalid
 			buffer.append("Illegal Argument");
 			return false;
@@ -40,4 +44,5 @@ public class IntegerArgumentView extends NumberArgumentView<Integer> {
 		setValue(value);
 		return true;
 	}
+
 }

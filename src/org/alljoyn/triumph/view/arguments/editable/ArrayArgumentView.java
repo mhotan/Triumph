@@ -14,35 +14,28 @@
  *    limitations under the license.
  ******************************************************************************/
 
-package org.alljoyn.triumph.view.argview;
+package org.alljoyn.triumph.view.arguments.editable;
 
-import org.alljoyn.triumph.model.components.arguments.ShortArgument;
-import org.alljoyn.triumph.util.NumberUtil;
+import org.alljoyn.triumph.model.components.arguments.ArrayArgument;
 
 /**
- * A view that shows a short value.
- * @author mhotan@quicinc.com
+ * JavaFX View that represents an Array Argument.
+ * 
+ * @author mhotan
+ *
+ * @param <T> Generic array type, like byte[], int[], or Object[]
  */
-public class ShortArgumentView extends NumberArgumentView<Short> {
+public abstract class ArrayArgumentView<T> extends MultiElementArgumentView<T> {
 
-	public ShortArgumentView(ShortArgument argument) {
-		super(argument);
-	}
+    /**
+     * @param arg ArrayArgument to associate to.
+     */
+    protected ArrayArgumentView(ArrayArgument<T> arg) {
+        super(arg);
+    }
 
-	@Override
-	protected boolean setArgument(String raw, StringBuffer buffer) {
-		buffer.setLength(0);
-		
-		// Attempt to par
-		Short value = NumberUtil.parseShort(raw, mNumArg.isUnsigned());
-		if (value == null) { // Check if the argument was invalid
-			buffer.append("Illegal Argument");
-			return false;
-		}
-		
-		buffer.append(NumberUtil.getUnsignedRepresentation(value));
-		setValue(value);
-		return true;
-	}
-
+    @Override
+    protected String getInternalArgumentName(int position) {
+        return position + ".";
+    }
 }

@@ -1,4 +1,4 @@
-package org.alljoyn.triumph.view.argview;
+package org.alljoyn.triumph.view.arguments.editable;
 
 import org.alljoyn.triumph.model.components.arguments.NullArgument;
 

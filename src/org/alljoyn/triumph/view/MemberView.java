@@ -38,8 +38,8 @@ import org.alljoyn.bus.BusException;
 import org.alljoyn.triumph.model.components.Member;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.EditableArgumentViewFactory;
+import org.alljoyn.triumph.view.arguments.editable.ArgumentView;
+import org.alljoyn.triumph.view.arguments.editable.EditableArgumentViewFactory;
 
 /**
  * Base view class that is used to present a distinct member instance.

@@ -29,7 +29,7 @@ import org.alljoyn.triumph.model.TriumphModel;
 import org.alljoyn.triumph.model.components.Signal;
 import org.alljoyn.triumph.model.components.SignalHandlerManager;
 import org.alljoyn.triumph.model.components.arguments.Argument;
-import org.alljoyn.triumph.view.argview.ArgumentView;
+import org.alljoyn.triumph.view.arguments.editable.ArgumentView;
 
 import com.sun.istack.internal.logging.Logger;
 

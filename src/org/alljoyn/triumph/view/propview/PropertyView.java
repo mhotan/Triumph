@@ -35,8 +35,8 @@ import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
-import org.alljoyn.triumph.view.argview.ArgumentView;
-import org.alljoyn.triumph.view.argview.EditableArgumentViewFactory;
+import org.alljoyn.triumph.view.arguments.editable.ArgumentView;
+import org.alljoyn.triumph.view.arguments.editable.EditableArgumentViewFactory;
 
 /**
  * View that is used to present a Dbus/Alljoyn property.

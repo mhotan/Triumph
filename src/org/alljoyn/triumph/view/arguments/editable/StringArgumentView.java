@@ -14,13 +14,17 @@
  *    limitations under the license.
  ******************************************************************************/
 
-package org.alljoyn.triumph.view.argview;
+package org.alljoyn.triumph.view.arguments.editable;
 
-import org.alljoyn.triumph.model.components.arguments.NumberArgument;
+import org.alljoyn.triumph.model.components.arguments.Argument;
 
-public class DoubleArgumentView extends NumberArgumentView<Double> {
+/**
+ * 
+ * @author mhotan
+ */
+public class StringArgumentView extends SimpleArgumentView<String> {
 
-	public DoubleArgumentView(NumberArgument<Double> argument) {
+	public StringArgumentView(Argument<String> argument) {
 		super(argument);
 	}
 
@@ -28,15 +32,12 @@ public class DoubleArgumentView extends NumberArgumentView<Double> {
 	protected boolean setArgument(String raw, StringBuffer errorBuffer) {
 		errorBuffer.setLength(0);
 		
-		try {
-			Double value = Double.valueOf(raw);
-			errorBuffer.append(value);
-			setValue(value);
-			return true;
-		} catch (NumberFormatException e) {
-			errorBuffer.append("Illegal Argument");
-			return false;
+		// Allow the null input
+		if (raw != null && raw.equals(Argument.NULL)) {
+			raw = null;
 		}
+		setValue(raw);
+		return true;
 	}
 
 }
