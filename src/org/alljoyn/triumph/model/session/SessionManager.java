@@ -18,7 +18,6 @@ package org.alljoyn.triumph.model.session;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.alljoyn.bus.BusAttachment;
 import org.alljoyn.bus.BusException;
@@ -27,7 +26,6 @@ import org.alljoyn.bus.ProxyBusObject;
 import org.alljoyn.bus.Status;
 import org.alljoyn.bus.XMLInterfaceDescriptionBuilder;
 import org.alljoyn.bus.ifaces.Introspectable;
-import org.alljoyn.triumph.MainApplication;
 import org.alljoyn.triumph.TriumphException;
 import org.alljoyn.triumph.model.Destroyable;
 import org.w3c.dom.Node;
@@ -38,8 +36,6 @@ import org.w3c.dom.Node;
  * @author mhotan
  */
 public class SessionManager implements Destroyable, TriumphSessionListener {
-
-	private static final Logger LOGGER = MainApplication.getLogger();
 
 	/**
 	 * Mapping of sessions that currently exist between
