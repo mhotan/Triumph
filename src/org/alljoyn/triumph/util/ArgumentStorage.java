@@ -28,10 +28,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.alljoyn.triumph.model.components.arguments.Argument;
-
-import com.sun.istack.internal.logging.Logger;
 
 /**
  * Class that handles the persistent storage of arguments.
@@ -40,7 +39,7 @@ import com.sun.istack.internal.logging.Logger;
  */
 public class ArgumentStorage {
 
-    private static final Logger LOG = Logger.getLogger(ArgumentStorage.class);
+    private static final Logger LOG = Logger.getLogger(ArgumentStorage.class.getSimpleName());
 
     // The root of all directories
     private static final String ROOT_DIR = "bin/data/args";

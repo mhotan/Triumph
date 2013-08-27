@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="org/alljoyn/triumph/util/AJParser.java|org/alljoyn/triumph/view/argview/AttributeListCell.java|org/alljoyn/triumph/view/ArgumentControl.java|org/alljoyn/triumph/controller/ServiceController.java|org/alljoyn/triumph/view/ServicesView.java|org/alljoyn/triumph/view/ViewManager.java|org/alljoyn/triumph/view/argview/SimpleControl.java" kind="src" path="src"/>
+	<classpathentry excluding="org/alljoyn/triumph/util/AJParser.java|org/alljoyn/triumph/view/argview/AttributeListCell.java|org/alljoyn/triumph/view/ArgumentControl.java|org/alljoyn/triumph/controller/ServiceController.java|org/alljoyn/triumph/view/ServicesView.java|org/alljoyn/triumph/view/argview/SimpleControl.java" kind="src" path="src"/>
 	<classpathentry excluding="org/alljoyn/triumph/test/MarshallingTest.java" kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0_25"/>
-	<classpathentry kind="con" path="at.bestsolution.efxclipse.tooling.jdt.core.JAVAFX_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="libs"/>
 	<classpathentry kind="lib" path="res"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/alljoyn_java"/>
+	<classpathentry kind="lib" path="libs/jars/jfxrt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -20,12 +20,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.alljoyn.triumph.TriumphCPPAdapter;
 import org.alljoyn.triumph.TriumphException;
 import org.w3c.dom.Node;
-
-import com.sun.istack.internal.logging.Logger;
 
 /**
  * This argument represents a single Dictionary Entry.
@@ -34,7 +33,7 @@ import com.sun.istack.internal.logging.Logger;
  */
 public class DictionaryEntryArgument extends Argument<Map.Entry<?, ?>> {
 
-    private final static Logger LOG = Logger.getLogger(DictionaryEntryArgument.class);
+    private final static Logger LOG = Logger.getLogger(DictionaryEntryArgument.class.getSimpleName());
     
     /**
      * Added Serialization ID

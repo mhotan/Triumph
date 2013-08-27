@@ -1,5 +1,10 @@
 /bin
 .settings/*
+rename.sh
+.sconsign.dblite
 *.o
 *.so
-jni/org_alljoyn_triumph_TriumphCPPAdapter.h
+*.class
+*.h
+*.os
+*.dll

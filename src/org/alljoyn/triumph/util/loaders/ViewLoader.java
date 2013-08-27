@@ -18,10 +18,9 @@ package org.alljoyn.triumph.util.loaders;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import javafx.fxml.FXMLLoader;
-
-import com.sun.istack.internal.logging.Logger;
 
 /**
  * Class that handles the loading of views from the res folder in the project directory.
@@ -30,7 +29,7 @@ import com.sun.istack.internal.logging.Logger;
  */
 public final class ViewLoader {
 
-    private static final Logger LOG = Logger.getLogger(ViewLoader.class);
+    private static final Logger LOG = Logger.getLogger(ViewLoader.class.getSimpleName());
 
     /**
      * Cannot instantiate

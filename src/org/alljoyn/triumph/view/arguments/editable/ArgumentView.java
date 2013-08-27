@@ -16,6 +16,8 @@
 
 package org.alljoyn.triumph.view.arguments.editable;
 
+import java.util.logging.Logger;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -26,8 +28,6 @@ import javafx.scene.layout.HBox;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.model.components.arguments.Argument.DIRECTION;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
-
-import com.sun.istack.internal.logging.Logger;
 
 /**
  * Custom JavaFX UI control element that represent a general argument.  This provides basic 
@@ -42,7 +42,7 @@ import com.sun.istack.internal.logging.Logger;
  */
 public abstract class ArgumentView<T> extends HBox {
 
-    protected final Logger LOG = Logger.getLogger(getClass());
+    protected final Logger LOG = Logger.getLogger(getClass().getSimpleName());
 
     /**
      * Internal Argument this view represents.

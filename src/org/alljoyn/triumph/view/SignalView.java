@@ -17,6 +17,7 @@
 package org.alljoyn.triumph.view;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -31,8 +32,6 @@ import org.alljoyn.triumph.model.components.SignalHandlerManager;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.view.arguments.editable.ArgumentView;
 
-import com.sun.istack.internal.logging.Logger;
-
 /**
  * The view that represents a single Signal member of the interface. 
  * 
@@ -40,7 +39,7 @@ import com.sun.istack.internal.logging.Logger;
  */
 public class SignalView extends MemberView {
 
-    private static final Logger LOG = Logger.getLogger(SignalView.class);
+    private static final Logger LOG = Logger.getLogger(SignalView.class.getSimpleName());
     
     /**
      * Internal Signal reference to the view.

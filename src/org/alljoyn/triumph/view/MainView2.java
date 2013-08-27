@@ -3,8 +3,8 @@ package org.alljoyn.triumph.view;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -35,11 +35,9 @@ import org.alljoyn.triumph.model.components.AllJoynService;
 import org.alljoyn.triumph.util.SessionPortStorage;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 
-import com.sun.istack.internal.logging.Logger;
-
 public class MainView2 extends VBox {
 
-    private static final Logger LOG = Logger.getLogger(MainView2.class);
+    private static final Logger LOG = Logger.getLogger(MainView2.class.getSimpleName());
 
     @FXML
     private ScrollPane mDistributedEndpointsPane, mLocalEndpointsPane;
@@ -48,7 +46,7 @@ public class MainView2 extends VBox {
 
     private final ObservableList<EndPoint> mDistEndPts, mLocalEndPts;
 
-    private final Map<EndPoint, AllJoynService> mMap;
+//    private final Map<EndPoint, AllJoynService> mMap;
 
     public MainView2(Stage primaryStage) {
         ViewLoader.loadView("MainView2.fxml", this);
@@ -58,7 +56,7 @@ public class MainView2 extends VBox {
         mDistEndPts = FXCollections.observableArrayList();
         mLocalEndPts = FXCollections.observableArrayList();
 
-        mMap = new HashMap<EndPoint, AllJoynService>();
+//        mMap = new HashMap<EndPoint, AllJoynService>();
         setUpTable(mDistributedTable, mDistEndPts);
         setUpTable(mLocalTable, mLocalEndPts);
         
@@ -239,7 +237,7 @@ public class MainView2 extends VBox {
         // Set the data to be observed
         EndPoints.add(new EndPoint(new AllJoynService("test")));
         tv.setItems(EndPoints);
-        tv.getColumns().addAll(connectColumn, nameColumn, portColumn, machineIdColumn, objectColumn, ifaceColumn);
+//        tv.getColumns().addAll(connectColumn, nameColumn, portColumn, machineIdColumn, objectColumn, ifaceColumn);
 
     }
 

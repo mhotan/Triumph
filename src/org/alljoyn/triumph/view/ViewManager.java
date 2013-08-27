@@ -1,6 +1,8 @@
 package org.alljoyn.triumph.view;
-
 import java.util.HashMap;
+import java.util.Map;
+
+import org.w3c.dom.Node;
 
 /**
  * Creates a way to track and manage view for distinct model type.
@@ -49,8 +51,8 @@ public class ViewManager<T, V extends Node> {
      * 
      * @return
      */
-    public V getView() {
-        
+    public V getViewForElement(T element) {
+        return mMap.get(element);
     }
     
 }
