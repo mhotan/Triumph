@@ -1,7 +1,7 @@
 /bin
 .settings/*
 rename.sh
-.sconsign.dblite
+*.sconsign.dblite
 *.o
 *.so
 *.class
