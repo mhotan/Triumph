@@ -17,30 +17,9 @@
 #include "org_alljoyn_triumph_TriumphCPPAdapter.h"
 
 #include <jni.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <new>
-#include <map>
-#include <assert.h>
-#include <map>
-#include <list>
-#include <algorithm>
-#include <qcc/Log.h>
-#include <qcc/ManagedObj.h>
-#include <qcc/atomic.h>
-#include <qcc/String.h>
-#include <alljoyn/BusAttachment.h>
-#include <alljoyn/ProxyBusObject.h>
-#include <alljoyn/AllJoynStd.h>
-#include <alljoyn/BusListener.h>
-#include <qcc/Log.h>
-#include <qcc/String.h>
-#include <sstream>
-#include <string>
-
 // Namespaces of alljoyn and standard use applications.
 using namespace std;
-using namespace ajn;
 
 /** The cached JVM pointer, valid across all contexts. */
 static JavaVM* jvm = NULL;
@@ -73,33 +52,6 @@ static jfieldID FID_SignalEmitter_msgContext = NULL;
 static const jint DEFAULTCALLTIMEOUT = 25000;
 static const jint FLAGS = 0;
 static jclass OBJECT_CLASS = NULL;
-
-/**
- * Get a valid JNIEnv pointer.
- *
- * A JNIEnv pointer is only valid in an associated JVM thread.  In a callback
- * function (from C++), there is no associated JVM thread, so we need to obtain
- * a valid JNIEnv.  This is a helper function to make that happen.
- *
- * @return The JNIEnv pointer valid in the calling context.
- */
-static JNIEnv* GetEnv(jint* result = 0)
-{
-	JNIEnv* env;
-	jint ret = jvm->GetEnv((void**)&env, JNI_VERSION_1_2);
-	if (result) {
-		*result = ret;
-	}
-	if (JNI_EDETACHED == ret) {
-#if defined(QCC_OS_ANDROID)
-		ret = jvm->AttachCurrentThread(&env, NULL);
-#else
-		ret = jvm->AttachCurrentThread((void**)&env, NULL);
-#endif
-	}
-	assert(JNI_OK == ret);
-	return env;
-}
 
 #ifdef __cplusplus
 extern "C" {
@@ -252,7 +204,6 @@ JNIEXPORT jobject JNICALL Java_org_alljoyn_triumph_TriumphCPPAdapter_getProperty
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,
 		void* reserved)
 {
-	QCC_UseOSLogging(true);
 	jvm = vm;
 	JNIEnv* env;
 	if (jvm->GetEnv((void**)&env, JNI_VERSION_1_2)) {
