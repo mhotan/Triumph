@@ -186,33 +186,35 @@ public class NativeLoader {
         try {
             // 
             String libraryName = getOSSpecificName(libPath, true);
-            in = getClass().getResourceAsStream(mLibPath + libraryName);
-
-            // This is the case where the library path does not point to the library folder.
-            if (in == null) {
-                throw new FileNotFoundException("File at " + mLibPath + libraryName + ". Please make sure the " +
-                        "that the libraries are placed in the correct lib folder");
-            }
-            
-            int cnt;
-            byte buf[] = new byte[16 * 1024];
-
-            // Retrieve the temporary directory name
-            String tmpDirName = System.getProperty("java.io.tmpdir");
-            File tmpDir = new File(tmpDirName);
-            if (!tmpDir.exists()) {
-                tmpDir.mkdir();
-            }
-            File file = File.createTempFile(libPath + "-", ".tmp", tmpDir);
-            // Clean up the file when exiting
-            file.deleteOnExit();
-            out = new FileOutputStream(file);
-
-            // copy until done.
-            while ((cnt = in.read(buf)) >= 1) {
-                out.write(buf, 0, cnt);
-            }
-            return file.getAbsolutePath();
+            return getClass().getResource(mLibPath + libraryName).getPath();
+//            in = getClass().getResourceAsStream(mLibPath + libraryName);
+//
+//            
+//            // This is the case where the library path does not point to the library folder.
+//            if (in == null) {
+//                throw new FileNotFoundException("File at " + mLibPath + libraryName + ". Please make sure the " +
+//                        "that the libraries are placed in the correct lib folder");
+//            }
+//            
+//            int cnt;
+//            byte buf[] = new byte[16 * 1024];
+//
+//            // Retrieve the temporary directory name
+//            String tmpDirName = System.getProperty("java.io.tmpdir");
+//            File tmpDir = new File(tmpDirName);
+//            if (!tmpDir.exists()) {
+//                tmpDir.mkdir();
+//            }
+//            File file = File.createTempFile(libPath + "-", ".tmp", tmpDir);
+//            // Clean up the file when exiting
+//            file.deleteOnExit();
+//            out = new FileOutputStream(file);
+//
+//            // copy until done.
+//            while ((cnt = in.read(buf)) >= 1) {
+//                out.write(buf, 0, cnt);
+//            }
+//            return file.getAbsolutePath();
         } finally {
             if (in != null) {
                 try {

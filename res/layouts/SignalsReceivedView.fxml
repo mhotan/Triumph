@@ -7,6 +7,6 @@
 
 <fx:root type="BorderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns:fx="http://javafx.com/fxml">
   <top>
-    <HBox fx:id="mUtilPane" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
+    <HBox fx:id="mUtilPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
   </top>
 </fx:root>

@@ -17,6 +17,8 @@
 package org.alljoyn.triumph.view;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -37,6 +39,7 @@ import javafx.scene.paint.Color;
 
 import org.alljoyn.triumph.model.components.SignalContext;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
+import org.alljoyn.triumph.view.arguments.simple.ArgumentTableCellFactory;
 
 public class SignalReceivedView extends BorderPane {
 
@@ -49,7 +52,9 @@ public class SignalReceivedView extends BorderPane {
     private URL location;
 
     private final ListView<SignalContext> mSignalListView;
-
+    private final TableView<SignalContectTableItem> mTableView;
+    
+    
     private final ObservableList<SignalContext> mList;
     private final ObservableList<SignalContectTableItem> mTableItems;
 
@@ -63,15 +68,16 @@ public class SignalReceivedView extends BorderPane {
         mListener = listener;
         
         mTableItems = FXCollections.observableArrayList();
-        TableView<SignalContectTableItem> tv = new TableView<SignalContectTableItem>(mTableItems);
-        tv.setEditable(true);
+        mTableView = new TableView<SignalContectTableItem>(mTableItems);
+        mTableView.setEditable(true);
+        
+        // Bind the width of this table to the width of this view.
+        mTableView.prefWidthProperty().bind(widthProperty());
         
         TableColumn<SignalContectTableItem, String> tc = new TableColumn<SignalContectTableItem, String>("Signal Received");
         tc.setMinWidth(200);
         tc.setCellValueFactory(new PropertyValueFactory<SignalContectTableItem, String>("description"));
-        
-        tv.getColumns().add(tc);
-        
+        mTableView.getColumns().add(tc);
         
      // Create a list and associate it to the view
         mList = FXCollections.observableArrayList();
@@ -85,7 +91,7 @@ public class SignalReceivedView extends BorderPane {
                 mListener.onSignalContextSelected(signal);
             }
         });
-        setCenter(tv);
+        setCenter(mTableView);
     }
 
     /**
@@ -95,8 +101,25 @@ public class SignalReceivedView extends BorderPane {
      * @param received Received SignalContext 
      */
     public void addSignal(SignalContext received) {
-        mList.add(received);
-        mTableItems.add(new SignalContectTableItem(received));
+        add(received);
+        add(new SignalContectTableItem(received));
+    }
+    
+    private void add(SignalContext context) {
+        List<SignalContext> signals = new ArrayList<SignalContext>(mList);
+        signals.add(context);
+        mList.removeAll(mList);
+        for (SignalContext signal : signals)
+            mList.add(signal);
+    }
+    
+    private void add(SignalContectTableItem item) {
+        List<SignalContectTableItem> signals = new ArrayList<SignalReceivedView.SignalContectTableItem>(mTableItems);
+        signals.add(item);
+        mTableItems.removeAll(mTableItems);
+        for (SignalContectTableItem signal : signals)
+            mTableItems.add(signal);
+        mTableView.setItems(FXCollections.observableArrayList(mTableItems));
     }
 
     @FXML

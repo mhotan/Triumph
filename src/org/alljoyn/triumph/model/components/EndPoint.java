@@ -30,10 +30,10 @@ import javafx.scene.control.TreeItem;
  * 
  * @author Michael Hotan mhotan@quicinc.com 
  */
-public class AllJoynService extends AllJoynComponent {
+public class EndPoint extends AllJoynComponent {
 
 	
-	private final List<AllJoynObject> mObjects;
+	private final List<AJObject> mObjects;
 	
 	public enum SERVICE_TYPE {
 	    LOCAL, REMOTE
@@ -47,7 +47,7 @@ public class AllJoynService extends AllJoynComponent {
 	 * 
 	 * @param name Name of this service.
 	 */
-	public AllJoynService(String name) {
+	public EndPoint(String name) {
 		this(name, null);
 	}
 	
@@ -57,7 +57,7 @@ public class AllJoynService extends AllJoynComponent {
 	 * @param name Name of the service.
 	 * @param objects Objects contained in this service.
 	 */
-	public AllJoynService(String name, List<AllJoynObject> objects) {
+	public EndPoint(String name, List<AJObject> objects) {
 		super(TYPE.SERVICE);
 		if (name == null || name.isEmpty()) 
 			throw new IllegalArgumentException("AllJoynService, Illegal name: " + name);
@@ -65,8 +65,8 @@ public class AllJoynService extends AllJoynComponent {
 		
 		// if the input is null it just creates a new empty list
 		// of objects.  No big deal.... I think
-		mObjects = objects == null ? new ArrayList<AllJoynObject>() 
-				: new ArrayList<AllJoynObject>(objects);
+		mObjects = objects == null ? new ArrayList<AJObject>() 
+				: new ArrayList<AJObject>(objects);
 	}
 	
 	/**
@@ -87,12 +87,12 @@ public class AllJoynService extends AllJoynComponent {
 	 * Add all the objects to this service.
 	 * @param objects Object to add to this service.
 	 */
-	public void addAll(List<AllJoynObject> objects) {
+	public void addAll(List<AJObject> objects) {
 		// Adds all the objects to this service.
 		mObjects.addAll(objects);
 		
 		// Sets the owning service to this instance of this object
-		for (AllJoynObject obj: mObjects) {
+		for (AJObject obj: mObjects) {
 			obj.setService(this);
 		}
 	}
@@ -104,8 +104,8 @@ public class AllJoynService extends AllJoynComponent {
 	 * @param objectPath Complete Object path of the object in search for.
 	 * @return AllJoynObject with same object path if it exist, else returns null on none found.
 	 */
-	public AllJoynObject getObject(String objectPath) {
-		for (AllJoynObject object: mObjects) {
+	public AJObject getObject(String objectPath) {
+		for (AJObject object: mObjects) {
 			if (object.getName().equals(objectPath))
 				return object;
 		}
@@ -145,7 +145,7 @@ public class AllJoynService extends AllJoynComponent {
 		}
 		
 		// Add all the objects under this root.
-		for (AllJoynObject object: mObjects) {
+		for (AJObject object: mObjects) {
 			if (!currentObjects.contains(object))
 				children.add(object.toTree());
 		}
@@ -154,15 +154,15 @@ public class AllJoynService extends AllJoynComponent {
 		return root;
 	}
 
-	public List<AllJoynObject> getObjects() {
-		return new ArrayList<AllJoynObject>(mObjects);
+	public List<AJObject> getObjects() {
+		return new ArrayList<AJObject>(mObjects);
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (o == null) return false;
 		if (!o.getClass().equals(getClass())) return false;
-		AllJoynService s = (AllJoynService) o;
+		EndPoint s = (EndPoint) o;
 		return s.getName().equals(getName());
 	}
 	

@@ -82,9 +82,9 @@ public abstract class AllJoynComponent implements Comparable<AllJoynComponent> {
 		mName = "";
 	}
 
-	public AllJoynService toService() {
+	public EndPoint toService() {
 		if (mType != TYPE.SERVICE) return null;
-		return (AllJoynService) this;
+		return (EndPoint) this;
 	}
 	
 	public Method toMethod() {

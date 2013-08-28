@@ -53,7 +53,7 @@ public class Method extends Member {
 	 * 
 	 * @param node node that represents the method.
 	 */
-	Method(Node node, AllJoynInterface iface) {
+	Method(Node node, Interface iface) {
 		super(node, iface, TYPE.METHOD, DIRECTION.IN);
 		
 		mInterfaceName = iface.getName();

@@ -34,9 +34,9 @@ import org.alljoyn.bus.Status;
 import org.alljoyn.bus.ifaces.DBusProxyObj;
 import org.alljoyn.triumph.TriumphCPPAdapter;
 import org.alljoyn.triumph.TriumphException;
-import org.alljoyn.triumph.model.components.AllJoynInterface;
-import org.alljoyn.triumph.model.components.AllJoynObject;
-import org.alljoyn.triumph.model.components.AllJoynService;
+import org.alljoyn.triumph.model.components.Interface;
+import org.alljoyn.triumph.model.components.AJObject;
+import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.Member;
 import org.alljoyn.triumph.model.components.TriumphAJParser;
 import org.alljoyn.triumph.model.components.arguments.Argument;
@@ -140,19 +140,19 @@ public class MethodTest {
         assertNotNull("Introspected data is not null", introSpection);
     }
 
-    private AllJoynObject privTestHasObjectByObjectPath() throws TriumphException {
+    private AJObject privTestHasObjectByObjectPath() throws TriumphException {
         TriumphAJParser parser = new TriumphAJParser(mSessionManager);
-        AllJoynService service = new AllJoynService(ServiceWellKnownName);
+        EndPoint service = new EndPoint(ServiceWellKnownName);
 
         service = parser.parseIntrospectData(service, PORT);
-        List<AllJoynObject> objects = service.getObjects();
+        List<AJObject> objects = service.getObjects();
 
         // There is always the the DBus peer object for this well known name
         // Then there is our registered object.  Therefore there is exactly two objects that exist
         assertEquals("Has only one objects", 2, objects.size());
 
         // Get the object with the name
-        AllJoynObject object = service.getObject(ObjectPath);
+        AJObject object = service.getObject(ObjectPath);
         assertNotNull("Doesn't have Object Path " + ObjectPath, object);
         return object;
     }
@@ -165,18 +165,18 @@ public class MethodTest {
     // Should have the interface it actually implements.
     @Test
     public void testHasObjectHasInterface() throws TriumphException {
-        AllJoynObject object = privTestHasObjectByObjectPath();
+        AJObject object = privTestHasObjectByObjectPath();
         String name = MethodInterface.class.getName();
         Assert.assertTrue("Has interface with name " + name, object.hasInterface(name));
         Assert.assertNotNull("Has interface with name " + name, object.getInterface(name));
-        AllJoynInterface iface = object.getInterface(name);
+        Interface iface = object.getInterface(name);
         Assert.assertEquals("Name is correct", name, iface.getName());
     }
 
     // Should not have an interface that the object does not implement
     @Test
     public void testHasObjectHasInterfaceFail() throws TriumphException {
-        AllJoynObject object = privTestHasObjectByObjectPath();
+        AJObject object = privTestHasObjectByObjectPath();
         String failName =  "Name.not.exist";
         Assert.assertFalse("should not have interface name " + failName, object.hasInterface(failName));
         Assert.assertNull("should not have interface name " + failName, object.getInterface(failName));
@@ -191,11 +191,11 @@ public class MethodTest {
      * @throws TriumphException
      */
     private Object callMethod(String memberName, Object[] inArgs) throws TriumphException {
-        AllJoynObject object = privTestHasObjectByObjectPath();
+        AJObject object = privTestHasObjectByObjectPath();
         assertNotNull(object);
         String ifaceName = MethodInterface.class.getName();
 
-        AllJoynInterface iface = object.getInterface(ifaceName);
+        Interface iface = object.getInterface(ifaceName);
         assertNotNull(iface);
 
         // Get the method
@@ -344,11 +344,11 @@ public class MethodTest {
 
     @Test
     public void inputComplexStruct() throws TriumphException {
-        AllJoynObject object = privTestHasObjectByObjectPath();
+        AJObject object = privTestHasObjectByObjectPath();
         assertNotNull(object);
         String ifaceName = MethodInterface.class.getName();
 
-        AllJoynInterface iface = object.getInterface(ifaceName);
+        Interface iface = object.getInterface(ifaceName);
         assertNotNull(iface);
 
         // Get the method
@@ -400,11 +400,11 @@ public class MethodTest {
 
     // Set up 
     private Object callMethod(String memberName) throws TriumphException {
-        AllJoynObject object = privTestHasObjectByObjectPath();
+        AJObject object = privTestHasObjectByObjectPath();
         assertNotNull(object);
         String ifaceName = MethodInterface.class.getName();
 
-        AllJoynInterface iface = object.getInterface(ifaceName);
+        Interface iface = object.getInterface(ifaceName);
         assertNotNull(iface);
 
         // Get the method

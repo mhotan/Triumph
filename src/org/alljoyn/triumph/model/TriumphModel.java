@@ -44,10 +44,10 @@ import org.alljoyn.triumph.TriumphCPPAdapter;
 import org.alljoyn.triumph.TriumphException;
 import org.alljoyn.triumph.model.BusObserver.BusObserverListener;
 import org.alljoyn.triumph.model.components.AllJoynComponent;
-import org.alljoyn.triumph.model.components.AllJoynInterface;
-import org.alljoyn.triumph.model.components.AllJoynObject;
-import org.alljoyn.triumph.model.components.AllJoynService;
-import org.alljoyn.triumph.model.components.AllJoynService.SERVICE_TYPE;
+import org.alljoyn.triumph.model.components.Interface;
+import org.alljoyn.triumph.model.components.AJObject;
+import org.alljoyn.triumph.model.components.EndPoint;
+import org.alljoyn.triumph.model.components.EndPoint.SERVICE_TYPE;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.Signal;
@@ -232,23 +232,23 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
     /* 	Getters													 */	  
     /* ********************************************************* */
 
-    public synchronized List<AllJoynService> getDistributedServices() {
+    public synchronized List<EndPoint> getDistributedServices() {
         List<String> servicesStr = new ArrayList<String>(mDistributedServices);
-        List<AllJoynService> services = new ArrayList<AllJoynService>(servicesStr.size());
+        List<EndPoint> services = new ArrayList<EndPoint>(servicesStr.size());
         for (String service: servicesStr) {
-            AllJoynService ser = new AllJoynService(service);
+            EndPoint ser = new EndPoint(service);
             ser.setServiceType(SERVICE_TYPE.REMOTE);
             services.add(ser);
         }
         return services;
     }
 
-    public synchronized List<AllJoynService> getLocalServices() {
+    public synchronized List<EndPoint> getLocalServices() {
         // Extract all the names of the local services
         List<String> servicesStr = new ArrayList<String>(mLocalServices);
-        List<AllJoynService> services = new ArrayList<AllJoynService>(servicesStr.size());
+        List<EndPoint> services = new ArrayList<EndPoint>(servicesStr.size());
         for (String service: servicesStr) {
-            AllJoynService ser = new AllJoynService(service);
+            EndPoint ser = new EndPoint(service);
             ser.setServiceType(SERVICE_TYPE.LOCAL);
             services.add(ser);
         }
@@ -298,7 +298,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      * 
      * @param service name of service that is being requested
      */
-    public void onServiceSelected(AllJoynService service) {
+    public void onServiceSelected(EndPoint service) {
 
         // If the service is not empty then return fast
         // There is no need to parse any data because 
@@ -321,7 +321,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      * @return The complete built service
      * @throws TriumphException Exception if could not communicate with the service
      */
-    public AllJoynService buildService(AllJoynService service) throws TriumphException {
+    public EndPoint buildService(EndPoint service) throws TriumphException {
         return buildService(service, SessionPortStorage.getPort(service.getName()));
     }
 
@@ -362,7 +362,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      * @return Unmarshaled result
      * @throws BusException Error
      */
-    public Object onMethodInvoked(Method method, List<Argument<?>> arguments) throws BusException {
+    public Argument<?> onMethodInvoked(Method method, List<Argument<?>> arguments) throws BusException {
         Argument<?>[] args = new Argument<?>[arguments.size()];
         for (int i = 0; i < args.length; ++i) {
             args[i] = arguments.get(i);
@@ -378,7 +378,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      * @return Unmarshaled result
      * @throws BusException Error
      */
-    public Object onMethodInvoked(Method method, Argument<?>[] arguments) throws BusException {
+    public Argument<?> onMethodInvoked(Method method, Argument<?>[] arguments) throws BusException {
 
         // Make sure that the number of input arguments
         // match the number of arguments we have
@@ -388,9 +388,9 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         }
 
         // Extract the chain of all the objects, interface, and services.
-        AllJoynInterface iface = method.getInterface();
-        AllJoynObject object = iface.getObject();
-        AllJoynService service = object.getOwner();
+        Interface iface = method.getInterface();
+        AJObject object = iface.getObject();
+        EndPoint service = object.getOwner();
 
         // Get the ProxyBusObject to invoke the method.
         Session session = mSessionManager.getSession(service.getName());
@@ -406,7 +406,22 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         String ifaceName = iface.getName();
         String methodName = method.getName();
         String inputSig = method.getInputSignature();	
-        return TriumphCPPAdapter.callMethod(mBus, proxy, ifaceName, methodName, inputSig, args);
+        Object output = TriumphCPPAdapter.callMethod(mBus, proxy, ifaceName, methodName, inputSig, args);
+        
+     // Try to decipher the output argument name
+        List<Argument<?>> outargs = method.getOutputArguments();
+        String name = "Output";
+        if (outargs.size() == 1) {
+            String tmp = outargs.get(0).getName();
+            name = tmp == null || tmp.isEmpty() ? name : tmp;
+        }
+        
+        // Unmarshal based on the method output argument signature.
+        Argument<?> outArg = ArgumentFactory.getArgument(name, method.getOutputSignature(), output);
+        
+        // Log the transaction
+        TransactionLogger.getInstance().logMethodInvocation(method, arguments, outArg);
+        return outArg;
     }
 
     /**
@@ -441,9 +456,9 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         }
 
         // Extract the chain of all the objects, interface, and services.
-        AllJoynInterface iface = signal.getInterface();
-        AllJoynObject object = iface.getObject();
-        AllJoynService service = object.getOwner();
+        Interface iface = signal.getInterface();
+        AJObject object = iface.getObject();
+        EndPoint service = object.getOwner();
 
         // Destination endpoint
         String destination = service.getName();
@@ -472,6 +487,9 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
                     session.getSessionID(), GlobalBroadcast.Off);
         }
         TriumphCPPAdapter.emitSignal(emitter, ifaceName, signalName, signature, args);
+        
+        // Log the transaction
+        TransactionLogger.getInstance().logSignalEmition(signal, arguments);
     }
 
     /**
@@ -484,9 +502,9 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      */
     public void setProperty(Property property, Argument<?> arg) {
 
-        AllJoynInterface iface = property.getInterface();
-        AllJoynObject object = iface.getObject();
-        AllJoynService service = object.getOwner();
+        Interface iface = property.getInterface();
+        AJObject object = iface.getObject();
+        EndPoint service = object.getOwner();
 
         // Destination endpoint
         String destination = service.getName();
@@ -499,6 +517,9 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         ProxyBusObject proxy = session.getProxy(object.getName());
 
         TriumphCPPAdapter.setProperty(mBus, proxy, ifaceName, propertyName, signature, arg.getValue());
+        
+        // Log the transaction
+        TransactionLogger.getInstance().logPropertySet(property, arg);
     }
 
     /**
@@ -508,11 +529,11 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      * @return Object value of the property
      * @throws BusException An error occured
      */
-    public Object getProperty(Property property) throws BusException {
+    public Argument<?> getProperty(Property property) throws BusException {
 
-        AllJoynInterface iface = property.getInterface();
-        AllJoynObject object = iface.getObject();
-        AllJoynService service = object.getOwner();
+        Interface iface = property.getInterface();
+        AJObject object = iface.getObject();
+        EndPoint service = object.getOwner();
 
         // Destination endpoint
         String destination = service.getName();
@@ -522,8 +543,13 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         // Get the ProxyBusObject to invoke the method.
         Session session = mSessionManager.getSession(destination);
         ProxyBusObject proxy = session.getProxy(object.getName());
-
-        return TriumphCPPAdapter.getProperty(mBus, proxy, ifaceName, propertyName);
+        
+        Object propertyObj = TriumphCPPAdapter.getProperty(mBus, proxy, ifaceName, propertyName);
+        Argument<?> output = ArgumentFactory.getArgument(property.getName(), property.getSignature(), propertyObj);
+        
+        // Log the transaction
+        TransactionLogger.getInstance().logPropertyGet(property, output);
+        return output;
     }
 
     /* ********************************************************* */
@@ -574,7 +600,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
     /* 	Broadcast Change to all listeners						 */	  
     /* ********************************************************* */
 
-    // TODO Note we can add more features to the views
+    // Note we can add more features to the views
     // By adding to TriumphViewable Interface
     // and then implement it in ViewManager.
 
@@ -680,7 +706,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      * @return The Alljoyn service to use.
      * @throws TriumphException
      */
-    private AllJoynService buildService(AllJoynService service, short sessionPort) throws TriumphException {
+    private EndPoint buildService(EndPoint service, short sessionPort) throws TriumphException {
         LOG.fine("Building Service Via Introspection: " + service);
 
         // Attempt to create a session
@@ -703,7 +729,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      * @return List of all Objects associated with the service
      * @throws Unable to get introspection
      */
-    private TreeItem<AllJoynComponent> buildTree(AllJoynService service, short sessionPort) 
+    private TreeItem<AllJoynComponent> buildTree(EndPoint service, short sessionPort) 
             throws TriumphException {
         return buildService(service, sessionPort).toTree();
     }

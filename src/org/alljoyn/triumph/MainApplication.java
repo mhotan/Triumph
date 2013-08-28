@@ -37,54 +37,55 @@ import org.alljoyn.triumph.view.MainController;
  */
 public class MainApplication extends Application {
 
-	// Statically load All Joyn java library
-	static {
-		NativeLoader loader = new NativeLoader();
-		loader.loadLibrary("alljoyn_java");
-		loader.loadLibrary("triumph");
-	}
-	
-	/**
-	 * Logger for the stats.
-	 */
-	private static final Logger LOGGER = Logger.getLogger("triumph");
-	
-	/**
-	 * @return The single instance of the logger that pertains to this 
-	 * application
-	 */
-	public static Logger getLogger() {
-		return LOGGER;
-	}
-	/**
-	 * Title for the application.
-	 */
-	static final String TITLE = "Triumph";
+    // Statically load All Joyn java library
+    static {
+        System.out.println("Current library paths " + System.getProperty("java.library.path"));
+        NativeLoader loader = new NativeLoader();
+        loader.loadLibrary("triumph");
+        loader.loadLibrary("alljoyn_java");
+    }
 
-	/**
-	 * @param args Unused command line arguments
-	 */
-	public static void main(String[] args) {
-		Application.launch(MainApplication.class, (java.lang.String[])null);
-	}
+    /**
+     * Logger for the stats.
+     */
+    private static final Logger LOGGER = Logger.getLogger("triumph");
 
-	/**
-	 * Tree of all the services that are presently seen
-	 */
-	private TreeView<String> mTreeView;
+    /**
+     * @return The single instance of the logger that pertains to this 
+     * application
+     */
+    public static Logger getLogger() {
+        return LOGGER;
+    }
+    /**
+     * Title for the application.
+     */
+    static final String TITLE = "Triumph";
 
-	/**
-	 * @return TreeView of all the current Buses.
-	 */
-	public TreeView<String> getServiceTreeView() {
-		return mTreeView;
-	}
+    /**
+     * @param args Unused command line arguments
+     */
+    public static void main(String[] args) {
+        Application.launch(MainApplication.class, args);
+    }
 
-	@Override
-	public void start(Stage primaryStage) throws IOException {
-		primaryStage.setTitle(TITLE);		
-		TriumphModel model = TriumphModel.getInstance();
-		MainController controller = new MainController(primaryStage);
-		model.addView(controller);
-	}
+    /**
+     * Tree of all the services that are presently seen
+     */
+    private TreeView<String> mTreeView;
+
+    /**
+     * @return TreeView of all the current Buses.
+     */
+    public TreeView<String> getServiceTreeView() {
+        return mTreeView;
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws IOException {
+        primaryStage.setTitle(TITLE);		
+        TriumphModel model = TriumphModel.getInstance();
+        MainController controller = new MainController(primaryStage);
+        model.addView(controller);
+    }
 }

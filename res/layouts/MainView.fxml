@@ -25,9 +25,13 @@
 
 <fx:root type="BorderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml">
   <bottom>
-    <TabPane maxWidth="1.7976931348623157E308" minHeight="100.0" prefHeight="200.0" prefWidth="-1.0" tabClosingPolicy="UNAVAILABLE">
+    <TabPane id="mButtomPane" fx:id="mBottomTabPane" maxHeight="200.0" maxWidth="1.7976931348623157E308" minHeight="100.0" prefHeight="-1.0" prefWidth="-1.0" tabClosingPolicy="UNAVAILABLE">
       <tabs>
-        <Tab content="$null" text="Log" />
+        <Tab fx:id="mLogTab" text="Log">
+          <content>
+            <ScrollPane fx:id="mLogPane" content="$null" prefHeight="-1.0" prefWidth="-1.0" />
+          </content>
+        </Tab>
         <Tab text="Signal received">
           <content>
             <ScrollPane fx:id="mSignalReceivedPane" content="$null" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />

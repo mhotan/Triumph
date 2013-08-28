@@ -31,8 +31,15 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 
+import org.alljoyn.triumph.model.TransactionLogger;
+import org.alljoyn.triumph.model.TransactionLogger.MethodTransaction;
+import org.alljoyn.triumph.model.TransactionLogger.PropertyTransaction;
+import org.alljoyn.triumph.model.TransactionLogger.SignalTransaction;
+import org.alljoyn.triumph.model.TransactionLogger.Transaction;
+import org.alljoyn.triumph.model.TransactionLogger.Transaction.TYPE;
 import org.alljoyn.triumph.model.components.SignalContext;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
+import org.alljoyn.triumph.view.LogView.OnClickListener;
 import org.alljoyn.triumph.view.SignalReceivedView.SignalReceivedListener;
 
 /**
@@ -40,7 +47,7 @@ import org.alljoyn.triumph.view.SignalReceivedView.SignalReceivedListener;
  * 
  * @author mhotan@quicinc.com, Michael Hotan
  */
-public class MainView extends BorderPane implements SignalReceivedListener {
+public class MainView extends BorderPane implements SignalReceivedListener, OnClickListener {
 
     @FXML
     private ResourceBundle resources;
@@ -58,16 +65,20 @@ public class MainView extends BorderPane implements SignalReceivedListener {
 
     @FXML
     private Button mRefreshButton;
+    
+    @FXML
+    private TabPane mBottomTabPane;
 
     @FXML
-    private ScrollPane mSignalReceivedPane;
+    private ScrollPane mSignalReceivedPane, mLogPane;
     private final SignalReceivedView mReceiveSignalView;
 
     //
     private final MainViewInterface mViewHandler;
     private BusView mDistributedBusView, mLocalBusView;
+    private final LogView mLogView;
 
-
+    
     /**
      * Prepares the main view to be used.
      * @param Must have handler for view callbacks
@@ -100,10 +111,23 @@ public class MainView extends BorderPane implements SignalReceivedListener {
         SingleSelectionModel<Tab> selectionModel = mTabPane.getSelectionModel();
         selectionModel.select(mDistributedTab);
 
+        mBottomTabPane.prefWidthProperty().bind(widthProperty());
+        mBottomTabPane.maxWidthProperty().bind(maxWidthProperty());
+        
         // Set up the view that handles the display for incoming signals.
         mReceiveSignalView = new SignalReceivedView(this);
-        mReceiveSignalView.setPrefWidth(Double.MAX_VALUE);
+        mReceiveSignalView.prefWidthProperty().bind(mSignalReceivedPane.widthProperty());
         mSignalReceivedPane.setContent(mReceiveSignalView);
+        
+        // Place the correct components for the log.
+        // Right now we will use a list.
+        mLogPane.prefWidthProperty().bind(mBottomTabPane.widthProperty());
+        mLogPane.prefHeightProperty().bind(mBottomTabPane.heightProperty());
+        mLogView = new LogView(TransactionLogger.getInstance().getTransactions());
+        mLogView.addListener(this);
+        mLogView.prefWidthProperty().bind(mLogPane.widthProperty());
+        mLogView.prefHeightProperty().bind(mLogPane.heightProperty());
+        mLogPane.setContent(mLogView);
     }
 
     public MainView(MainViewInterface handler, BusView distributed, BusView local) {
@@ -193,11 +217,15 @@ public class MainView extends BorderPane implements SignalReceivedListener {
     @FXML
     void initialize() {
         assert mAboutMenuItem != null : "fx:id=\"mAboutMenuItem\" was not injected: check your FXML file 'MainView.fxml'.";
+        assert mBottomTabPane != null : "fx:id=\"mBottomTabPane\" was not injected: check your FXML file 'MainView.fxml'.";
         assert mCloseMenuItem != null : "fx:id=\"mCloseMenuItem\" was not injected: check your FXML file 'MainView.fxml'.";
         assert mDeleteMenuItem != null : "fx:id=\"mDeleteMenuItem\" was not injected: check your FXML file 'MainView.fxml'.";
         assert mDistributedTab != null : "fx:id=\"mDistributedTab\" was not injected: check your FXML file 'MainView.fxml'.";
         assert mLocalTab != null : "fx:id=\"mLocalTab\" was not injected: check your FXML file 'MainView.fxml'.";
+        assert mLogPane != null : "fx:id=\"mLogPane\" was not injected: check your FXML file 'MainView.fxml'.";
         assert mRefreshButton != null : "fx:id=\"mRefreshButton\" was not injected: check your FXML file 'MainView.fxml'.";
+        assert mSignalReceivedPane != null : "fx:id=\"mSignalReceivedPane\" was not injected: check your FXML file 'MainView.fxml'.";
+        assert mTabPane != null : "fx:id=\"mTabPane\" was not injected: check your FXML file 'MainView.fxml'.";
     }
 
     /**
@@ -218,12 +246,31 @@ public class MainView extends BorderPane implements SignalReceivedListener {
          * @param newView View that is focused on.
          */
         public void onBusViewChanged(BusView newView);
+        
+        public void onMethodTransactionSelected(MethodTransaction methodTrans);
+        
+        public void onSignalTransactionSelected(SignalTransaction signalTrans);
+     
+        public void onPropertyTransactionSelected(PropertyTransaction propTrans);
+        
     }
 
     @Override
     public void onSignalContextSelected(SignalContext context) {
         // TODO Generate a view showing the Signal Context sent.
 
+    }
+
+    @Override
+    public void onTransactionClicked(Transaction transaction) {
+        TYPE type = transaction.getType();
+        if (type == TYPE.METHOD_INVOKE) {
+            mViewHandler.onMethodTransactionSelected((MethodTransaction) transaction);
+        } else if (type == TYPE.SIGNAL_EMIT) {
+            mViewHandler.onSignalTransactionSelected((SignalTransaction) transaction);
+        } else if (type == TYPE.PROPERTY_GET || type == TYPE.PROPERTY_SET) {
+            mViewHandler.onPropertyTransactionSelected((PropertyTransaction) transaction);
+        }
     }
 
 }

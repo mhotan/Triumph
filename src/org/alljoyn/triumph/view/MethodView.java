@@ -26,7 +26,6 @@ import org.alljoyn.bus.BusException;
 import org.alljoyn.triumph.model.TriumphModel;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.arguments.Argument;
-import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
 import org.alljoyn.triumph.view.arguments.editable.ArgumentView;
 
 /**
@@ -76,18 +75,8 @@ public class MethodView extends MemberView {
         // TODO Collect all the arguments and 
         TriumphModel model = TriumphModel.getInstance();
         List<Argument<?>> args = mMethod.getInputArguments();
-        Object result = model.onMethodInvoked(mMethod, args);
+        Argument<?> outArg  = model.onMethodInvoked(mMethod, args);
 
-        // Try to decipher the output argument name
-        List<Argument<?>> outargs = mMethod.getOutputArguments();
-        String name = "Output";
-        if (outargs.size() == 1) {
-            String tmp = outargs.get(0).getName();
-            name = tmp == null || tmp.isEmpty() ? name : tmp;
-        }
-
-        // Update the out put view with the output argument.
-        Argument<?> outArg = ArgumentFactory.getArgument(name, mMethod.getOutputSignature(), result);
         List<Argument<?>> outArgList = new ArrayList<Argument<?>>(1);
         outArgList.add(outArg);
         setOutputArguments(outArgList);

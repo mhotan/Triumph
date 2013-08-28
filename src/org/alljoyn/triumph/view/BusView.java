@@ -49,7 +49,7 @@ import org.alljoyn.triumph.MainApplication;
 import org.alljoyn.triumph.controller.AllJoynComponentTreeClickHandler;
 import org.alljoyn.triumph.controller.AllJoynComponentTreeClickHandler.OnClickListener;
 import org.alljoyn.triumph.model.components.AllJoynComponent;
-import org.alljoyn.triumph.model.components.AllJoynService;
+import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.Member;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.Property;
@@ -182,13 +182,13 @@ public class BusView extends BorderPane implements OnClickListener {
      * 
      * @param services a list of all the existing services
      */
-    public void updateState(List<AllJoynService> services) {
+    public void updateState(List<EndPoint> services) {
         if (services == null) return;
 
         // Extract all the names of the service.
         List<String> currServiceNames = new ArrayList<String>(services.size());
         for (int i = 0; i < services.size(); ++i) {
-            AllJoynService service = services.get(i);
+            EndPoint service = services.get(i);
             currServiceNames.add(service.getName());
         }
 
@@ -284,7 +284,7 @@ public class BusView extends BorderPane implements OnClickListener {
      * 
      * @param service Service to add to the list of known services
      */
-    private void addService(AllJoynService service) {
+    private void addService(EndPoint service) {
         if (service == null) {
             MainApplication.getLogger().warning("BusView.addService Service is null");
             return;

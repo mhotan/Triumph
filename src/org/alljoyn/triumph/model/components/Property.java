@@ -46,7 +46,7 @@ public class Property extends AllJoynComponent implements Attributable {
     /**
      * Owning interface.
      */
-    private final AllJoynInterface mInterface;
+    private final Interface mInterface;
 
     /**
      * Signature of this Property.
@@ -56,7 +56,7 @@ public class Property extends AllJoynComponent implements Attributable {
     /**
      * @return the owning interface.
      */
-    public AllJoynInterface getInterface() {
+    public Interface getInterface() {
         return mInterface;
     }
 
@@ -64,7 +64,7 @@ public class Property extends AllJoynComponent implements Attributable {
      * Creates an empty property with no name
      * no attributes, and full read write access.
      */
-    Property(AllJoynInterface iface) {
+    Property(Interface iface) {
         super(AllJoynComponent.TYPE.PROPERTY);
         mAttributes = new ArrayList<Attribute>();
         mInterface = iface;
@@ -77,7 +77,7 @@ public class Property extends AllJoynComponent implements Attributable {
      * @param node Node to build from
      * @param iface Owning interface
      */
-    Property(Node node, AllJoynInterface iface) {
+    Property(Node node, Interface iface) {
         this(iface);
 
         // Method must be of type method

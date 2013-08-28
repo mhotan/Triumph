@@ -47,7 +47,7 @@ public abstract class Member extends AllJoynComponent {
 	/**
 	 * Owning interface.
 	 */
-	protected final AllJoynInterface mInterface;
+	protected final Interface mInterface;
 
 	private final int isDeprecated, isNoReply;
 
@@ -61,7 +61,7 @@ public abstract class Member extends AllJoynComponent {
 	 * 
 	 * @param node node that represents the method.
 	 */
-	Member(Node node, AllJoynInterface iface, TYPE type, DIRECTION defaultDirection) {
+	Member(Node node, Interface iface, TYPE type, DIRECTION defaultDirection) {
 		super(node, type);
 		if (iface == null) {
 			throw new IllegalArgumentException("Can't have null interface as owner");
@@ -142,7 +142,7 @@ public abstract class Member extends AllJoynComponent {
 	/**
 	 * @return the owning interface.
 	 */
-	public AllJoynInterface getInterface() {
+	public Interface getInterface() {
 		return mInterface;
 	}
 	

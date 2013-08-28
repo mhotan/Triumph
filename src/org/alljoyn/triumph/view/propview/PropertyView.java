@@ -33,7 +33,6 @@ import org.alljoyn.bus.BusException;
 import org.alljoyn.triumph.model.TriumphModel;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.arguments.Argument;
-import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 import org.alljoyn.triumph.view.arguments.editable.ArgumentView;
 import org.alljoyn.triumph.view.arguments.editable.EditableArgumentViewFactory;
@@ -120,8 +119,7 @@ public class PropertyView extends BorderPane {
      */
     private void getProperty() {
         try {
-            Object o = TriumphModel.getInstance().getProperty(mProperty);
-            Argument<?> arg = ArgumentFactory.getArgument(mProperty.getName(), mProperty.getSignature(), o);
+            Argument<?> arg = TriumphModel.getInstance().getProperty(mProperty);
             mCurrentArgument = EditableArgumentViewFactory.produceView(arg);
             mArgumentPane.getChildren().clear();
             mArgumentPane.getChildren().add(mCurrentArgument);

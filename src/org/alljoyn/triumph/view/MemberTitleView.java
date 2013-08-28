@@ -28,9 +28,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-import org.alljoyn.triumph.model.components.AllJoynInterface;
-import org.alljoyn.triumph.model.components.AllJoynObject;
-import org.alljoyn.triumph.model.components.AllJoynService;
+import org.alljoyn.triumph.model.components.Interface;
+import org.alljoyn.triumph.model.components.AJObject;
+import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.Annotation;
 import org.alljoyn.triumph.model.components.Member;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
@@ -93,17 +93,17 @@ public class MemberTitleView extends BorderPane {
             mAnnotationsList.setItems(anns);
         }
 
-        AllJoynInterface iface = member.getInterface();
+        Interface iface = member.getInterface();
         mInterfaceLabel.setText(iface.getName());
 
-        AllJoynObject object = iface.getObject();
+        AJObject object = iface.getObject();
         if (object == null) 
             return;
 
         // set the object path name
         mObjectPathLabel.setText(object.getName());
 
-        AllJoynService service = object.getOwner();
+        EndPoint service = object.getOwner();
         if (service == null)
             return;
 

@@ -32,9 +32,9 @@ import org.alljoyn.bus.annotation.BusProperty;
 import org.alljoyn.bus.ifaces.DBusProxyObj;
 import org.alljoyn.triumph.TriumphCPPAdapter;
 import org.alljoyn.triumph.TriumphException;
-import org.alljoyn.triumph.model.components.AllJoynInterface;
-import org.alljoyn.triumph.model.components.AllJoynObject;
-import org.alljoyn.triumph.model.components.AllJoynService;
+import org.alljoyn.triumph.model.components.Interface;
+import org.alljoyn.triumph.model.components.AJObject;
+import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.TriumphAJParser;
 import org.alljoyn.triumph.model.session.Session;
 import org.alljoyn.triumph.model.session.SessionManager;
@@ -107,19 +107,19 @@ public class PropertyTest {
 		mInArgs = null;
 	}
 
-	private AllJoynObject privTestHasObjectByObjectPath() throws TriumphException {
+	private AJObject privTestHasObjectByObjectPath() throws TriumphException {
 		TriumphAJParser parser = new TriumphAJParser(mSessionManager);
-		AllJoynService service = new AllJoynService(ServiceWellKnownName);
+		EndPoint service = new EndPoint(ServiceWellKnownName);
 
 		service = parser.parseIntrospectData(service, PORT);
-		List<AllJoynObject> objects = service.getObjects();
+		List<AJObject> objects = service.getObjects();
 
 		// There is always the the DBus peer object for this well known name
 		// Then there is our registered object.  Therefore there is exactly two objects that exist
 		assertEquals("Has only one objects", 2, objects.size());
 
 		// Get the object with the name
-		AllJoynObject object = service.getObject(ObjectPath);
+		AJObject object = service.getObject(ObjectPath);
 		assertNotNull("Doesn't have Object Path " + ObjectPath, object);
 		return object;
 	}
@@ -127,11 +127,11 @@ public class PropertyTest {
 	// Should have the interface it actually implements.
 	@Test
 	public void testHasObjectHasInterface() throws TriumphException {
-		AllJoynObject object = privTestHasObjectByObjectPath();
+		AJObject object = privTestHasObjectByObjectPath();
 		String name = PropertyInterface.class.getName();
 		Assert.assertTrue("Has interface with name " + name, object.hasInterface(name));
 		Assert.assertNotNull("Has interface with name " + name, object.getInterface(name));
-		AllJoynInterface iface = object.getInterface(name);
+		Interface iface = object.getInterface(name);
 		Assert.assertEquals("Name is correct", name, iface.getName());
 	}
 
@@ -139,8 +139,8 @@ public class PropertyTest {
 
 	@Test
 	public void testReadWrite() throws BusException {
-		AllJoynObject remoteObject = privTestHasObjectByObjectPath();
-		AllJoynInterface iface = remoteObject.getInterface(PropertyInterface.class.getName());
+		AJObject remoteObject = privTestHasObjectByObjectPath();
+		Interface iface = remoteObject.getInterface(PropertyInterface.class.getName());
 		
 		// Get the Proxy object
 		ProxyBusObject proxy = mSession.getProxy(ObjectPath);

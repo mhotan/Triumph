@@ -27,8 +27,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 
-import org.alljoyn.triumph.model.components.AllJoynService;
-import org.alljoyn.triumph.model.components.AllJoynService.SERVICE_TYPE;
+import org.alljoyn.triumph.model.components.EndPoint;
+import org.alljoyn.triumph.model.components.EndPoint.SERVICE_TYPE;
 import org.alljoyn.triumph.util.SessionPortStorage;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 
@@ -54,13 +54,13 @@ public class ServiceView extends HBox {
     @FXML
     private Label mLabel;
 
-    private final AllJoynService mService;
+    private final EndPoint mService;
 
     /**
      * 
      * @param service
      */
-    public ServiceView(AllJoynService service) {
+    public ServiceView(EndPoint service) {
         ViewLoader.loadView("ServiceView.fxml", this);
         mService = service;
         mLabel.setText(service.getName());

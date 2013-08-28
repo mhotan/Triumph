@@ -75,20 +75,20 @@ public class TriumphAJParser {
      * @return The complete service with all the internal objects
      * @throws TriumphException Unable to get introspection
      */
-    public AllJoynService parseIntrospectData(AllJoynService service,
+    public EndPoint parseIntrospectData(EndPoint service,
             short sessionId) throws TriumphException {
 
         
 
         // Retrieve all the names of the objects that currently exists within that
         // service.  This allows us to check if we need to create a session.
-        Set<AllJoynObject> currentObjects = new HashSet<AllJoynObject>(service.getObjects());
+        Set<AJObject> currentObjects = new HashSet<AJObject>(service.getObjects());
         Set<String> currObjStrs = new HashSet<String>(currentObjects.size());
-        for (AllJoynObject obj: currentObjects) 
+        for (AJObject obj: currentObjects) 
             currObjStrs.add(obj.getName());
 
         // Parse the root object path first and recursively complete the set
-        List<AllJoynObject> objects = parse(service.getName(), "/", sessionId, currObjStrs);
+        List<AJObject> objects = parse(service.getName(), "/", sessionId, currObjStrs);
         service.addAll(objects);
         return service;
     }
@@ -107,7 +107,7 @@ public class TriumphAJParser {
      * @return List of all children objects that didnt have names in the ignore set.
      * @throws TriumphException Unable to get introspection
      */
-    private List<AllJoynObject> parse(
+    private List<AJObject> parse(
             String service, String objectPath, 
             short sessionPortNum, Set<String> ignoreSet) throws TriumphException {
 
@@ -136,9 +136,9 @@ public class TriumphAJParser {
                 MainApplication.getLogger().warning("Unable create Interfaces found while parsing service: " + service + " object path: " + objectPath);
             }
             // if this node is an object then add it to the list.
-            List<AllJoynObject> objects = new ArrayList<AllJoynObject>();
-            if (AllJoynObject.isObject(node))
-                objects.add(new AllJoynObject(node, objectPath));
+            List<AJObject> objects = new ArrayList<AJObject>();
+            if (AJObject.isObject(node))
+                objects.add(new AJObject(node, objectPath));
 
             // iterate through all the sub objects and add 
             // child objects to the list.
@@ -147,7 +147,7 @@ public class TriumphAJParser {
             // Parse each descendant object and add it to
             for (String childName: subObjects) {
                 if (ignoreSet.contains(childName)) continue;	
-                List<AllJoynObject> childObjects = parse(service, childName, sessionPortNum, ignoreSet);
+                List<AJObject> childObjects = parse(service, childName, sessionPortNum, ignoreSet);
                 objects.addAll(childObjects);
             }
             return objects; 
@@ -184,7 +184,7 @@ public class TriumphAJParser {
 
             // If this node is not an object.
             // IE could be an interface or something else.
-            if (!AllJoynObject.LABEL.equals(child.getNodeName()))
+            if (!AJObject.LABEL.equals(child.getNodeName()))
                 continue;
 
             //Attempt to find the name attribute in the parse

@@ -31,7 +31,7 @@ import org.w3c.dom.NodeList;
  * 
  * @author Michael Hotan mhotan@quicinc.com
  */
-public class AllJoynInterface extends AllJoynComponent {
+public class Interface extends AllJoynComponent {
 
 	private static final String LABEL = "interface";
 
@@ -56,13 +56,13 @@ public class AllJoynInterface extends AllJoynComponent {
 	private final List<Annotation> mAnnotations;
 	
 	
-	private final AllJoynObject mOwner;
+	private final AJObject mOwner;
 
 	/**
 	 * Creates an empty interface associated with name
 	 * @param name Name to associate to interface
 	 */
-	public AllJoynInterface(String name, AllJoynObject owner) {
+	public Interface(String name, AJObject owner) {
 		super(TYPE.INTERFACE);
 
 		if (owner == null)
@@ -82,7 +82,7 @@ public class AllJoynInterface extends AllJoynComponent {
 	 * Creates an alljoyn interface 
 	 * @param node
 	 */
-	AllJoynInterface(Node node, AllJoynObject owner) {
+	Interface(Node node, AJObject owner) {
 		super(node, TYPE.INTERFACE);
 
 		if (owner == null)
@@ -135,7 +135,7 @@ public class AllJoynInterface extends AllJoynComponent {
 	 * Returns the owning object 
 	 * @return Owning object of this interface.
 	 */
-	public AllJoynObject getObject() {
+	public AJObject getObject() {
 		return mOwner;
 	}
 
@@ -305,7 +305,7 @@ public class AllJoynInterface extends AllJoynComponent {
 	public boolean equals(Object o) {
 		if (o == null) return false;
 		if (!o.getClass().equals(getClass())) return false;
-		AllJoynInterface s = (AllJoynInterface) o;
+		Interface s = (Interface) o;
 		return s.getName().equals(getName()) && s.getObject().equals(getObject());
 	}
 	

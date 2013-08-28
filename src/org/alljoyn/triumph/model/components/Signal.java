@@ -43,7 +43,7 @@ public class Signal extends Member {
 	 * @param node Node to build signal from.
 	 * @param iface owning interface
 	 */
-	Signal(Node node, AllJoynInterface iface) {
+	Signal(Node node, Interface iface) {
 		super(node, iface, AllJoynComponent.TYPE.SIGNAL, DIRECTION.OUT);
 		
 		mInterfaceName = iface.getName();

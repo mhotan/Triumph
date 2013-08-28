@@ -20,15 +20,15 @@ import org.w3c.dom.Node;
 
 public class AllJoynComponentFactory {
 
-	public static Method methodFromNode(Node node, AllJoynInterface owner) {
+	public static Method methodFromNode(Node node, Interface owner) {
 		return new Method(node, owner);
 	}
 	
-	public static Signal singalFromNode(Node node, AllJoynInterface owner) {
+	public static Signal singalFromNode(Node node, Interface owner) {
 		return new Signal(node, owner);
 	}
 	
-	public static Property propertyFromNode(Node node, AllJoynInterface owner) {
+	public static Property propertyFromNode(Node node, Interface owner) {
 		return new Property(node, owner);
 	}
 }

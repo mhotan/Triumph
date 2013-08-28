@@ -25,7 +25,7 @@ import javafx.scene.text.TextAlignment;
 
 import org.alljoyn.triumph.model.components.AllJoynComponent;
 import org.alljoyn.triumph.model.components.AllJoynComponent.TYPE;
-import org.alljoyn.triumph.model.components.AllJoynService;
+import org.alljoyn.triumph.model.components.EndPoint;
 
 
 /**
@@ -122,7 +122,7 @@ public class AllJoynComponentTreeCell extends TreeCell<AllJoynComponent> {
      * @param item
      */
     private void drawService(AllJoynComponent item) {
-        ServiceView view = new ServiceView((AllJoynService)item);
+        ServiceView view = new ServiceView((EndPoint)item);
         setGraphic(view);
         Label label = view.getLabel();
         double width = label.getPrefWidth();

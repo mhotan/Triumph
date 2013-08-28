@@ -68,6 +68,7 @@ native_dir = platform
 native_src = PrependDir(native_dir, env.Split("""TriumphCPPAdapter.cpp"""))
 env.VariantDir(native_dir, 'jni', duplicate=0)
 print 'Creating project shared library'
+env['LIBS'] = ['stdc++']
 env.SharedLibrary('libs/lib/' + native_dir + '/triumph', native_src)
 native_libs = os.path.join(os.path.join('libs', 'lib'), native_dir)
 print 'Native library location: ' + native_libs

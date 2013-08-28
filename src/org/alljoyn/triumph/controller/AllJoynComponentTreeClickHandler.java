@@ -26,7 +26,7 @@ import javafx.scene.input.MouseEvent;
 
 import org.alljoyn.triumph.model.TriumphModel;
 import org.alljoyn.triumph.model.components.AllJoynComponent;
-import org.alljoyn.triumph.model.components.AllJoynService;
+import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.Signal;
@@ -81,7 +81,7 @@ public class AllJoynComponentTreeClickHandler implements EventHandler<MouseEvent
 		AllJoynComponent element = treeItem.getValue();
 
 		// Attempt to create extract the specific instance type.
-		AllJoynService service = element.toService();
+		EndPoint service = element.toService();
 		Method method = element.toMethod();
 		Signal signal = element.toSignal();
 		Property prop = element.toProperty();

@@ -1,8 +1,9 @@
-package org.alljoyn.triumph.view;
+package org.alljoyn.triumph.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.w3c.dom.Node;
+import javafx.scene.Node;
+
 
 /**
  * Creates a way to track and manage view for distinct model type.
@@ -12,44 +13,44 @@ import org.w3c.dom.Node;
  * @param <T> Key object that maps directly to View type
  * @param <V> Type of view that corresponds to T
  */
-public class ViewManager<T, V extends Node> {
+public class ViewCache<T, V extends Node> {
 
     private final Map<T,V> mMap;
     
     /**
-     * 
+     * Creates an initially empty cache
      */
-    public ViewManager() {
+    public ViewCache() {
         this(new HashMap<T,V>());
     } 
     
     /**
      * 
-     * @param manager
+     * @param manager Manager to build from
      */
-    public ViewManager(ViewManager<T,V> manager) {
+    public ViewCache(ViewCache<T,V> manager) {
         this(manager.mMap);
     }
     
     /**
-     * 
+     * Creates a cache from a mapping
      * 
      * @param currentViews Currently tracked views.
      */
-    public ViewManager(Map<T,V> currentViews) {
+    public ViewCache(Map<T,V> currentViews) {
         mMap = new HashMap<T,V>(currentViews);
     }
     
     /**
-     * 
+     * Add view using the element as the key
      */
     public void addView(T element, V view) {
        mMap.put(element, view); 
     }
     
     /**
-     * 
-     * @return
+     * Attempts to 
+     * @return 
      */
     public V getViewForElement(T element) {
         return mMap.get(element);

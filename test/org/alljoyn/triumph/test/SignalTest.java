@@ -30,9 +30,9 @@ import org.alljoyn.bus.Status;
 import org.alljoyn.bus.ifaces.DBusProxyObj;
 import org.alljoyn.triumph.TriumphCPPAdapter;
 import org.alljoyn.triumph.TriumphException;
-import org.alljoyn.triumph.model.components.AllJoynInterface;
-import org.alljoyn.triumph.model.components.AllJoynObject;
-import org.alljoyn.triumph.model.components.AllJoynService;
+import org.alljoyn.triumph.model.components.Interface;
+import org.alljoyn.triumph.model.components.AJObject;
+import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.Member;
 import org.alljoyn.triumph.model.components.TriumphAJParser;
 import org.alljoyn.triumph.model.session.Session;
@@ -124,19 +124,19 @@ public class SignalTest {
 		mBus.unregisterBusObject(mSource);
 	}
 
-	private AllJoynObject privTestHasObjectByObjectPath() throws TriumphException {
+	private AJObject privTestHasObjectByObjectPath() throws TriumphException {
 		TriumphAJParser parser = new TriumphAJParser(mSessionManager);
-		AllJoynService service = new AllJoynService(ServiceWellKnownName);
+		EndPoint service = new EndPoint(ServiceWellKnownName);
 		
 		service = parser.parseIntrospectData(service, PORT);
-		List<AllJoynObject> objects = service.getObjects();
+		List<AJObject> objects = service.getObjects();
 		
 		// There is always the the DBus peer object for this well known name
 		// Then there is our registered object.  Therefore there is exactly two objects that exist
 		assertEquals("Has only one objects", 3, objects.size());
 		
 		// Get the object with the name
-		AllJoynObject object = service.getObject(ReceiverPath);
+		AJObject object = service.getObject(ReceiverPath);
 		assertNotNull("Doesn't have Object Path " + ReceiverPath, object);
 		return object;
 	}
@@ -149,11 +149,11 @@ public class SignalTest {
 	 * @throws TriumphException
 	 */
 	private void emitSignal(String signalName, Object[] args) throws TriumphException {
-		AllJoynObject object = privTestHasObjectByObjectPath();
+		AJObject object = privTestHasObjectByObjectPath();
 		assertNotNull(object);
 		String ifaceName = SignalInterface.class.getName();
 		
-		AllJoynInterface iface = object.getInterface(ifaceName);
+		Interface iface = object.getInterface(ifaceName);
 		assertNotNull(iface);
 		
 		// Get the method

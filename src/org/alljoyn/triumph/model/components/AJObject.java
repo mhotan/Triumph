@@ -31,14 +31,14 @@ import org.w3c.dom.NodeList;
  * 
  * @author mhotan
  */
-public class AllJoynObject extends AllJoynComponent {
+public class AJObject extends AllJoynComponent {
 
 	public static final String LABEL = "node";
 
 	/**
 	 * Holds a list of all interfaces that this object implements
 	 */
-	private final List<AllJoynInterface> mInterfaces;
+	private final List<Interface> mInterfaces;
 	
 	/**
 	 * List of all the names (prefix excluded)
@@ -49,17 +49,17 @@ public class AllJoynObject extends AllJoynComponent {
 	/**
 	 * Reference to parent service.
 	 */
-	private AllJoynService mService;
+	private EndPoint mService;
 
 	/**
 	 * Creates an all joyn object with the COMPLETE path
 	 * argument objectPath
 	 * @param objectPath Complete path name
 	 */
-	public AllJoynObject(String objectPath) {
+	public AJObject(String objectPath) {
 		super(AllJoynComponent.TYPE.OBJECT);
 		setName(objectPath);
-		mInterfaces = new ArrayList<AllJoynInterface>();
+		mInterfaces = new ArrayList<Interface>();
 		mSubObjects = new ArrayList<String>();
 		mService = null;
 	}
@@ -68,7 +68,7 @@ public class AllJoynObject extends AllJoynComponent {
 	 * Creates an alljoyn object from a DOM node of introspected data
 	 * @param node Node to parse
 	 */
-	AllJoynObject(Node node, String objectPath) {
+	AJObject(Node node, String objectPath) {
 		super(node, TYPE.OBJECT);
 		mService = null;
 
@@ -84,7 +84,7 @@ public class AllJoynObject extends AllJoynComponent {
 		}
 		setName(objectPath);
 
-		mInterfaces = new ArrayList<AllJoynInterface>();
+		mInterfaces = new ArrayList<Interface>();
 		mSubObjects = new ArrayList<String>();
 
 		NodeList children = node.getChildNodes();
@@ -101,8 +101,8 @@ public class AllJoynObject extends AllJoynComponent {
 			// if we have a potential object
 			if (LABEL.equals(child.getNodeName())) {
 				mSubObjects.add(name);
-			} else if (AllJoynInterface.isInterface(child)) {
-				mInterfaces.add(new AllJoynInterface(child, this));
+			} else if (Interface.isInterface(child)) {
+				mInterfaces.add(new Interface(child, this));
 			}
 		}
 	}
@@ -111,8 +111,8 @@ public class AllJoynObject extends AllJoynComponent {
 	 * Returns a list of interfaces that this object supports,
 	 * @return List of interfaces this object supports
 	 */
-	public List<AllJoynInterface> getInterfaces() {
-		return new ArrayList<AllJoynInterface>(mInterfaces);
+	public List<Interface> getInterfaces() {
+		return new ArrayList<Interface>(mInterfaces);
 	}
 	
 	/**
@@ -131,11 +131,11 @@ public class AllJoynObject extends AllJoynComponent {
 	 * @param ifaceName Interface name to find.
 	 * @return AllJoynInterface with associated name ifaceName. Null if no interface is found.
 	 */
-	public AllJoynInterface getInterface(String ifaceName) {
+	public Interface getInterface(String ifaceName) {
 		if (ifaceName == null)
 			return null;
 		
-		for (AllJoynInterface iface: mInterfaces) {
+		for (Interface iface: mInterfaces) {
 			if (iface.getName().equals(ifaceName))
 				return iface;
 		}
@@ -145,7 +145,7 @@ public class AllJoynObject extends AllJoynComponent {
 	/**
 	 * @return Returns the owning service.
 	 */
-	public AllJoynService getOwner() {
+	public EndPoint getOwner() {
 		return mService;
 	}
 	
@@ -154,7 +154,7 @@ public class AllJoynObject extends AllJoynComponent {
 	 * 
 	 * @param owner Owner to assign
 	 */
-	void setService(AllJoynService owner) {
+	void setService(EndPoint owner) {
 		if (mService != null && mService.equals(owner)) {
 			return; // Already set correctly
 		}
@@ -199,7 +199,7 @@ public class AllJoynObject extends AllJoynComponent {
 		// implements an interface.
 		boolean hasInterface = false;
 		for (int i = 0; i < length; ++i) {
-			hasInterface |= AllJoynInterface.isInterface(children.item(i));
+			hasInterface |= Interface.isInterface(children.item(i));
 		}
 		return hasInterface;
 	}
@@ -232,7 +232,7 @@ public class AllJoynObject extends AllJoynComponent {
 		}
 		TreeItem<AllJoynComponent> iRoot =
 				new TreeItem<AllJoynComponent>(new Label(interfaceLabel));
-		for (AllJoynInterface i: mInterfaces) {
+		for (Interface i: mInterfaces) {
 			iRoot.getChildren().add(i.toTree());
 		}
 		root.getChildren().add(iRoot);
@@ -243,7 +243,7 @@ public class AllJoynObject extends AllJoynComponent {
 	public boolean equals(Object o) {
 		if (o == null) return false;
 		if (!o.getClass().equals(getClass())) return false;
-		AllJoynObject s = (AllJoynObject) o;
+		AJObject s = (AJObject) o;
 		return s.getName().equals(getName()) && s.getOwner().equals(getOwner());
 	}
 	

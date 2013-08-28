@@ -26,8 +26,11 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import org.alljoyn.triumph.model.TransactionLogger.MethodTransaction;
+import org.alljoyn.triumph.model.TransactionLogger.PropertyTransaction;
+import org.alljoyn.triumph.model.TransactionLogger.SignalTransaction;
 import org.alljoyn.triumph.model.TriumphModel;
-import org.alljoyn.triumph.model.components.AllJoynService;
+import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.Signal;
@@ -114,8 +117,6 @@ public class MainController implements TriumphViewable, MainViewInterface {
         mPrimaryStage.show();
     }
 
-    MainView2 view2;
-
     //////////////////////////////////////////////////////////////////
     ////  Method needed for TriumphViewable.
     //////////////////////////////////////////////////////////////////
@@ -127,11 +128,11 @@ public class MainController implements TriumphViewable, MainViewInterface {
         // Needs to update the state of itself it pulls the data from the model.
         
         // Update the Distributed bus views
-        List<AllJoynService> distributed = mModel.getDistributedServices();
+        List<EndPoint> distributed = mModel.getDistributedServices();
         mDistributedBusView.updateState(distributed);	
 
         // Update the list of local services.
-        List<AllJoynService> locals = mModel.getLocalServices();
+        List<EndPoint> locals = mModel.getLocalServices();
         mLocalBusView.updateState(locals);
         
         // etc... add more services.
@@ -190,6 +191,21 @@ public class MainController implements TriumphViewable, MainViewInterface {
     @Override
     public void onBusViewChanged(BusView newView) {
         mCurrentView = newView;
+    }
+
+    @Override
+    public void onMethodTransactionSelected(MethodTransaction methodTrans) {
+        showMethod(methodTrans.mMethod);
+    }
+
+    @Override
+    public void onSignalTransactionSelected(SignalTransaction signalTrans) {
+        showSignal(signalTrans.mSignal);
+    }
+
+    @Override
+    public void onPropertyTransactionSelected(PropertyTransaction propTrans) {
+        showProperty(propTrans.mProperty);
     }
 
     

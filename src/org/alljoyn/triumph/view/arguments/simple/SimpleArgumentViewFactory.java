@@ -16,12 +16,22 @@
 
 package org.alljoyn.triumph.view.arguments.simple;
 
+import javafx.scene.layout.HBox;
+
+import org.alljoyn.triumph.model.components.arguments.Argument;
+
 /**
  * 
  * @author mhotan@quicinc.com
  */
 public class SimpleArgumentViewFactory {
 
+    /**
+     * Cannot instantiate
+     */
+    private SimpleArgumentViewFactory() {}
     
-    
+    public static HBox produceView(Argument<?> argument) {
+        return new SimpleArgumentView(argument);
+    }
 }

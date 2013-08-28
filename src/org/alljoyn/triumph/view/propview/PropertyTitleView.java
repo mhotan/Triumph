@@ -9,9 +9,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-import org.alljoyn.triumph.model.components.AllJoynInterface;
-import org.alljoyn.triumph.model.components.AllJoynObject;
-import org.alljoyn.triumph.model.components.AllJoynService;
+import org.alljoyn.triumph.model.components.Interface;
+import org.alljoyn.triumph.model.components.AJObject;
+import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 
@@ -82,9 +82,9 @@ public class PropertyTitleView extends BorderPane {
         // Set the name of the property
         mMemberName.setText(prop.getName());
     
-        AllJoynInterface iface = prop.getInterface();
-        AllJoynObject object = iface.getObject();
-        AllJoynService service = object.getOwner();
+        Interface iface = prop.getInterface();
+        AJObject object = iface.getObject();
+        EndPoint service = object.getOwner();
         
         mWellKnownNameLabel.setText(service.getName());
         mInterfaceLabel.setText(iface.getName());
