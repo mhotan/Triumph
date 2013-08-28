@@ -42,188 +42,188 @@ import org.alljoyn.triumph.view.SignalReceivedView.SignalReceivedListener;
  */
 public class MainView extends BorderPane implements SignalReceivedListener {
 
-	@FXML
-	private ResourceBundle resources;
+    @FXML
+    private ResourceBundle resources;
 
-	@FXML
-	private URL location;
+    @FXML
+    private URL location;
 
-	@FXML private MenuItem mAboutMenuItem, mCloseMenuItem, mDeleteMenuItem;
+    @FXML private MenuItem mAboutMenuItem, mCloseMenuItem, mDeleteMenuItem;
 
-	@FXML
+    @FXML
     private TabPane mTabPane;
-	
-	@FXML
-	private Tab mDistributedTab, mLocalTab;
 
-	@FXML
-	private Button mRefreshButton;
-	
-	@FXML
+    @FXML
+    private Tab mDistributedTab, mLocalTab;
+
+    @FXML
+    private Button mRefreshButton;
+
+    @FXML
     private ScrollPane mSignalReceivedPane;
-	private final SignalReceivedView mReceiveSignalView;
-	
-	//
-	private final MainViewInterface mViewHandler;
-	private BusView mDistributedBusView, mLocalBusView;
+    private final SignalReceivedView mReceiveSignalView;
 
-	
-	/**
-	 * Prepares the main view to be used.
-	 * @param Must have handler for view callbacks
-	 */
-	private MainView(MainViewInterface handler) {
-		if (handler == null)
-			throw new NullPointerException("MainViewInterface cannot be null");
-		mViewHandler = handler;
-		
-		// load the FXML class
-		ViewLoader.loadView("MainView.fxml", this);
-		
-		// add 
-		mTabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+    //
+    private final MainViewInterface mViewHandler;
+    private BusView mDistributedBusView, mLocalBusView;
 
-			@Override
-			public void changed(ObservableValue<? extends Tab> observable,
-					Tab oldValue, Tab newValue) {
-				if (oldValue.equals(newValue)) return; // No change
-				
-				if (newValue.equals(mDistributedTab)) {
-					mViewHandler.onBusViewChanged(mDistributedBusView);
-				} else if (newValue.equals(mLocalTab)) {
-					mViewHandler.onBusViewChanged(mLocalBusView);
-				}
-			}
-		});
-		
-		// Set the selected tab to be the Distributed Pane.
-		SingleSelectionModel<Tab> selectionModel = mTabPane.getSelectionModel();
-		selectionModel.select(mDistributedTab);
-		
-		// Set up the view that handles the display for incoming signals.
-		mReceiveSignalView = new SignalReceivedView(this);
-		mReceiveSignalView.setPrefWidth(Double.MAX_VALUE);
-		mSignalReceivedPane.setContent(mReceiveSignalView);
-	}
 
-	public MainView(MainViewInterface handler, BusView distributed, BusView local) {
-		this(handler);
-		setDistributedBusView(distributed);
-		setLocalBusView(local);
-		
-		setWidth(800);
-		setHeight(600);
-	}
+    /**
+     * Prepares the main view to be used.
+     * @param Must have handler for view callbacks
+     */
+    private MainView(MainViewInterface handler) {
+        if (handler == null)
+            throw new NullPointerException("MainViewInterface cannot be null");
+        mViewHandler = handler;
 
-	/**
-	 * Finds the current bus view that is in focus.
-	 * @return the current Bus View
-	 */
-	public BusView getCurrentBusView() {
-		SingleSelectionModel<Tab> selectionModel = mTabPane.getSelectionModel();
-		Tab current = selectionModel.getSelectedItem();
-		if (current.equals(mDistributedTab))
-			return mDistributedBusView;
-		if (current.equals(mLocalTab))
-			return mLocalBusView;
-		throw new RuntimeException("Unable to find view for tab '" + current.getText() + "'");
-	}
-	
-	/**
-	 * Shows the 
-	 * @param context
-	 */
-	public void showNewSignalReceived(SignalContext context) {
-	    if (context == null) return;
-	    mReceiveSignalView.addSignal(context);
-	}
-	
-	/**
-	 * Sets the Distributed Bus view to the input
-	 * 
-	 * @param view BusView to set as Distributed view
-	 */
-	private void setDistributedBusView(BusView view) {
-		mDistributedBusView = setBusView(mDistributedTab, view);
-	}
+        // load the FXML class
+        ViewLoader.loadView("MainView.fxml", this);
 
-	/**
-	 * Sets the Distributed Bus view to the input
-	 * 
-	 * @param view BusView to set as Distributed view
-	 */
-	private void setLocalBusView(BusView view) {
-		mLocalBusView = setBusView(mLocalTab, view);
-	}
+        // add 
+        mTabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
 
-	/**
-	 * Adds exclusive view to pane.s
-	 * 
-	 * @param pane Pane to put view in.
-	 * @param view View to add to pane
-	 */
-	private BusView setBusView(Tab pane, BusView view) {
-		if (view == null)
-			throw new NullPointerException("MainView setting a bus view with a Null BusView");
+            @Override
+            public void changed(ObservableValue<? extends Tab> observable,
+                    Tab oldValue, Tab newValue) {
+                if (oldValue.equals(newValue)) return; // No change
 
-		// Make sure the view is the only
-		pane.setContent(view);
-		return view;
-	}
+                if (newValue.equals(mDistributedTab)) {
+                    mViewHandler.onBusViewChanged(mDistributedBusView);
+                } else if (newValue.equals(mLocalTab)) {
+                    mViewHandler.onBusViewChanged(mLocalBusView);
+                }
+            }
+        });
 
-	@FXML
-	void onAbout(ActionEvent event) {
-		mViewHandler.onAbout();
-	}
+        // Set the selected tab to be the Distributed Pane.
+        SingleSelectionModel<Tab> selectionModel = mTabPane.getSelectionModel();
+        selectionModel.select(mDistributedTab);
 
-	@FXML
-	void onClose(ActionEvent event) {
-		mViewHandler.onClose();
-	}
+        // Set up the view that handles the display for incoming signals.
+        mReceiveSignalView = new SignalReceivedView(this);
+        mReceiveSignalView.setPrefWidth(Double.MAX_VALUE);
+        mSignalReceivedPane.setContent(mReceiveSignalView);
+    }
 
-	@FXML
-	void onDelete(ActionEvent event) {
-	}
+    public MainView(MainViewInterface handler, BusView distributed, BusView local) {
+        this(handler);
+        setDistributedBusView(distributed);
+        setLocalBusView(local);
 
-	@FXML
-	void onRefresh(ActionEvent event) {
-		mViewHandler.onRefresh();
-	}
+        setWidth(800);
+        setHeight(600);
+    }
 
-	@FXML
-	void initialize() {
-		assert mAboutMenuItem != null : "fx:id=\"mAboutMenuItem\" was not injected: check your FXML file 'MainView.fxml'.";
-		assert mCloseMenuItem != null : "fx:id=\"mCloseMenuItem\" was not injected: check your FXML file 'MainView.fxml'.";
-		assert mDeleteMenuItem != null : "fx:id=\"mDeleteMenuItem\" was not injected: check your FXML file 'MainView.fxml'.";
-		assert mDistributedTab != null : "fx:id=\"mDistributedTab\" was not injected: check your FXML file 'MainView.fxml'.";
-		assert mLocalTab != null : "fx:id=\"mLocalTab\" was not injected: check your FXML file 'MainView.fxml'.";
-		assert mRefreshButton != null : "fx:id=\"mRefreshButton\" was not injected: check your FXML file 'MainView.fxml'.";
-	}
+    /**
+     * Finds the current bus view that is in focus.
+     * @return the current Bus View
+     */
+    public BusView getCurrentBusView() {
+        SingleSelectionModel<Tab> selectionModel = mTabPane.getSelectionModel();
+        Tab current = selectionModel.getSelectedItem();
+        if (current.equals(mDistributedTab))
+            return mDistributedBusView;
+        if (current.equals(mLocalTab))
+            return mLocalBusView;
+        throw new RuntimeException("Unable to find view for tab '" + current.getText() + "'");
+    }
 
-	/**
-	 * Interface that allows the Main view of the application to communivate back to any model
-	 * 
-	 * @author mhotan
-	 */
-	public interface MainViewInterface {
+    /**
+     * Shows the 
+     * @param context
+     */
+    public void showNewSignalReceived(SignalContext context) {
+        if (context == null) return;
+        mReceiveSignalView.addSignal(context);
+    }
 
-		public void onAbout();
-		
-		public void onClose();
-		
-		public void onRefresh();
-		
-		/**
-		 * 
-		 * @param newView View that is focused on.
-		 */
-		public void onBusViewChanged(BusView newView);
-	}
+    /**
+     * Sets the Distributed Bus view to the input
+     * 
+     * @param view BusView to set as Distributed view
+     */
+    private void setDistributedBusView(BusView view) {
+        mDistributedBusView = setBusView(mDistributedTab, view);
+    }
+
+    /**
+     * Sets the Distributed Bus view to the input
+     * 
+     * @param view BusView to set as Distributed view
+     */
+    private void setLocalBusView(BusView view) {
+        mLocalBusView = setBusView(mLocalTab, view);
+    }
+
+    /**
+     * Adds exclusive view to pane.s
+     * 
+     * @param pane Pane to put view in.
+     * @param view View to add to pane
+     */
+    private BusView setBusView(Tab pane, BusView view) {
+        if (view == null)
+            throw new NullPointerException("MainView setting a bus view with a Null BusView");
+
+        // Make sure the view is the only
+        pane.setContent(view);
+        return view;
+    }
+
+    @FXML
+    void onAbout(ActionEvent event) {
+        mViewHandler.onAbout();
+    }
+
+    @FXML
+    void onClose(ActionEvent event) {
+        mViewHandler.onClose();
+    }
+
+    @FXML
+    void onDelete(ActionEvent event) {
+    }
+
+    @FXML
+    void onRefresh(ActionEvent event) {
+        mViewHandler.onRefresh();
+    }
+
+    @FXML
+    void initialize() {
+        assert mAboutMenuItem != null : "fx:id=\"mAboutMenuItem\" was not injected: check your FXML file 'MainView.fxml'.";
+        assert mCloseMenuItem != null : "fx:id=\"mCloseMenuItem\" was not injected: check your FXML file 'MainView.fxml'.";
+        assert mDeleteMenuItem != null : "fx:id=\"mDeleteMenuItem\" was not injected: check your FXML file 'MainView.fxml'.";
+        assert mDistributedTab != null : "fx:id=\"mDistributedTab\" was not injected: check your FXML file 'MainView.fxml'.";
+        assert mLocalTab != null : "fx:id=\"mLocalTab\" was not injected: check your FXML file 'MainView.fxml'.";
+        assert mRefreshButton != null : "fx:id=\"mRefreshButton\" was not injected: check your FXML file 'MainView.fxml'.";
+    }
+
+    /**
+     * Interface that allows the Main view of the application to communivate back to any model
+     * 
+     * @author mhotan
+     */
+    public interface MainViewInterface {
+
+        public void onAbout();
+
+        public void onClose();
+
+        public void onRefresh();
+
+        /**
+         * 
+         * @param newView View that is focused on.
+         */
+        public void onBusViewChanged(BusView newView);
+    }
 
     @Override
     public void onSignalContextSelected(SignalContext context) {
         // TODO Generate a view showing the Signal Context sent.
-        
+
     }
 
 }

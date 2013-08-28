@@ -29,49 +29,49 @@ import org.alljoyn.triumph.model.components.SignalContext;
  */
 public interface TriumphViewable {
 
-	/**
-	 * Notifies any view component that some aspect of the model 
-	 * has changed.  It is up to the view to independently find which
-	 * aspect of the model has changed.
-	 *   
-	 * It is up to the View to find a way to access the data it needs to
-	 * update its view.
-	 */
-	public void update();
+    /**
+     * Notifies any view component that some aspect of the model 
+     * has changed.  It is up to the view to independently find which
+     * aspect of the model has changed.
+     *   
+     * It is up to the View to find a way to access the data it needs to
+     * update its view.
+     */
+    public void update();
 
-	/**
-	 * An Error occurred and the user should be notified
-	 * @param message Error message
-	 */
-	public void showError(String message);
-	
-	/**
-	 * Given a particular method expose the appropriate amount of detail.
-	 * 
-	 * @param method Method to show
-	 */
-	public void showMethod(Method method);
-	
-	/**
-	 * Given an Signal the view shows the appropriate
-	 * fields and members that represent this Signal instance.
-	 * 
-	 * @param signal Signal to show
-	 */
-	public void showSignal(Signal signal);
-	
-	/**
-	 * Given an Property the view shows the appropriate
-	 * fields and members that represent this Property instance.
-	 * 
-	 * @param property Property to show
-	 */
-	public void showProperty(Property property);
+    /**
+     * An Error occurred and the user should be notified
+     * @param message Error message
+     */
+    public void showError(String message);
 
-	/**
-	 * This is the notification to the view that a signal has been recieved.
-	 * 
-	 * @param signalReceived The signal context that has been recieved
-	 */
-	public void showSignalReceived(SignalContext signalReceived);
+    /**
+     * Given a particular method expose the appropriate amount of detail.
+     * 
+     * @param method Method to show
+     */
+    public void showMethod(Method method);
+
+    /**
+     * Given an Signal the view shows the appropriate
+     * fields and members that represent this Signal instance.
+     * 
+     * @param signal Signal to show
+     */
+    public void showSignal(Signal signal);
+
+    /**
+     * Given an Property the view shows the appropriate
+     * fields and members that represent this Property instance.
+     * 
+     * @param property Property to show
+     */
+    public void showProperty(Property property);
+
+    /**
+     * This is the notification to the view that a signal has been recieved.
+     * 
+     * @param signalReceived The signal context that has been recieved
+     */
+    public void showSignalReceived(SignalContext signalReceived);
 }

@@ -18,13 +18,13 @@ package org.alljoyn.triumph.view;
 
 
 import javafx.scene.control.Label;
-
 import javafx.scene.control.TreeCell;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
 import org.alljoyn.triumph.model.components.AllJoynComponent;
+import org.alljoyn.triumph.model.components.AllJoynComponent.TYPE;
 import org.alljoyn.triumph.model.components.AllJoynService;
 
 
@@ -54,27 +54,20 @@ public class AllJoynComponentTreeCell extends TreeCell<AllJoynComponent> {
             return;
         }
 
-        switch (item.getType()) {
-        case SERVICE:
+        AllJoynComponent.TYPE type = item.getType();
+        if (type == TYPE.SERVICE) {
             drawService(item);
-            break;
-        case OBJECT:
-            // TODO Create a graphic for the this object
+        } else if (type == TYPE.OBJECT) {
             drawObject(item);
-            break;
-        case METHOD:
+        } else if (type == TYPE.METHOD) {
             drawMethod(item);
-            break;
-        case SIGNAL:
+        } else if (type == TYPE.SIGNAL) {
             drawSignal(item);
-            break;
-        case PROPERTY:
+        } else if (type == TYPE.PROPERTY) {
             drawProperty(item);
-            break;
-        case INTERFACE:
+        } else if (type == TYPE.INTERFACE) {
             drawInterface(item);
-            break;
-        default: // LABEL
+        } else {
             drawLabel(item);
         }
     }

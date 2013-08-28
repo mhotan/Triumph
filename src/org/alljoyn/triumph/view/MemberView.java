@@ -28,9 +28,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
@@ -224,29 +224,23 @@ public abstract class MemberView extends VBox {
 
     @FXML
     void onKeyPressed(KeyEvent event) {
-        switch (event.getCode()) {
-        case SHIFT:
+        KeyCode code = event.getCode();
+        if (code == KeyCode.SHIFT) {
             shiftPressedProperty.set(true);
-            break;
-        case ENTER:
+        } else if (code == KeyCode.ENTER) {
             // If the Shift key is pressed down  
             // and enter pressed then attempt to invoke the method.
             if (shiftPressedProperty.get()) {
                 handleInvokationRequest();
             }
-            break;
-        default:
-            // TODO handle more input keys
         }
     }
 
     @FXML
     void onKeyReleased(KeyEvent event) {
-        switch (event.getCode()) {
-        case SHIFT:
+        KeyCode code = event.getCode();
+        if (code == KeyCode.SHIFT) {
             shiftPressedProperty.set(false);
-            break;
-        default:
         }
     }
 

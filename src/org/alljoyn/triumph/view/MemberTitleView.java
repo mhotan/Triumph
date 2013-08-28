@@ -42,86 +42,86 @@ import org.alljoyn.triumph.util.loaders.ViewLoader;
  */
 public class MemberTitleView extends BorderPane {
 
-	@FXML
-	private ResourceBundle resources;
+    @FXML
+    private ResourceBundle resources;
 
-	@FXML
-	private URL location;
+    @FXML
+    private URL location;
 
-	@FXML
-	private Label mAnnotationTitleLabel;
+    @FXML
+    private Label mAnnotationTitleLabel;
 
-	@FXML
+    @FXML
     private ListView<Annotation> mAnnotationsList;
 
-	@FXML
-	private VBox mDetailLabelPane;
+    @FXML
+    private VBox mDetailLabelPane;
 
-	@FXML
-	private Label mInterfaceLabel;
+    @FXML
+    private Label mInterfaceLabel;
 
-	@FXML
-	private VBox mMainLabelPane;
+    @FXML
+    private VBox mMainLabelPane;
 
-	@FXML
-	private Label mMemberName;
+    @FXML
+    private Label mMemberName;
 
-	@FXML
-	private Label mObjectPathLabel;
+    @FXML
+    private Label mObjectPathLabel;
 
-	@FXML
-	private Label mWellKnownNameLabel;
+    @FXML
+    private Label mWellKnownNameLabel;
 
-	public MemberTitleView(Member member) {
-		// Load the associated 
-		ViewLoader.loadView("MemberTitleView.fxml", this);
-		
-		mMemberName.setText(member.getName());
-		
-		// Preset the object path and the well known name
-		mObjectPathLabel.setText("Unknown Object");
-		mWellKnownNameLabel.setText("Unknown Advertised Name");
-		
-		// Add annotations if they exists
-		// Other wise remove annotations.
-		List<Annotation> annotations = member.getAnnotations();
-		if (annotations.isEmpty()) {
-			mMainLabelPane.getChildren().remove(mAnnotationTitleLabel);
-			mMainLabelPane.getChildren().remove(mAnnotationsList);
-		} else {
-			ObservableList<Annotation> anns = FXCollections.observableArrayList(annotations);
-			mAnnotationsList.setItems(anns);
-		}
-		
-		AllJoynInterface iface = member.getInterface();
-		mInterfaceLabel.setText(iface.getName());
-		
-		AllJoynObject object = iface.getObject();
-		if (object == null) 
-			return;
-		
-		// set the object path name
-		mObjectPathLabel.setText(object.getName());
-		
-		AllJoynService service = object.getOwner();
-		if (service == null)
-			return;
-		
-		mWellKnownNameLabel.setText(service.getName());
-	}
+    public MemberTitleView(Member member) {
+        // Load the associated 
+        ViewLoader.loadView("MemberTitleView.fxml", this);
 
-	// Check for the ability 
-	@FXML
-	void initialize() {
-		assert mAnnotationTitleLabel != null : "fx:id=\"mAnnotationTitleLabel\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
-		assert mAnnotationsList != null : "fx:id=\"mAnnotationsLabel\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
-		assert mDetailLabelPane != null : "fx:id=\"mDetailLabelPane\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
-		assert mInterfaceLabel != null : "fx:id=\"mInterfaceLabel\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
-		assert mMainLabelPane != null : "fx:id=\"mMainLabelPane\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
-		assert mMemberName != null : "fx:id=\"mMemberName\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
-		assert mObjectPathLabel != null : "fx:id=\"mObjectPathLabel\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
-		assert mWellKnownNameLabel != null : "fx:id=\"mWellKnownNameLabel\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
-	}
+        mMemberName.setText(member.getName());
+
+        // Preset the object path and the well known name
+        mObjectPathLabel.setText("Unknown Object");
+        mWellKnownNameLabel.setText("Unknown Advertised Name");
+
+        // Add annotations if they exists
+        // Other wise remove annotations.
+        List<Annotation> annotations = member.getAnnotations();
+        if (annotations.isEmpty()) {
+            mMainLabelPane.getChildren().remove(mAnnotationTitleLabel);
+            mMainLabelPane.getChildren().remove(mAnnotationsList);
+        } else {
+            ObservableList<Annotation> anns = FXCollections.observableArrayList(annotations);
+            mAnnotationsList.setItems(anns);
+        }
+
+        AllJoynInterface iface = member.getInterface();
+        mInterfaceLabel.setText(iface.getName());
+
+        AllJoynObject object = iface.getObject();
+        if (object == null) 
+            return;
+
+        // set the object path name
+        mObjectPathLabel.setText(object.getName());
+
+        AllJoynService service = object.getOwner();
+        if (service == null)
+            return;
+
+        mWellKnownNameLabel.setText(service.getName());
+    }
+
+    // Check for the ability 
+    @FXML
+    void initialize() {
+        assert mAnnotationTitleLabel != null : "fx:id=\"mAnnotationTitleLabel\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
+        assert mAnnotationsList != null : "fx:id=\"mAnnotationsLabel\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
+        assert mDetailLabelPane != null : "fx:id=\"mDetailLabelPane\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
+        assert mInterfaceLabel != null : "fx:id=\"mInterfaceLabel\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
+        assert mMainLabelPane != null : "fx:id=\"mMainLabelPane\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
+        assert mMemberName != null : "fx:id=\"mMemberName\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
+        assert mObjectPathLabel != null : "fx:id=\"mObjectPathLabel\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
+        assert mWellKnownNameLabel != null : "fx:id=\"mWellKnownNameLabel\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
+    }
 
 
 }

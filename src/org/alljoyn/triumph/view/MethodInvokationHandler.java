@@ -28,46 +28,46 @@ import org.alljoyn.triumph.model.components.Method;
 
 public class MethodInvokationHandler implements EventHandler<ActionEvent> {
 
-	private final Pane mPane;
-	private final javafx.scene.control.Label mLabel;
-	private final Button mButton;
-	
-	private Method mMethod;
-	
-	public MethodInvokationHandler(Pane pane) {
-		mPane = pane;
-		mLabel = new javafx.scene.control.Label("");
-		Pane innerpane = new Pane();
-		mButton = new Button("invoke");
-		
-		// In case outer pane is an Hbox.
-		HBox.setHgrow(innerpane, Priority.SOMETIMES);
-		// In case outer pane is a VBox
-		VBox.setVgrow(innerpane, Priority.SOMETIMES);
-		
-		mPane.getChildren().addAll(mLabel, innerpane, mButton);
-	}
-	
-	
-	public void setMethod(Method method) {
-		mMethod = method;
-		update();
-	}
-	
-	private void update() {
-		if (mMethod == null) {
-			mLabel.setText("");
-			mButton.setVisible(false);
-			return;
-		} 
-		mLabel.setText(mMethod.getName());
-		mButton.setVisible(true);
-	}
-	
-	@Override
-	public void handle(ActionEvent event) {
-		// TODO Auto-generated method stub
-		
-	}
+    private final Pane mPane;
+    private final javafx.scene.control.Label mLabel;
+    private final Button mButton;
+
+    private Method mMethod;
+
+    public MethodInvokationHandler(Pane pane) {
+        mPane = pane;
+        mLabel = new javafx.scene.control.Label("");
+        Pane innerpane = new Pane();
+        mButton = new Button("invoke");
+
+        // In case outer pane is an Hbox.
+        HBox.setHgrow(innerpane, Priority.SOMETIMES);
+        // In case outer pane is a VBox
+        VBox.setVgrow(innerpane, Priority.SOMETIMES);
+
+        mPane.getChildren().addAll(mLabel, innerpane, mButton);
+    }
+
+
+    public void setMethod(Method method) {
+        mMethod = method;
+        update();
+    }
+
+    private void update() {
+        if (mMethod == null) {
+            mLabel.setText("");
+            mButton.setVisible(false);
+            return;
+        } 
+        mLabel.setText(mMethod.getName());
+        mButton.setVisible(true);
+    }
+
+    @Override
+    public void handle(ActionEvent event) {
+        // TODO Auto-generated method stub
+
+    }
 
 }

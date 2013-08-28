@@ -27,22 +27,22 @@ import org.alljoyn.triumph.model.components.Signal;
  */
 public final class MemberViewFactory {
 
-	private MemberViewFactory() {
-		// cannot instantiate
-	}
-	
-	/**
-	 * Produces a View for this method.
-	 * 
-	 * @param member member instance to create view for.
-	 * @return View that corresponds to the member instance
-	 */
-	public static MemberView produceView(Member member) {
-		if (member instanceof Signal) {
-			return new SignalView((Signal) member);
-		} else if (member instanceof Method) {
-			return new MethodView((Method) member);
-		}
-		throw new RuntimeException("Unsupported member type " + member.getClass());
-	}
+    private MemberViewFactory() {
+        // cannot instantiate
+    }
+
+    /**
+     * Produces a View for this method.
+     * 
+     * @param member member instance to create view for.
+     * @return View that corresponds to the member instance
+     */
+    public static MemberView produceView(Member member) {
+        if (member instanceof Signal) {
+            return new SignalView((Signal) member);
+        } else if (member instanceof Method) {
+            return new MethodView((Method) member);
+        }
+        throw new RuntimeException("Unsupported member type " + member.getClass());
+    }
 }
