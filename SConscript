@@ -27,6 +27,7 @@ if platform.startswith('linux'):
     platform = 'linux'
 elif platform.startswith('win32') or platform.startswith('cygwin'):
     platform = 'windows'
+    env['ENV']['TMP'] = os.environ['TMP']
 elif platform.startswith('darwin'):
     platform = 'darwin'
 else:
@@ -44,9 +45,10 @@ concat_jars = ""
 for jar in third_party_jars:
     if platform == 'windows':
         concat_jars += ';'
+        concat_jars += third_party_jars_dir.abspath + "\\" + jar
     else:
         concat_jars += ':'
-    concat_jars += third_party_jars_dir.abspath + "/" + jar
+        concat_jars += third_party_jars_dir.abspath + "/" + jar
 concat_jars = concat_jars[1:]
 
 # Append the classpath to the enviroment
@@ -56,7 +58,7 @@ env.Append(JAVACLASSPATH = concat_jars)
 print 'Compiling java classes'
 jni_classes = env.Java('classes', 'src')
 print 'Creating java native interface headers'
-jni_headers = env.JavaH('jni', jni_classes)
+jni_headers = env.JavaH('jni', ['classes/org/alljoyn/triumph/TriumphCPPAdapter.class'])
 
 # compile native classes into platform dependent 'lib-XXX' directory
 # NOTE: javah dependencies do not appear to work if SConscript was called
@@ -67,7 +69,8 @@ native_src = PrependDir(native_dir, env.Split("""TriumphCPPAdapter.cpp"""))
 env.VariantDir(native_dir, 'jni', duplicate=0)
 print 'Creating project shared library'
 env.SharedLibrary('libs/lib/' + native_dir + '/triumph', native_src)
-native_libs = 'libs/lib/' + native_dir
+native_libs = os.path.join(os.path.join('libs', 'lib'), native_dir)
+print 'Native library location: ' + native_libs
 
 # Attempt to load the AllJoyn library and jar
 # this is dependent if the ALLJOYN_HOME directory is set.
