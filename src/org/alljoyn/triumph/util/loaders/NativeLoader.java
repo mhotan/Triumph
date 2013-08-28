@@ -54,33 +54,30 @@ public class NativeLoader {
     private static final String ARCHITECTURE_I386 = "i386";
 
     /**
-     * String representation for the native library directory for Windows x86 architecture.
+     * String representation for the native library directory for Windows x86_64 architecture.
      * <p>  This string is vital important for this loader.
      */
-    public static final String DIRECTORY_X86 = "win-x86";
+    public static final String DIRECTORY_WINDOWS = "windows";
 
     /**
-     * String representation for the native library directory for Linux AMD 64 bit architecture.
+     * String representation for the native library directory for Linux 64 bit architecture.
      * <p>  This string is vital important for this loader.
      */
-    public static final String DIRECTORY_AMD64 = "linux-amd64";
+    public static final String DIRECTORY_LINUX = "linux";
 
     /**
-     * String representation for the native library directory for 64-bit linux on itanium architecture
+     * String representation for the native library directory for Mac OS.
      * <p>  This string is vital important for this loader.
      */
-    public static final String DIRECTORY_IA64 = "linux-ia64";
-
-    /**
-     * String representation for the native library directory for Linux AMD 32 bit architecture
-     * <p>  This string is vital important for this loader.
-     */
-    public static final String DIRECTORY_I386 = "linux-x86";
+    public static final String DIRECTORY_MAC = "darwin";
 
     private static final String LINUX_SUFFIX = ".so";
     private static final String WINDOWS_SUFFIX = ".dll";
+    private static final String MAC_SUFFIX = "jnilib";
+    
     private static final String WINDOWS_PREFIX = "win";
     private static final String LINUX_PREFIX = "linux";
+    private static final String MAC_PREFIX = "mac";
     
     private final String mLibPath;
 
@@ -156,26 +153,17 @@ public class NativeLoader {
         String path;
 
         if (osName.startsWith(WINDOWS_PREFIX)) {
-            if (osArch.equalsIgnoreCase(ARCHITECTURE_X86)) {
-                name = library + WINDOWS_SUFFIX;
-                path = DIRECTORY_X86;
-            } else {
-                throw new UnsupportedOperationException("Platform " + osName + "_" + osArch + " not supported");
-            }
+            name = "lib" + library + WINDOWS_SUFFIX;
+            path = DIRECTORY_WINDOWS;
         } else if (osName.startsWith(LINUX_PREFIX)) {
-            if (osArch.equalsIgnoreCase(ARCHITECTURE_AMD64)) {
-                name = "lib" + library + LINUX_SUFFIX;
-                path = DIRECTORY_AMD64;
-            } else if (osArch.equalsIgnoreCase(ARCHITECTURE_IA64)) {
-                name = "lib" + library + LINUX_SUFFIX;
-                path = DIRECTORY_IA64;
-            } else if (osArch.equalsIgnoreCase(ARCHITECTURE_I386)) {
-                name = "lib" + library + LINUX_SUFFIX;
-                path = DIRECTORY_I386;
-            } else {
-                throw new UnsupportedOperationException("Platform " + osName + "_" + osArch + " not supported");
-            }
-        } else {
+            name = "lib" + library + LINUX_SUFFIX;
+            path = DIRECTORY_LINUX;
+        } 
+        else if (osName.startsWith(MAC_PREFIX)) {    
+            name = "lib" + library + MAC_SUFFIX;
+            path = DIRECTORY_MAC;
+        } 
+        else {
             throw new UnsupportedOperationException("Platform " + osName + "_" + osArch + " not supported");
         }
 
