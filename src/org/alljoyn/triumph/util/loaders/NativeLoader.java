@@ -153,7 +153,7 @@ public class NativeLoader {
         String path;
 
         if (osName.startsWith(WINDOWS_PREFIX)) {
-            name = "lib" + library + WINDOWS_SUFFIX;
+            name = library + WINDOWS_SUFFIX;
             path = DIRECTORY_WINDOWS;
         } else if (osName.startsWith(LINUX_PREFIX)) {
             name = "lib" + library + LINUX_SUFFIX;
