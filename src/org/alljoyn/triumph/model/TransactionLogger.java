@@ -9,7 +9,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import org.alljoyn.triumph.model.TransactionLogger.Transaction.TYPE;
-import org.alljoyn.triumph.model.components.AllJoynComponent;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.Signal;
