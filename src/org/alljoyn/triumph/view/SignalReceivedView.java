@@ -27,7 +27,6 @@ import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
@@ -35,16 +34,12 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 
 import org.alljoyn.triumph.model.components.SignalContext;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
-import org.alljoyn.triumph.view.arguments.simple.ArgumentTableCellFactory;
 
 public class SignalReceivedView extends BorderPane {
 
-    
-    
     @FXML
     private ResourceBundle resources;
 
@@ -82,6 +77,8 @@ public class SignalReceivedView extends BorderPane {
      // Create a list and associate it to the view
         mList = FXCollections.observableArrayList();
         mSignalListView = new ListView<SignalContext>(mList);
+        mSignalListView.prefWidthProperty().bind(widthProperty());
+        
         mSignalListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         mSignalListView.setOnMouseClicked(new EventHandler<Event>() {
 
@@ -91,7 +88,7 @@ public class SignalReceivedView extends BorderPane {
                 mListener.onSignalContextSelected(signal);
             }
         });
-        setCenter(mTableView);
+        setCenter(mSignalListView);
     }
 
     /**
@@ -128,17 +125,17 @@ public class SignalReceivedView extends BorderPane {
         assert mUtilPane != null : "fx:id=\"mUtilPane\" was not injected: check your FXML file 'SignalsReceivedView.fxml'.";
     }
 
-    private static class SimpleSignalContextListCell extends ListCell<SignalContext> {
-
-        @Override
-        public void updateItem(SignalContext item, boolean empty) {
-            super.updateItem(item, empty);
-            if (item != null) {
-                setTextFill(Color.BLACK);
-                setText(item.getDescription());
-            }
-        }
-    }
+//    private static class SimpleSignalContextListCell extends ListCell<SignalContext> {
+//
+//        @Override
+//        public void updateItem(SignalContext item, boolean empty) {
+//            super.updateItem(item, empty);
+//            if (item != null) {
+//                setTextFill(Color.BLACK);
+//                setText(item.getDescription());
+//            }
+//        }
+//    }
     
     public interface SignalReceivedListener {
         

@@ -17,9 +17,7 @@
 package org.alljoyn.triumph.view;
 
 import java.net.URL;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,7 +33,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
@@ -43,7 +40,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 
 import org.alljoyn.triumph.MainApplication;
 import org.alljoyn.triumph.controller.AllJoynComponentTreeClickHandler;
@@ -202,8 +198,9 @@ public class BusView extends BorderPane implements OnClickListener {
             addService(services.get(i));
         }
 
+        Set<String> endpoints = new HashSet<>(mServiceMap.keySet());
         // If the current list does not have one of our names
-        for (String name: mServiceMap.keySet()) {
+        for (String name: endpoints) {
 
             // If the list has the name then we need to keep the service
             if (currServiceNames.contains(name)) continue;

@@ -39,7 +39,6 @@ public class MainApplication extends Application {
 
     // Statically load All Joyn java library
     static {
-        System.out.println("Current library paths " + System.getProperty("java.library.path"));
         NativeLoader loader = new NativeLoader();
         loader.loadLibrary("triumph");
         loader.loadLibrary("alljoyn_java");

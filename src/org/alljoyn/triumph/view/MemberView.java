@@ -28,6 +28,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -115,6 +116,8 @@ public abstract class MemberView extends VBox {
         List<Argument<?>> inputArgs = member.getInputArguments();
         List<Argument<?>> outputArgs = member.getOutputArguments();
 
+        mInvokeButton.setTooltip(new Tooltip("or Shift + Enter"));
+        
         mInputArgs = new ArrayList<ArgumentView<?>>(inputArgs.size());
         mOutputArgs = new ArrayList<ArgumentView<?>>(outputArgs.size());
 

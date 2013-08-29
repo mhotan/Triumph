@@ -1,3 +1,19 @@
+/******************************************************************************
+ * Copyright 2013, Qualcomm Innovation Center, Inc.
+ *
+ *    All rights reserved.
+ *    This file is licensed under the 3-clause BSD license in the NOTICE.txt
+ *    file for this project. A copy of the 3-clause BSD license is found at:
+ *
+ *        http://opensource.org/licenses/BSD-3-Clause.
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the license is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the license for the specific language governing permissions and
+ *    limitations under the license.
+ ******************************************************************************/
+
 package org.alljoyn.triumph.view;
 
 import java.net.URL;
@@ -10,6 +26,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -18,7 +35,11 @@ import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.util.ArgumentStorage;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 
-
+/**
+ * Dialog that will appear for saving an argument
+ * 
+ * @author mhotan@quicinc.com, Michael Hotan
+ */
 public class SaveArgumentDialog extends GridPane {
 
     @FXML
@@ -35,6 +56,9 @@ public class SaveArgumentDialog extends GridPane {
 
     @FXML
     private Label mError;
+
+    @FXML
+    private ImageView mImageView;
 
     @FXML
     private TextField mInput;
@@ -139,6 +163,7 @@ public class SaveArgumentDialog extends GridPane {
         assert actionParent != null : "fx:id=\"actionParent\" was not injected: check your FXML file 'SaveArgumentDialog.fxml'.";
         assert mCancelButton != null : "fx:id=\"mCancelButton\" was not injected: check your FXML file 'SaveArgumentDialog.fxml'.";
         assert mError != null : "fx:id=\"mError\" was not injected: check your FXML file 'SaveArgumentDialog.fxml'.";
+        assert mImageView != null : "fx:id=\"mImageView\" was not injected: check your FXML file 'SaveArgumentDialog.fxml'.";
         assert mInput != null : "fx:id=\"mInput\" was not injected: check your FXML file 'SaveArgumentDialog.fxml'.";
         assert mOkButton != null : "fx:id=\"mOkButton\" was not injected: check your FXML file 'SaveArgumentDialog.fxml'.";
         assert mOverwriteButton != null : "fx:id=\"mOverwriteButton\" was not injected: check your FXML file 'SaveArgumentDialog.fxml'.";

@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.alljoyn.triumph.TriumphException;
 import org.alljoyn.triumph.model.components.Attributable;
@@ -36,8 +37,10 @@ import org.w3c.dom.Node;
  *
  * @param <T> The type associated with the value of this argument
  */
-public abstract class Argument<T extends Object> implements Attributable, Serializable {
+public abstract class Argument<T extends Object> implements Attributable, Serializable, Cloneable {
 
+    private static final Logger LOG = Logger.getLogger(Argument.class.getSimpleName());
+    
     /**
      * Serialization ID.
      */
@@ -137,7 +140,7 @@ public abstract class Argument<T extends Object> implements Attributable, Serial
 
         // Attempt to extract the name of the node.
         Node n2 = attrList.getNamedItem("name");
-        mName = n2 != null ? n2.getNodeValue() : null;
+        mName = n2 != null ? n2.getNodeValue() : "";
         mAttr = new ArrayList<Attribute>();
 
         // iterate through all the attributes of the node
@@ -174,9 +177,7 @@ public abstract class Argument<T extends Object> implements Attributable, Serial
     }
 
     public String getName() {
-        return mName == null 
-                || mName.equals("") 
-                ? "": mName;
+        return mName == null ? "": mName;
     }
 
     /**
@@ -325,6 +326,18 @@ public abstract class Argument<T extends Object> implements Attributable, Serial
     @Override
     public int hashCode() {
         return mName.hashCode() * getDBusSignature().hashCode();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object clone() {
+        Argument<T> arg = null;
+        try {
+            arg = (Argument<T>) ArgumentFactory.getArgument(mName, mAJSignature, getValue());
+        } catch (TriumphException e) {
+            LOG.severe("Unable to clone " + this.toString());
+        }
+        return arg;
     }
     
     //////////////////////////////////////////////////////////////////////////////////////

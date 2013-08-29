@@ -19,15 +19,21 @@ package org.alljoyn.triumph.view.arguments.editable;
 import java.util.logging.Logger;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.model.components.arguments.Argument.DIRECTION;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
+import org.alljoyn.triumph.view.SaveArgumentDialog2;
+import org.alljoyn.triumph.view.SaveArgumentDialog2.CloseListener;
 
 /**
  * Custom JavaFX UI control element that represent a general argument.  This provides basic 
@@ -40,7 +46,7 @@ import org.alljoyn.triumph.util.loaders.ViewLoader;
  *  
  * @author mhotan 
  */
-public abstract class ArgumentView<T> extends HBox {
+public abstract class ArgumentView<T> extends HBox implements CloseListener {
 
     protected final Logger LOG = Logger.getLogger(getClass().getSimpleName());
 
@@ -77,6 +83,8 @@ public abstract class ArgumentView<T> extends HBox {
      * Button that explicitly request to set the value to null
      */
     @FXML protected Button mNullify;
+
+    private Stage mSaveDialog;
 
     /**
      * ArgumentCellFactory Controls the ability to create cells.
@@ -121,8 +129,14 @@ public abstract class ArgumentView<T> extends HBox {
 
         // Hide any possible errors
         hideError();
-        
-        
+
+        mSave.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                onSave(event);
+            }
+        });
     }
 
     /**
@@ -217,7 +231,7 @@ public abstract class ArgumentView<T> extends HBox {
         if (mError == null) return;
         mError.setVisible(false);
     }
-    
+
     /**
      * Sets whether the save button can be used or not.
      * @param enable
@@ -226,7 +240,7 @@ public abstract class ArgumentView<T> extends HBox {
         if (mSave == null) return;
         mSave.setDisable(!enable);
     }
-    
+
     /**
      * Show the save button if it is available
      */
@@ -234,7 +248,7 @@ public abstract class ArgumentView<T> extends HBox {
         if (mSave == null) return;
         mSave.setVisible(true);
     }
-    
+
     /**
      * Hide the save button if it is available
      */
@@ -242,17 +256,32 @@ public abstract class ArgumentView<T> extends HBox {
         if (mSave == null) return;
         mSave.setVisible(false);
     }
-    
+
     /**
      * User request to save the state of the current argument.
      * 
      * @param event Event that generated the save request
      */
     protected void onSave(ActionEvent event) {
-        // TODO Show a dialog querying to save the argument
-        
+        if (mSaveDialog != null) {
+            mSaveDialog.show();
+            return;
+        }
+        onSetCurrentValue();
+        mSaveDialog = new Stage();
+        mSaveDialog.initModality(Modality.WINDOW_MODAL);
+        SaveArgumentDialog2 dialog = new SaveArgumentDialog2(mArg, this);
+        mSaveDialog.setScene(new Scene(dialog));
+        mSaveDialog.show();
     }
-    
+
+    @Override
+    public void onRequestClose() {
+        if (mSaveDialog == null) return;
+        mSaveDialog.close();
+        mSaveDialog = null;
+    }
+
     /**
      * Show the save button if it is available
      */
@@ -260,7 +289,7 @@ public abstract class ArgumentView<T> extends HBox {
         if (mNullify == null) return;
         mNullify.setVisible(true);
     }
-    
+
     /**
      * Hide the save button if it is available
      */

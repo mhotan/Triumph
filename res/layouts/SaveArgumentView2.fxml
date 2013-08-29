@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.*?>
+
+<fx:root type="BorderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns:fx="http://javafx.com/fxml">
+  <bottom>
+    <HBox id="HBox" fx:id="mButtonBar" alignment="CENTER" spacing="5.0" styleClass="buttonbar">
+      <children>
+        <Pane fx:id="mButtonFillerL1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="SOMETIMES" />
+        <Pane fx:id="mButtonFillerL2" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="SOMETIMES" />
+        <Pane fx:id="mButtonFillerL3" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="SOMETIMES" />
+        <Button fx:id="mCancelButton" mnemonicParsing="false" onAction="#onCancel" text="Cancel" />
+        <Pane fx:id="mButtonFillerC1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="SOMETIMES" />
+        <Button fx:id="mSaveButton" mnemonicParsing="false" onAction="#onSave" styleClass="dialog-button" text="Save" />
+        <Pane fx:id="mButtonFillerR1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="SOMETIMES" />
+      </children>
+    </HBox>
+  </bottom>
+  <center>
+    <ScrollPane fx:id="mArgPane" content="$null" hbarPolicy="NEVER" maxHeight="400.0" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
+  </center>
+  <stylesheets>
+    <URL value="@SaveArgumentDialog2.css" />
+    <URL value="@General.css" />
+  </stylesheets>
+  <top>
+    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" spacing="5.0">
+      <children>
+        <Label alignment="BOTTOM_CENTER" maxWidth="1.7976931348623157E308" text="Save this Argument for late use?">
+          <font>
+            <Font name="System Bold" size="16.0" />
+          </font>
+          <VBox.margin>
+            <Insets fx:id="x1" />
+          </VBox.margin>
+        </Label>
+        <GridPane id="mErrorRow" fx:id="mGridPane" hgap="10.0" maxWidth="1.7976931348623157E308" padding="$x1" vgap="5.0">
+          <children>
+            <Label fx:id="mNameLabel" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Name:" GridPane.columnIndex="0" GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="NEVER" />
+            <Label fx:id="mSignatureLabel" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Signature:" GridPane.columnIndex="0" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.vgrow="NEVER" />
+            <TextField fx:id="mNameInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="-1.0" GridPane.columnIndex="1" GridPane.hgrow="SOMETIMES" GridPane.rowIndex="0" />
+            <TextField fx:id="mSignatureInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="-1.0" GridPane.columnIndex="1" GridPane.hgrow="SOMETIMES" GridPane.rowIndex="1" />
+          </children>
+          <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="-1.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="50.0" prefWidth="150.0" />
+          </columnConstraints>
+          <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          </rowConstraints>
+        </GridPane>
+        <Label fx:id="mError" alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="error-message" text="Error Message" textAlignment="LEFT" wrapText="true" VBox.vgrow="SOMETIMES">
+          <graphic>
+            <Label alignment="CENTER" styleClass="error-label" text="" textAlignment="LEFT" />
+          </graphic>
+        </Label>
+      </children>
+      <padding>
+        <Insets left="10.0" right="10.0" top="10.0" />
+      </padding>
+    </VBox>
+  </top>
+</fx:root>

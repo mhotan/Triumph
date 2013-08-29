@@ -17,17 +17,21 @@
 package org.alljoyn.triumph.util;
 
 import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.alljoyn.triumph.model.components.arguments.Argument;
@@ -41,12 +45,31 @@ public class ArgumentStorage {
 
     private static final Logger LOG = Logger.getLogger(ArgumentStorage.class.getSimpleName());
 
+
+    private static final String BIN_PATH = "bin";
+    private static final String DATA_PATH = BIN_PATH + "/" + "data";
+    private static final String ARG_DIR_PATH = DATA_PATH + "/" + "args";
+
     // The root of all directories
-    private static final String ROOT_DIR = "bin/data/args";
+    private static final String ROOT_DIR = "data/args";
 
     private static ArgumentStorage instance;
 
     private Map<String, InternalArgumentStorage> mInstances;
+
+    private static Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
+
+    static {
+        //add owners permission
+        perms.add(PosixFilePermission.OWNER_READ);
+        perms.add(PosixFilePermission.OWNER_WRITE);
+        //add group permissions
+        perms.add(PosixFilePermission.GROUP_READ);
+        perms.add(PosixFilePermission.GROUP_WRITE);
+        //add others permissions
+        perms.add(PosixFilePermission.OTHERS_READ);
+        perms.add(PosixFilePermission.OTHERS_WRITE);
+    }
 
     /*
      * To keep track of the different type of arguments.
@@ -65,11 +88,25 @@ public class ArgumentStorage {
     }
 
     private ArgumentStorage() {
-        try {
-            Files.createDirectories(Paths.get(ROOT_DIR));
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to initialize ArgumentStorage because " + e.getMessage());
-        }
+        //        try {
+        File argsDir = new File(ARG_DIR_PATH);
+        if (!argsDir.exists()) 
+            argsDir.mkdirs();
+
+        //            
+        //            
+        //            Path rootDir = Paths.get(ROOT_DIR);
+        //            // If the directory already exists then we are done
+        //            if (Files.exists(rootDir) && Files.isDirectory(rootDir)) return;
+        //            
+        //            // If it is for some reason not a directory
+        //            if (Files.exists(rootDir)) {
+        //                Files.delete(rootDir);
+        //            }
+        //            Files.createDirectories(rootDir, PosixFilePermissions.asFileAttribute(perms));
+        //        } catch (IOException e) {
+        //            throw new RuntimeException("Unable to initialize ArgumentStorage because " + e);
+        //        }
     }
 
     /**
@@ -77,6 +114,7 @@ public class ArgumentStorage {
      * 
      * @param argSignature Argument signature for that storage.
      * @return Storage that handles the signature
+     * @throws IOException 
      */
     private InternalArgumentStorage getStorage(String argSignature) {
         if (argSignature == null)
@@ -89,7 +127,11 @@ public class ArgumentStorage {
         // check if we already have a storage.
         InternalArgumentStorage storage = mInstances.get(argSignature);
         if (storage == null) {
-            storage = new InternalArgumentStorage(argSignature);
+            try {
+                storage = new InternalArgumentStorage(argSignature);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             mInstances.put(argSignature, storage);
         }
         return storage;
@@ -104,7 +146,7 @@ public class ArgumentStorage {
         InternalArgumentStorage storage = getStorage(dbusSignature);
         storage.saveArgument(arg);
     }
-    
+
     /**
      * Checks whether there is already an argument that resembles 
      * this argument.
@@ -149,28 +191,37 @@ public class ArgumentStorage {
          */
         private Map<String, Argument<?>> mKnownArgs;
 
-        /**
-         * 
-         */
-        private final Path mPath;
+        private final String mPathStr;
+        private final File mFile;
 
-        private InternalArgumentStorage(String argSignature) {
+        private final ObjectOutputStream mOos;
+        
+        private InternalArgumentStorage(String argSignature) throws IOException {
             mSignature = argSignature;
-            mPath = Paths.get(ROOT_DIR + "/" + "args-" + argSignature);
+            mPathStr = ARG_DIR_PATH + "/" + "args-" + argSignature;
+            File f = new File(mPathStr);
+            if (!f.exists())
+                f.createNewFile();
+            mFile = f;
             mKnownArgs = new HashMap<String, Argument<?>>(getArguments(argSignature));
+
+            mOos = new ObjectOutputStream(new FileOutputStream(mFile));
+            // Save all the argument that we just uploaded.
+            for (String name: mKnownArgs.keySet()) {
+                saveArgument(mKnownArgs.get(name));
+            }
         }
 
         /**
-         * Used on construction.
+         * Used on construction.  Retrieves a mapping of argument name to argument type
          * @param name Signature name.
-         * @return
+         * @return Mapping
          */
         private Map<String, Argument<?>> getArguments(String name) {
             Map<String, Argument<?>> mapping = new HashMap<String, Argument<?>>();
             ObjectInputStream is = null;
             try {
-                is = new ObjectInputStream(Files.newInputStream(
-                        mPath, StandardOpenOption.CREATE, StandardOpenOption.READ));
+                is = new ObjectInputStream(new FileInputStream(mFile));
                 while (true) {
                     try {
                         Argument<?> arg = (Argument<?>) is.readObject();
@@ -180,22 +231,30 @@ public class ArgumentStorage {
                     } 
                 }
             } catch (Exception e) {
-                LOG.warning("Exception reading from " + mPath + " because of " + e.getMessage());
+                LOG.warning("Exception reading from " + mFile.getPath() + " because of " + e);
             } finally {
                 if (is != null) {
                     try {
                         is.close();
                     } catch (IOException e) { /* Couldn't close move on.*/}
                 }
-
-                // Delete the old file
-                try {
-                    Files.deleteIfExists(mPath);
-                } catch (IOException e) {
-                    LOG.warning("Could not delete the file to start again.");
-                }
+                clearArgumentFile();
             }
             return mapping;
+        }
+
+        /**
+         * Clear away the file of all of its objects.
+         */
+        private void clearArgumentFile() {
+            try {
+                // Wipe away a
+                PrintWriter writer = new PrintWriter(mFile);
+                writer.print("");
+                writer.close();
+            } catch (IOException e) {
+                LOG.warning("Could not clear the persistent storage " + mFile.getPath());
+            }
         }
 
         /**
@@ -206,27 +265,17 @@ public class ArgumentStorage {
         boolean hasArgument(String name) {
             return mKnownArgs.containsKey(name);
         }
-        
+
         /**
          * Attempt to save the argument
          * @param arg Argument to save
          */
         void saveArgument(Argument<?> arg) {
-            
-            mKnownArgs.put(arg.getSaveByName(), arg);
-            ObjectOutputStream os = null;
             try {
-                os = new ObjectOutputStream(Files.newOutputStream(
-                        mPath, StandardOpenOption.CREATE, StandardOpenOption.APPEND, StandardOpenOption.WRITE));
-                os.writeObject(arg);
+                mOos.writeObject(arg);
+                mKnownArgs.put(arg.getSaveByName(), arg);
             } catch (IOException e) {
-                LOG.warning("Could not save argument " + arg.getSignature() + " because of " + e.getMessage());
-            } finally {
-                if (os != null) {
-                    try { // Attempt to close.
-                        os.close();
-                    } catch (IOException e) {}
-                }
+                LOG.warning("Unable to save argument: " + arg);
             }
         }
 

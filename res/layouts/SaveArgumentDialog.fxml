@@ -13,11 +13,7 @@
 
 <fx:root type="GridPane" hgap="14.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" vgap="20.0" xmlns:fx="http://javafx.com/fxml">
   <children>
-    <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="TOP">
-      <image>
-        <Image url="@img-alljoyn-logo.png" />
-      </image>
-    </ImageView>
+    <ImageView fx:id="mImageView" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="TOP" />
     <VBox maxHeight="+Infinity" maxWidth="+Infinity" minHeight="-Infinity" prefWidth="400.0" spacing="7.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
       <children>
         <Label fx:id="messageLabel" text="%label.message" textAlignment="LEFT" wrapText="true">
@@ -51,7 +47,7 @@
           </HBox.margin>
         </HBox>
         <Pane maxWidth="+Infinity" HBox.hgrow="ALWAYS" />
-        <Button id="cancelButton" fx:id="mCancelButton" cancelButton="true" minWidth="80.0" mnemonicParsing="false" text="%button.cancel" HBox.hgrow="NEVER">
+        <Button id="cancelButton" fx:id="mCancelButton" cancelButton="true" minWidth="80.0" mnemonicParsing="false" onAction="#onCancel" text="%button.cancel" HBox.hgrow="NEVER">
           <HBox.margin>
             <Insets />
           </HBox.margin>
