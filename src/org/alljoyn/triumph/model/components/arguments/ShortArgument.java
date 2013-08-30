@@ -31,7 +31,8 @@ public class ShortArgument extends NumberArgument<Short> {
     private static final long serialVersionUID = 8444279590324346584L;
 
     ShortArgument(String name, DIRECTION direction, boolean isUnsigned) {
-		super(name, direction, isUnsigned);
+        super(name, isUnsigned ? "" + AJConstant.ALLJOYN_UINT16 : "" 
+                + AJConstant.ALLJOYN_INT16, direction, isUnsigned);
 	}
 
 	ShortArgument(org.w3c.dom.Node node, boolean isUnsigned, DIRECTION direction) {

@@ -2,14 +2,22 @@
 
 <?import java.lang.*?>
 <?import javafx.collections.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
 <fx:root type="BorderPane" xmlns:fx="http://javafx.com/fxml">
   <center>
-    <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
+    <Pane fx:id="mArgumentPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0">
+      <padding>
+        <Insets top="5.0" />
+      </padding>
+    </Pane>
   </center>
+  <padding>
+    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+  </padding>
   <top>
     <ComboBox fx:id="mComboBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Load old argument">
       <items>

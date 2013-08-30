@@ -27,7 +27,7 @@ public class DoubleArgument extends NumberArgument<Double> {
     private static final long serialVersionUID = -8779877698999881818L;
 
     DoubleArgument(String name, DIRECTION direction, boolean isUnsigned) {
-        super(name, direction, isUnsigned);
+        super(name, "" + AJConstant.ALLJOYN_DOUBLE, direction, isUnsigned);
     }
 
     DoubleArgument(Node node, boolean isUnsigned, DIRECTION direction) {

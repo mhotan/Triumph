@@ -107,8 +107,8 @@ public class SignalView extends MemberView {
     protected void invoke() throws BusException {
         
         StringBuffer buf = new StringBuffer();
-        for (ArgumentView<?> view : mOutputArgs) {
-            String error = view.onSetCurrentValue();
+        for (LoadableArgumentView view : mOutputArgs) {
+            String error = view.getCurrentView().onSetCurrentValue();
             if (error == null) continue;
             buf.append(error);
             buf.append("\n");

@@ -29,7 +29,7 @@ public class ByteArgument extends NumberArgument<Byte> {
     private static final long serialVersionUID = 449607774098645923L;
 
     ByteArgument(String name, DIRECTION direction) {
-        super(name, direction, false);
+        super(name,"" + AJConstant.ALLJOYN_BYTE, direction, false);
     }
 
     ByteArgument(org.w3c.dom.Node node, DIRECTION direction) {

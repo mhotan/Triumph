@@ -44,8 +44,8 @@ public abstract class NumberArgument<T extends Number> extends Argument<T> {
      */
     protected static final String NEGATIVE_ERROR = "Error: Must be Non Negative";
 
-    NumberArgument(String name, DIRECTION direction, boolean isUnsigned) {
-        super(name, direction);
+    NumberArgument(String name, String signature, DIRECTION direction, boolean isUnsigned) {
+        super(name, direction, signature);
         this.isUnsigned = isUnsigned;
     }
 

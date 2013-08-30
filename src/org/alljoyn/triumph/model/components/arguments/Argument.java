@@ -113,14 +113,16 @@ public abstract class Argument<T extends Object> implements Attributable, Serial
      * @param direction Direction of the argument.
      * @param Alljoyn type signature IE. 'as' for array of signature.
      */
-    Argument(String name, DIRECTION direction) {
+    Argument(String name, DIRECTION direction, String dBusSignature) {
         if (direction == null)
             throw new IllegalArgumentException("Direction cannot be null");
 
         mName = name;
         mAttr = new ArrayList<Attribute>();
         mDirection = direction;
-        mAJSignature = null;
+        mAJSignature = dBusSignature;
+        mSavedByName = "" + new Date().toString();
+        mValue = null;
     }
 
     /**

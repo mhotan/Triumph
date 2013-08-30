@@ -42,7 +42,7 @@ public class VariantArgument extends Argument<Variant> {
     }
 
     VariantArgument(String name, DIRECTION isInput) {
-        super(name, isInput);
+        super(name, isInput, "" + AJConstant.ALLJOYN_VARIANT);
     }
 
     @Override

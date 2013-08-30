@@ -35,7 +35,7 @@ public class StringArgument extends Argument<String> {
     private static final long serialVersionUID = -4078563471880216087L;
 
     StringArgument(String name, DIRECTION direction) {
-        super(name, direction);
+        super(name, direction, "" + AJConstant.ALLJOYN_STRING);
     }
 
     /**

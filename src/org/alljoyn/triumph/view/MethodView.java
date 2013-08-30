@@ -26,7 +26,6 @@ import org.alljoyn.bus.BusException;
 import org.alljoyn.triumph.model.TriumphModel;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.arguments.Argument;
-import org.alljoyn.triumph.view.arguments.editable.ArgumentView;
 
 /**
  * Basic view to represent a Method
@@ -58,9 +57,9 @@ public class MethodView extends MemberView {
     protected void invoke() throws BusException {
 
         StringBuffer buf = new StringBuffer();
-        for (ArgumentView<?> view : mInputArgs) {
+        for (LoadableArgumentView view : mInputArgs) {
             // If there is an error on save
-            String error = view.onSetCurrentValue();
+            String error = view.getCurrentView().onSetCurrentValue();
             if (error == null) continue;
            
             buf.append(error);

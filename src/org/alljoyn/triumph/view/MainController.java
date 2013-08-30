@@ -35,6 +35,9 @@ import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.Signal;
 import org.alljoyn.triumph.model.components.SignalContext;
+import org.alljoyn.triumph.model.components.arguments.Argument;
+import org.alljoyn.triumph.util.ArgumentStorage;
+import org.alljoyn.triumph.util.ArgumentStorage.SaveListener;
 import org.alljoyn.triumph.util.loaders.ImageLoader;
 import org.alljoyn.triumph.view.MainView.MainViewInterface;
 
@@ -111,6 +114,10 @@ public class MainController implements TriumphViewable, MainViewInterface {
                 Platform.exit();
             }
         });
+        
+        // Add this class as a save listener.
+        ArgumentStorage.getInstance().addListener(mDistributedBusView);
+        ArgumentStorage.getInstance().addListener(mLocalBusView);
 
         // Establish a quick reference to the current BusView.
         mCurrentView = mMain.getCurrentBusView();
@@ -178,8 +185,7 @@ public class MainController implements TriumphViewable, MainViewInterface {
 
     @Override
     public void onClose() {
-        // TODO Auto-generated method stub
-
+        mPrimaryStage.close();
     }
 
     @Override
@@ -207,6 +213,5 @@ public class MainController implements TriumphViewable, MainViewInterface {
     public void onPropertyTransactionSelected(PropertyTransaction propTrans) {
         showProperty(propTrans.mProperty);
     }
-
     
 }

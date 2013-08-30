@@ -50,6 +50,8 @@ import org.alljoyn.triumph.model.components.Member;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.Signal;
+import org.alljoyn.triumph.model.components.arguments.Argument;
+import org.alljoyn.triumph.util.ArgumentStorage.SaveListener;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 import org.alljoyn.triumph.view.propview.PropertyView;
 
@@ -58,7 +60,7 @@ import org.alljoyn.triumph.view.propview.PropertyView;
  * 
  * @author mhotan@quicinc.com, Michael Hotan
  */
-public class BusView extends BorderPane implements OnClickListener {
+public class BusView extends BorderPane implements OnClickListener, SaveListener {
 
     /*
      * Representation invariant
@@ -136,7 +138,7 @@ public class BusView extends BorderPane implements OnClickListener {
         initialize();
 
         mError.managedProperty().bind(mError.visibleProperty());
-        
+
         // Map of Member and MemberViews
         mMemberViewCache = new HashMap<Member, MemberView>();
         mPropertyViewCache = new HashMap<Property, PropertyView>();
@@ -410,5 +412,13 @@ public class BusView extends BorderPane implements OnClickListener {
     @Override
     public void onClick() {
         hideError();
+    }
+
+    @Override
+    public void onSaved(Argument<?> savedArg) {
+        for (MemberView view: mMemberViewCache.values()) {
+            if (view == null) continue;
+            view.updateArgumentList();
+        }
     }
 }

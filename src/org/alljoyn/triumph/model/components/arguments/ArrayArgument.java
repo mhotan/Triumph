@@ -57,7 +57,7 @@ public abstract class ArrayArgument<ARRAY_TYPE> extends Argument<ARRAY_TYPE> {
 	 * @param signature Complete signature of the array
 	 */
 	ArrayArgument(String name, DIRECTION direction, String signature) {
-		super(name, direction);
+		super(name, direction, signature);
 		
 		isArray(signature); // Throws exception if not the case
 		

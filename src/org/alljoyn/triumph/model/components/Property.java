@@ -31,7 +31,7 @@ import org.w3c.dom.Node;
  * 
  * @author Michael Hotan mhotan@quicinc.com
  */
-public class Property extends AllJoynComponent implements Attributable {
+public class Property extends InterfaceComponent implements Attributable {
 
     private static final String PROPERTY_LABEL = "property";
     private static final String ACCESS_LABEL = "access";
@@ -65,7 +65,7 @@ public class Property extends AllJoynComponent implements Attributable {
      * no attributes, and full read write access.
      */
     Property(Interface iface) {
-        super(AllJoynComponent.TYPE.PROPERTY);
+        super(AllJoynComponent.TYPE.PROPERTY, iface);
         mAttributes = new ArrayList<Attribute>();
         mInterface = iface;
         // initially make as secure as possibly

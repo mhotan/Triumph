@@ -29,6 +29,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 
 import org.alljoyn.triumph.model.TransactionLogger;
@@ -55,22 +56,42 @@ public class MainView extends BorderPane implements SignalReceivedListener, OnCl
     @FXML
     private URL location;
 
-    @FXML private MenuItem mAboutMenuItem, mCloseMenuItem, mDeleteMenuItem;
+    @FXML
+    private MenuItem mAboutMenuItem;
+
+    @FXML
+    private TabPane mBottomTabPane;
+
+    @FXML
+    private MenuItem mCloseMenuItem;
+
+    @FXML
+    private MenuItem mDeleteMenuItem;
+
+    @FXML
+    private Tab mDistributedTab;
+
+    @FXML
+    private Tab mLocalTab;
+
+    @FXML
+    private ScrollPane mLogPane;
+
+    @FXML
+    private Tab mLogTab;
+
+    @FXML
+    private Button mRefreshButton;
+
+    @FXML
+    private ScrollPane mSignalReceivedPane;
 
     @FXML
     private TabPane mTabPane;
 
     @FXML
-    private Tab mDistributedTab, mLocalTab;
-
-    @FXML
-    private Button mRefreshButton;
+    private AnchorPane mTopPane;
     
-    @FXML
-    private TabPane mBottomTabPane;
-
-    @FXML
-    private ScrollPane mSignalReceivedPane, mLogPane;
     private final SignalReceivedView mReceiveSignalView;
 
     //
@@ -223,10 +244,12 @@ public class MainView extends BorderPane implements SignalReceivedListener, OnCl
         assert mDistributedTab != null : "fx:id=\"mDistributedTab\" was not injected: check your FXML file 'MainView.fxml'.";
         assert mLocalTab != null : "fx:id=\"mLocalTab\" was not injected: check your FXML file 'MainView.fxml'.";
         assert mLogPane != null : "fx:id=\"mLogPane\" was not injected: check your FXML file 'MainView.fxml'.";
+        assert mLogTab != null : "fx:id=\"mLogTab\" was not injected: check your FXML file 'MainView.fxml'.";
         assert mRefreshButton != null : "fx:id=\"mRefreshButton\" was not injected: check your FXML file 'MainView.fxml'.";
         assert mSignalReceivedPane != null : "fx:id=\"mSignalReceivedPane\" was not injected: check your FXML file 'MainView.fxml'.";
         assert mTabPane != null : "fx:id=\"mTabPane\" was not injected: check your FXML file 'MainView.fxml'.";
-    }
+        assert mTopPane != null : "fx:id=\"mTopPane\" was not injected: check your FXML file 'MainView.fxml'.";
+}
 
     /**
      * Interface that allows the Main view of the application to communivate back to any model

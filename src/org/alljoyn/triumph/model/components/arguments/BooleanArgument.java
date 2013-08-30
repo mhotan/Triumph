@@ -40,7 +40,7 @@ public class BooleanArgument extends Argument<Boolean> {
      * @param direction
      */
     BooleanArgument(String name, DIRECTION direction) {
-        super(name, direction);
+        super(name, direction, "" + AJConstant.ALLJOYN_BOOLEAN);
     }
 
     /**

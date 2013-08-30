@@ -39,8 +39,6 @@ import org.alljoyn.bus.BusException;
 import org.alljoyn.triumph.model.components.Member;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
-import org.alljoyn.triumph.view.arguments.editable.ArgumentView;
-import org.alljoyn.triumph.view.arguments.editable.EditableArgumentViewFactory;
 
 /**
  * Base view class that is used to present a distinct member instance.
@@ -89,7 +87,7 @@ public abstract class MemberView extends VBox {
     /**
      * Internal List that we use to track the state of the independent arguments.
      */
-    protected final List<ArgumentView<?>> mInputArgs, mOutputArgs;
+    protected final List<LoadableArgumentView> mInputArgs, mOutputArgs;
 
     private BooleanProperty shiftPressedProperty;
 
@@ -118,8 +116,8 @@ public abstract class MemberView extends VBox {
 
         mInvokeButton.setTooltip(new Tooltip("or Shift + Enter"));
         
-        mInputArgs = new ArrayList<ArgumentView<?>>(inputArgs.size());
-        mOutputArgs = new ArrayList<ArgumentView<?>>(outputArgs.size());
+        mInputArgs = new ArrayList<LoadableArgumentView>(inputArgs.size());
+        mOutputArgs = new ArrayList<LoadableArgumentView>(outputArgs.size());
 
         // For each input and out argument,
         // Create the view for each
@@ -142,7 +140,7 @@ public abstract class MemberView extends VBox {
      * @param view View to add argument views to.
      */
     private static void setArguments(List<Argument<?>> newargs, 
-            List<ArgumentView<?>> trackingList, VBox view) {
+            List<LoadableArgumentView> trackingList, VBox view) {
         assert trackingList != null: "Internal list of argument view cannot be null";
         assert view != null: "View cannot be null";
 
@@ -152,7 +150,7 @@ public abstract class MemberView extends VBox {
 
         // Add the new argument views.
         for (Argument<?> arg: newargs) {
-            ArgumentView<?> argView = EditableArgumentViewFactory.produceView(arg);
+            LoadableArgumentView argView = new LoadableArgumentView(arg);
             trackingList.add(argView);
             view.getChildren().add(argView);
         }
@@ -164,8 +162,8 @@ public abstract class MemberView extends VBox {
      * @param trackingList Internal list of views
      * @param editable whether the arguments are editable
      */
-    private static void setArgumentEditability(List<ArgumentView<?>> trackingList, boolean editable) {
-        for (ArgumentView<?> view: trackingList) {
+    private static void setArgumentEditability(List<LoadableArgumentView> trackingList, boolean editable) {
+        for (LoadableArgumentView view: trackingList) {
             view.setEditable(editable);
         }
     }
@@ -272,6 +270,15 @@ public abstract class MemberView extends VBox {
         assert mOutputArgBox != null : "fx:id=\"mOutputArgBox\" was not injected: check your FXML file 'MemberView.fxml'.";
         assert mOutputArgPane != null : "fx:id=\"mOutputArgPane\" was not injected: check your FXML file 'MemberView.fxml'.";
         assert mTitlePane != null : "fx:id=\"mTitlePane\" was not injected: check your FXML file 'MemberView.fxml'.";
+    }
+
+    public void updateArgumentList() {
+        for (LoadableArgumentView view : mInputArgs) {
+            view.updateList();
+        }
+        for (LoadableArgumentView view: mOutputArgs) {
+            view.updateList();
+        }
     }
 
 }

@@ -65,7 +65,7 @@ public class StructArgument extends Argument<Object[]> {
      * @throws MarshalBusException 
      */
     StructArgument(String name, DIRECTION dir, String signature) {
-        super(name, dir);
+        super(name, dir, signature);
         isStructOrThrow(signature);
 
         mAJSignature = signature;

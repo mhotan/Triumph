@@ -31,7 +31,8 @@ public class IntegerArgument extends NumberArgument<Integer> {
     private static final long serialVersionUID = 6996729228553795921L;
 
     IntegerArgument(String name, DIRECTION direction, boolean isUnsigned) {
-        super(name, direction, isUnsigned);
+        super(name, isUnsigned ? "" + AJConstant.ALLJOYN_UINT32 : "" 
+                + AJConstant.ALLJOYN_INT32, direction, isUnsigned);
     }
 
     IntegerArgument(Node node, boolean isUnsigned, DIRECTION defaultDir) {

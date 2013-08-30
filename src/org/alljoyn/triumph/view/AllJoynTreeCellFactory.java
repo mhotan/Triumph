@@ -16,7 +16,6 @@
 
 package org.alljoyn.triumph.view;
 
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
 import javafx.util.Callback;

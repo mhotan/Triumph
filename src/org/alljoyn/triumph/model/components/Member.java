@@ -32,7 +32,7 @@ import org.w3c.dom.NodeList;
  * features of an invocable method.
  * @author mhotan
  */
-public abstract class Member extends AllJoynComponent {
+public abstract class Member extends InterfaceComponent {
 
 	/**
 	 * List of all Arguments associated with this method
@@ -62,7 +62,7 @@ public abstract class Member extends AllJoynComponent {
 	 * @param node node that represents the method.
 	 */
 	Member(Node node, Interface iface, TYPE type, DIRECTION defaultDirection) {
-		super(node, type);
+		super(node, type, iface);
 		if (iface == null) {
 			throw new IllegalArgumentException("Can't have null interface as owner");
 		}

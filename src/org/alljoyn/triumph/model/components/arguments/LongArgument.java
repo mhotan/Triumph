@@ -27,7 +27,8 @@ public class LongArgument extends NumberArgument<Long> {
     private static final long serialVersionUID = 6250147441382470498L;
 
     LongArgument(String name, DIRECTION direction, boolean isUnsigned) {
-        super(name, direction, isUnsigned);
+        super(name, isUnsigned ? "" + AJConstant.ALLJOYN_UINT64 : "" 
+                + AJConstant.ALLJOYN_INT64, direction, isUnsigned);
     }
 
     LongArgument(Node node, boolean isUnsigned, DIRECTION defaultDir) {

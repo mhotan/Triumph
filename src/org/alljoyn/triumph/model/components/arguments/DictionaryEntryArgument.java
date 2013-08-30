@@ -57,7 +57,7 @@ public class DictionaryEntryArgument extends Argument<Map.Entry<?, ?>> {
      * @param signature AllJoyn Signature of the element, IE {is}
      */
     DictionaryEntryArgument(String name, DIRECTION direction, String signature) {
-        super(name, direction);
+        super(name, direction, signature);
 
         mAJSignature = signature;
         String[] inner = getInnerSignatures(signature);
