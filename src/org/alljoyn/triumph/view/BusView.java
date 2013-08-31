@@ -200,7 +200,7 @@ public class BusView extends BorderPane implements OnClickListener, SaveListener
             addService(services.get(i));
         }
 
-        Set<String> endpoints = new HashSet<>(mServiceMap.keySet());
+        Set<String> endpoints = new HashSet<String>(mServiceMap.keySet());
         // If the current list does not have one of our names
         for (String name: endpoints) {
 

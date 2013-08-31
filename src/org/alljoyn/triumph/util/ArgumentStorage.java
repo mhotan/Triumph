@@ -23,7 +23,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
@@ -51,12 +50,13 @@ public class ArgumentStorage {
     private static final String ARG_DIR_PATH = DATA_PATH + "/" + "args";
 
     // The root of all directories
-    private static final String ROOT_DIR = "data/args";
 
     private static ArgumentStorage instance;
 
     private Map<String, InternalArgumentStorage> mInstances;
 
+    private List<SaveListener> mListeners;
+    
     private static Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
 
     static {
@@ -93,20 +93,7 @@ public class ArgumentStorage {
         if (!argsDir.exists()) 
             argsDir.mkdirs();
 
-        //            
-        //            
-        //            Path rootDir = Paths.get(ROOT_DIR);
-        //            // If the directory already exists then we are done
-        //            if (Files.exists(rootDir) && Files.isDirectory(rootDir)) return;
-        //            
-        //            // If it is for some reason not a directory
-        //            if (Files.exists(rootDir)) {
-        //                Files.delete(rootDir);
-        //            }
-        //            Files.createDirectories(rootDir, PosixFilePermissions.asFileAttribute(perms));
-        //        } catch (IOException e) {
-        //            throw new RuntimeException("Unable to initialize ArgumentStorage because " + e);
-        //        }
+        mListeners = new ArrayList<ArgumentStorage.SaveListener>();
     }
 
     /**
@@ -145,6 +132,10 @@ public class ArgumentStorage {
         String dbusSignature = arg.getDBusSignature();
         InternalArgumentStorage storage = getStorage(dbusSignature);
         storage.saveArgument(arg);
+        
+        // Broadcast that an argument was recently saved.
+        for (SaveListener list: mListeners)
+            list.onSaved(arg);
     }
 
     /**
@@ -230,6 +221,8 @@ public class ArgumentStorage {
                         break;
                     } 
                 }
+            } catch (EOFException e) {
+              // Do nothing this is fine.  
             } catch (Exception e) {
                 LOG.warning("Exception reading from " + mFile.getPath() + " because of " + e);
             } finally {
@@ -300,5 +293,23 @@ public class ArgumentStorage {
             return mSignature.hashCode();
         }
     }
+    
+    public void addListener(SaveListener listener) {
+        mListeners.add(listener);
+    }
+    
+    public void removeListener(SaveListener listener) {
+        mListeners.remove(listener);
+    }
 
+    public static interface SaveListener {
+        
+        /**
+         * Listener for clients to listen for saved arguments.
+         * @param savedArg Argument saved
+         */
+        public void onSaved(Argument<?> savedArg);
+        
+    }
+    
 }

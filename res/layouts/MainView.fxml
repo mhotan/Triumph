@@ -70,7 +70,7 @@
             </Menu>
           </menus>
         </MenuBar>
-        <AnchorPane prefHeight="200.0" prefWidth="200.0">
+        <AnchorPane fx:id="mTopPane" prefHeight="200.0" prefWidth="200.0">
           <children>
             <Label text="Triumph" textFill="BLACK" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
               <font>

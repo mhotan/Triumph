@@ -98,6 +98,8 @@ public class MainView extends BorderPane implements SignalReceivedListener, OnCl
     private final MainViewInterface mViewHandler;
     private BusView mDistributedBusView, mLocalBusView;
     private final LogView mLogView;
+    
+    private final ServicesView2 mServiceView;
 
     
     /**
@@ -149,6 +151,10 @@ public class MainView extends BorderPane implements SignalReceivedListener, OnCl
         mLogView.prefWidthProperty().bind(mLogPane.widthProperty());
         mLogView.prefHeightProperty().bind(mLogPane.heightProperty());
         mLogPane.setContent(mLogView);
+        
+        mServiceView = new ServicesView2();
+        mTopPane.getChildren().clear();
+        mTopPane.getChildren().add(mServiceView);
     }
 
     public MainView(MainViewInterface handler, BusView distributed, BusView local) {
@@ -294,6 +300,10 @@ public class MainView extends BorderPane implements SignalReceivedListener, OnCl
         } else if (type == TYPE.PROPERTY_GET || type == TYPE.PROPERTY_SET) {
             mViewHandler.onPropertyTransactionSelected((PropertyTransaction) transaction);
         }
+    }
+
+    public ServicesView2 getServicesView() {
+        return mServiceView;
     }
 
 }
