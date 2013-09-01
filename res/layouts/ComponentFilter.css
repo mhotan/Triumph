@@ -1,0 +1,13 @@
+.root {
+	-fx-padding: 5 5 5 5;
+	-fx-spacing: 5;
+}
+
+.container {
+	-fx-spacing: 3;
+	-fx-alignment: center ;
+}
+
+.service-component {
+	-fx-font-weight: bold;
+}

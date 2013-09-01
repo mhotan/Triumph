@@ -99,7 +99,7 @@ public class MainView extends BorderPane implements SignalReceivedListener, OnCl
     private BusView mDistributedBusView, mLocalBusView;
     private final LogView mLogView;
     
-    private final ServicesView2 mServiceView;
+    private final ServicesView mServiceView;
 
     
     /**
@@ -152,9 +152,11 @@ public class MainView extends BorderPane implements SignalReceivedListener, OnCl
         mLogView.prefHeightProperty().bind(mLogPane.heightProperty());
         mLogPane.setContent(mLogView);
         
-        mServiceView = new ServicesView2();
+        mServiceView = new ServicesView();
         mTopPane.getChildren().clear();
         mTopPane.getChildren().add(mServiceView);
+        mServiceView.prefHeightProperty().bind(mTopPane.prefHeightProperty());
+        mServiceView.prefWidthProperty().bind(mTopPane.prefWidthProperty());
     }
 
     public MainView(MainViewInterface handler, BusView distributed, BusView local) {
@@ -302,7 +304,7 @@ public class MainView extends BorderPane implements SignalReceivedListener, OnCl
         }
     }
 
-    public ServicesView2 getServicesView() {
+    public ServicesView getServicesView() {
         return mServiceView;
     }
 

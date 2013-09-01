@@ -236,8 +236,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         List<String> servicesStr = new ArrayList<String>(mDistributedServices);
         List<EndPoint> services = new ArrayList<EndPoint>(servicesStr.size());
         for (String service: servicesStr) {
-            EndPoint ser = new EndPoint(service);
-            ser.setServiceType(SERVICE_TYPE.REMOTE);
+            EndPoint ser = new EndPoint(service, SERVICE_TYPE.REMOTE);
             services.add(ser);
         }
         return services;
@@ -248,8 +247,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         List<String> servicesStr = new ArrayList<String>(mLocalServices);
         List<EndPoint> services = new ArrayList<EndPoint>(servicesStr.size());
         for (String service: servicesStr) {
-            EndPoint ser = new EndPoint(service);
-            ser.setServiceType(SERVICE_TYPE.LOCAL);
+            EndPoint ser = new EndPoint(service, SERVICE_TYPE.LOCAL);
             services.add(ser);
         }
         return services;
@@ -708,17 +706,19 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      */
     private EndPoint buildService(EndPoint service, short sessionPort) throws TriumphException {
         LOG.fine("Building Service Via Introspection: " + service);
-
-        // Attempt to create a session
-        Session session = mSessionManager.getSession(service.getName());
-        if (session == null) 
-            session = mSessionManager.createNewSession(service.getName(), sessionPort);
-        // If fails throw exception
-        ProxyBusObject proxy = session.getProxy("org/alljoyn/Bus/Peer");
-        service.saveBusPeerProxy(proxy);
-
-        TriumphAJParser parser = new TriumphAJParser(mSessionManager);
-        return parser.parseIntrospectData(service, sessionPort);
+        service.build(mSessionManager, sessionPort);
+        return service;
+        
+//        // Attempt to create a session
+//        Session session = mSessionManager.getSession(service.getName());
+//        if (session == null) 
+//            session = mSessionManager.createNewSession(service.getName(), sessionPort);
+//        // If fails throw exception
+//        ProxyBusObject proxy = session.getProxy("org/alljoyn/Bus/Peer");
+//        service.saveBusPeerProxy(proxy);
+//
+//        TriumphAJParser parser = new TriumphAJParser(mSessionManager);
+//        return parser.parseIntrospectData(service, sessionPort);
     }
 
     /**

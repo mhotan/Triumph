@@ -143,9 +143,9 @@ public class MainController implements TriumphViewable, MainViewInterface {
         mLocalBusView.updateState(locals);
         
         // etc... add more services.
-        ServicesView2 serView = mMain.getServicesView(); 
+        ServicesView serView = mMain.getServicesView(); 
         if (serView == null) return;
-        serView.updateState(distributed);
+        serView.updateState(distributed, locals);
     }
 
     @Override

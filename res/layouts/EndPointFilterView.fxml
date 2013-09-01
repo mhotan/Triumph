@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root type="VBox" minWidth="300.0" spacing="3.0" xmlns:fx="http://javafx.com/fxml">
+<fx:root type="VBox" minWidth="-1.0" spacing="3.0" xmlns:fx="http://javafx.com/fxml">
   <children>
     <Label fx:id="mFilterLabel" alignment="BOTTOM_CENTER" maxWidth="1.7976931348623157E308" text="Filter" VBox.vgrow="NEVER" />
     <HBox maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" spacing="5.0">
@@ -53,11 +53,6 @@
         <Button fx:id="mSaveButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#onSave" text="Save" HBox.hgrow="NEVER" />
       </children>
     </HBox>
-    <Label fx:id="mError" alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="error-message, error-label" text="" wrapText="true" VBox.vgrow="SOMETIMES">
-      <graphic>
-        <Label text="Error:" textFill="RED" />
-      </graphic>
-    </Label>
   </children>
   <padding>
     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.VBox?>
+
+<fx:root type="VBox" maxHeight="-1.0" maxWidth="1.7976931348623157E308" styleClass="root" xmlns:fx="http://javafx.com/fxml">
+  <children>
+    <GridPane fx:id="mGridPane" hgap="3.0" maxWidth="1.7976931348623157E308" vgap="3.0">
+      <children>
+        <ComboBox fx:id="mObjectCombo" maxHeight="-1.0" maxWidth="1.7976931348623157E308" onAction="#onSelectObject" promptText="Any" GridPane.columnIndex="0" GridPane.rowIndex="0">
+          <items>
+            <FXCollections fx:factory="observableArrayList">
+              <String fx:value="Item 1" />
+              <String fx:value="Item 2" />
+              <String fx:value="Item 3" />
+            </FXCollections>
+          </items>
+        </ComboBox>
+        <ComboBox fx:id="mIfaceCombo" maxHeight="-1.0" maxWidth="1.7976931348623157E308" onAction="#onSelectInterface" promptText="Any" GridPane.columnIndex="0" GridPane.rowIndex="1">
+          <items>
+            <FXCollections fx:factory="observableArrayList">
+              <String fx:value="Item 1" />
+              <String fx:value="Item 2" />
+              <String fx:value="Item 3" />
+            </FXCollections>
+          </items>
+        </ComboBox>
+        <CheckBox fx:id="mIsolateObject" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onIsolateObject" text="Isolate" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+        <CheckBox fx:id="mIsolateInterface" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onIsolateInterface" text="Isolate" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+        <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="service-component" text="Objects" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+        <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="service-component" text="Interfaces" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      </children>
+      <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+      </columnConstraints>
+      <rowConstraints>
+        <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+      </rowConstraints>
+    </GridPane>
+    <HBox fx:id="mCheckBoxContainer" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="container">
+      <children>
+        <CheckBox fx:id="mSelectAllBox" mnemonicParsing="false" onAction="#onSelectAll" text="Select All" />
+        <CheckBox fx:id="mMethodBox" mnemonicParsing="false" onAction="#onSelectMethod" text="Methods" />
+        <CheckBox fx:id="mSignalBox" mnemonicParsing="false" onAction="#onSignalSelected" text="Signals" />
+        <CheckBox fx:id="mPropertiesBox" mnemonicParsing="false" text="Properties" />
+      </children>
+    </HBox>
+  </children>
+  <padding>
+    <Insets />
+  </padding>
+  <stylesheets>
+    <URL value="@General.css" />
+    <URL value="@ComponentFilter.css" />
+  </stylesheets>
+</fx:root>

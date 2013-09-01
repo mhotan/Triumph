@@ -64,7 +64,17 @@ public final class ViewLoader {
             LOG.severe("Unable to load '" + fxmlFileName + "' from layouts directory");
             throw new RuntimeException("Exception caught loading '" + fxmlFileName + "': " + e.getMessage());
         }
-
     }
 
+    /**
+     * Uses the instance to load a view of the same simple name with appended suffix ".fxml".
+     * <br>Therefore this is like calling loadView(instance.getClass().getSimpleName() + ".fxml", instance);
+     * <br>NOTE: it is up to the client to correctly create a FXML file name with the correct name.\
+     * 
+     * @param instance Instance to use
+     */
+    public static void loadView(Object instance) {
+        loadView(instance.getClass().getSimpleName() + ".fxml", instance);
+    }
+    
 }

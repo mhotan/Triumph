@@ -1,8 +1,8 @@
 package org.alljoyn.triumph.view;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.ResourceBundle;
 
 import javafx.beans.value.ChangeListener;
@@ -24,20 +24,17 @@ import org.alljoyn.triumph.util.EndPointFilterStorage.SaveListener;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 
 /**
- * A view that manages 
+ * A view that manages the presentation of the 
  *  
  * @author Michael Hotan, mhotan@quicinc.com
  */
-public class FilterView extends VBox implements SaveListener {
+public class EndPointFilterView extends VBox implements SaveListener {
 
     @FXML
     private ResourceBundle resources;
 
     @FXML
     private URL location;
-
-    @FXML
-    private Label mError;
 
     @FXML
     private Button mFilterButton;
@@ -67,19 +64,34 @@ public class FilterView extends VBox implements SaveListener {
     private TextField mSuffixInput;
 
     private EndPointFilter mCurFilter;
+    
+    private ErrorDialog mErrorDialog;
 
     private final ObservableList<EndPointFilter> mAvailableList;
-    
-    private final List<FilterViewListener> mListeners;
 
-    public FilterView() {
-        ViewLoader.loadView("FilterView.fxml", this);
-        mListeners = new ArrayList<FilterView.FilterViewListener>();
-        
-        // Set the combo box with the current list
+    // Internal collection of list.
+    private final Collection<FilterViewListener> mListeners;
+
+    /**
+     * Create a basic view that presents a filter for searching for endpoints.
+     */
+    public EndPointFilterView() {
+        // Load the view associated with the name of this class.
+        // NOTE: FXML must have name EndPointFilterView.fxml
+        ViewLoader.loadView(this);
+
+        // Init collection to track listeners
+        // We a simple collection that maintains uniqueness.
+        mListeners = new HashSet<EndPointFilterView.FilterViewListener>();
+
+        // Initialize the combo box for 
         mAvailableList = FXCollections.observableArrayList(EndPointFilterStorage.getInstance().getFilters());
         mFilterComboBox.setItems(mAvailableList);
+
+        // Add a listener for updates in filters.
         EndPointFilterStorage.getInstance().addListener(this);
+
+        // Make sure everytime the user selects a new filter we update appropiately
         mFilterComboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EndPointFilter>() {
             @Override
             public void changed(ObservableValue<? extends EndPointFilter> arg0,
@@ -89,18 +101,29 @@ public class FilterView extends VBox implements SaveListener {
             }
         });
 
-        // Create the general filter
+        // Initialize the current filter with the a basic empty filter.
         switchFilter(new EndPointFilter("", "", null));
 
-        // Set the errore
-        mError.managedProperty().bind(mError.visibleProperty());
+        // Initially hide the error, making sure that when it is invisible
+        // It does not effect the layout inappropriately.
+        mErrorDialog = new ErrorDialog("Error", "");
         hideError();
-
-
     }
+
+    /**
+     * Returns the current filter
+     * @return Curernt endpoint filter
+     */
+    public EndPointFilter getCurrentFilter() {
+        return mCurFilter;
+    }
+
+
 
     @FXML
     void onFilter(ActionEvent event) {
+        if (!checkFields()) return;
+        
         for (FilterViewListener listener: mListeners) {
             listener.onFilterChanged(mCurFilter);
         }
@@ -109,13 +132,16 @@ public class FilterView extends VBox implements SaveListener {
     @FXML
     void onSave(ActionEvent event) {
         hideError();
-        
-        String name = mSaveByNameInput.getText();
+
+        // Check the save by name
+        String name = mSaveByNameInput.getText().trim();
+        mSaveByNameInput.setText(name);
         if (name.isEmpty()) {
-            showError("Can't have empty name");
+            showError("Invalid Name", "Can't have empty name");
             return;
         }
-        
+        if (!checkFields()) return;
+
         mCurFilter.setSaveByName(name);
         EndPointFilterStorage.getInstance().saveFilter(mCurFilter);
     }
@@ -123,6 +149,7 @@ public class FilterView extends VBox implements SaveListener {
     @FXML
     void onSetPort(ActionEvent event) {
         hideError();
+
         try {
             String portStr = mPortInput.getText().trim();
             mPortInput.setText(portStr);
@@ -131,7 +158,7 @@ public class FilterView extends VBox implements SaveListener {
             else
                 mCurFilter.setPort(Short.valueOf(portStr));
         } catch (NumberFormatException e) {
-            showError("Invalid Port");
+            showError("Invalid Port", "Not a short");
         }
     }
 
@@ -139,7 +166,7 @@ public class FilterView extends VBox implements SaveListener {
     void onSaveByNameSet(ActionEvent event) {
         String name = mSaveByNameInput.getText();
         if (name.isEmpty()) {
-            showError("Can't have empty name");
+            showError("Invalid Name", "Can't have empty name");
         } else {
             hideError();
         }
@@ -159,15 +186,47 @@ public class FilterView extends VBox implements SaveListener {
         mCurFilter.setPrefix(val);
     }
 
+    /**
+     * Hides any error message
+     */
     private void hideError() {
-        mError.setVisible(false);
+        mErrorDialog.hide();
     }
 
-    private void showError(String message) {
-        mError.setText(message);
-        mError.setVisible(true);
+    /**
+     * presents an error message
+     * @param message Message to show.
+     */
+    private void showError(String title, String message) {
+        mErrorDialog.setText(title, message);
+        mErrorDialog.show();
     }
 
+    private boolean checkFields() {
+        String prefix = mPrefixInput.getText().trim();
+        mPrefixInput.setText(prefix);
+        String suffix = mSuffixInput.getText().trim();
+        mSuffixInput.setText(suffix);
+        String port = mPortInput.getText().trim();
+        try {
+            mPortInput.setText(port);
+            if (port.isEmpty())
+                mCurFilter.setPort(null);
+            else
+                mCurFilter.setPort(Short.valueOf(port));
+            return true;
+        } catch (NumberFormatException e) {
+            showError("Invalid Port", "Not a short");
+            return false;
+        }
+    }
+    
+    
+    
+    /**
+     * Switches the current filter to the value inputted.
+     * @param filter Filter to use.
+     */
     private void switchFilter(EndPointFilter filter) {
         mCurFilter = filter;
         mPrefixInput.setText(mCurFilter.getPrefix());
@@ -180,7 +239,7 @@ public class FilterView extends VBox implements SaveListener {
 
     @FXML
     void initialize() {
-        assert mError != null : "fx:id=\"mError\" was not injected: check your FXML file 'FilterView.fxml'.";
+        //        assert mError != null : "fx:id=\"mError\" was not injected: check your FXML file 'FilterView.fxml'.";
         assert mFilterButton != null : "fx:id=\"mFilterButton\" was not injected: check your FXML file 'FilterView.fxml'.";
         assert mFilterComboBox != null : "fx:id=\"mFilterComboBox\" was not injected: check your FXML file 'FilterView.fxml'.";
         assert mFilterLabel != null : "fx:id=\"mFilterLabel\" was not injected: check your FXML file 'FilterView.fxml'.";
@@ -193,14 +252,14 @@ public class FilterView extends VBox implements SaveListener {
     }
 
     public void addListener(FilterViewListener list) {
-        if (list == null || mListeners.contains(list)) return;
+        if (list == null) return;
         mListeners.add(list);
     }
-    
+
     public void removeListener(FilterViewListener list) {
         mListeners.remove(list);
     }
-    
+
     /**
      * Interface for notification that filter has changed.
      * @author Michael Hotan, mhotan@quicinc.com
@@ -211,6 +270,7 @@ public class FilterView extends VBox implements SaveListener {
 
     }
 
+    // List for 
     @Override
     public void onSaved(EndPointFilter savedArg) {
         updateSavedList();

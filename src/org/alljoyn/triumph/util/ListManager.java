@@ -18,6 +18,7 @@
 package org.alljoyn.triumph.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -84,7 +85,7 @@ public class ListManager<T> {
         return mList;
     }
     
-    public void updateState(List<T> newItems) {
+    public void updateState(Collection<T> newItems) {
         if (newItems == null) return;
         
         // Iterate through the list of new items

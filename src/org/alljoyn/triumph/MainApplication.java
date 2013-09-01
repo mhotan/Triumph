@@ -23,7 +23,7 @@ import javafx.stage.Stage;
 
 import org.alljoyn.triumph.model.TriumphModel;
 import org.alljoyn.triumph.util.loaders.NativeLoader;
-import org.alljoyn.triumph.view.MainController;
+import org.alljoyn.triumph.view.MainController2;
 
 /**
  * The main application class that will be in charge of a set key initial and control tasks.
@@ -84,7 +84,7 @@ public class MainApplication extends Application {
     public void start(Stage primaryStage) throws IOException {
         primaryStage.setTitle(TITLE);		
         TriumphModel model = TriumphModel.getInstance();
-        MainController controller = new MainController(primaryStage);
+        MainController2 controller = new MainController2(primaryStage);
         model.addView(controller);
     }
 }

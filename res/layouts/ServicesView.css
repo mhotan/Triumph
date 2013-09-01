@@ -1,0 +1,4 @@
+.scroll-pane {
+	-fx-vbar-policy: as-needed ;
+	-fx-hbar-policy: never ;
+}

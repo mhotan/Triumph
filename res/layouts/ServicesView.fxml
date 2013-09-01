@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+<fx:root type="HBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-1.0" xmlns:fx="http://javafx.com/fxml">
+  <children>
+    <Pane fx:id="mFilterContainer" prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="NEVER" />
+    <TabPane fx:id="mTabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" side="TOP" tabClosingPolicy="UNAVAILABLE" HBox.hgrow="ALWAYS">
+      <tabs>
+        <Tab fx:id="mDistributedTab" closable="false" text="Distributed">
+          <content>
+            <ScrollPane fx:id="mDistributedPane" content="$null" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
+          </content>
+        </Tab>
+        <Tab fx:id="mLocalTab" closable="false" text="Local">
+          <content>
+            <ScrollPane fx:id="mLocalPane" content="$null" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
+          </content>
+        </Tab>
+      </tabs>
+    </TabPane>
+  </children>
+  <stylesheets>
+    <URL value="@General.css" />
+    <URL value="@ServicesView.css" />
+  </stylesheets>
+</fx:root>
