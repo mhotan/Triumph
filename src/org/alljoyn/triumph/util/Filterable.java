@@ -29,9 +29,8 @@ public interface Filterable<T>  {
     /**
      * Returns whether or not the object meets the requirement of the filter.
      * 
-     * @param object Object to check
+     * @param item Object to check
      * @return true if the object is filters, false otherwise
      */
-    public boolean filter(T object);
-    
+    public boolean filter(T item);
 }

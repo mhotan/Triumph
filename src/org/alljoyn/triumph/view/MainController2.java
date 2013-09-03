@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import javafx.application.Platform;
+import javafx.collections.SetChangeListener;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -16,6 +18,7 @@ import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.Signal;
 import org.alljoyn.triumph.model.components.SignalContext;
+import org.alljoyn.triumph.util.ViewCache;
 
 public class MainController2 implements EndPointListener, TriumphViewable {
 
@@ -36,7 +39,7 @@ public class MainController2 implements EndPointListener, TriumphViewable {
     /**
      * This presents the current state of the distributed bus.
      */
-    private final ServicesView mEndPointView;
+    private final ServicesView mEndPointsView;
     
     /**
      * Error dialog
@@ -48,6 +51,8 @@ public class MainController2 implements EndPointListener, TriumphViewable {
      */
     private final TriumphModel mModel;
     
+    private final ViewCache<EndPoint, Node> mSingleEndPointViews;
+    
     /**
      * Creates a Controller that creates and manages internal views.
      * 
@@ -56,12 +61,12 @@ public class MainController2 implements EndPointListener, TriumphViewable {
     public MainController2(Stage primaryStage) {
         mStage = primaryStage;
         mMainView = new MainBorderView();
-        mEndPointView = new ServicesView();
-        mMainView.setTopPane(mEndPointView);
+        mEndPointsView = new ServicesView();
+        mMainView.setTopPane(mEndPointsView);
         
         mErrorDialog = new ErrorDialog("Error", "Unknown error");
         mModel = TriumphModel.getInstance();
-        mEndPointView.addListener(this);
+        mEndPointsView.addListener(this);
         
         // Compose the structure of this view
         Scene scene = new Scene(mMainView);
@@ -75,12 +80,21 @@ public class MainController2 implements EndPointListener, TriumphViewable {
             }
         });
         
+        mSingleEndPointViews = new ViewCache<EndPoint, Node>();
+        
         mStage.show();
     }
     
     @Override
     public void onEndPointSelected(EndPoint ep) {
         LOG.info("Selected EndPoint: " + ep);
+        if (ep == null) return;
+        Node node = mSingleEndPointViews.getViewForElement(ep);
+        if (node == null) {
+            node = new EndPointView(ep);
+            mSingleEndPointViews.addView(ep, node);
+        }
+        mMainView.setCenterPane((EndPointView)node);
     }
 
     @Override
@@ -92,7 +106,7 @@ public class MainController2 implements EndPointListener, TriumphViewable {
         List<EndPoint> distributed = mModel.getDistributedServices();
         // Update the list of local services.
         List<EndPoint> locals = mModel.getLocalServices();
-        mEndPointView.updateState(distributed, locals);
+        mEndPointsView.updateState(distributed, locals);
     }
 
     @Override

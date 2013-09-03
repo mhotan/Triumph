@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+  <left>
+    <VBox fx:id="mLeftPane" maxHeight="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0">
+      <children>
+        <Pane fx:id="mFilterPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="NEVER" />
+        <ScrollPane fx:id="mContentPane" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="SOMETIMES">
+          <content>
+            <VBox fx:id="mListContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onScrollFinished="#mListViewContainer" prefHeight="-1.0" prefWidth="-1.0">
+              <children>
+                <ListView fx:id="mMethodsListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="SOMETIMES" />
+                <ListView fx:id="mSignalsListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="SOMETIMES" />
+                <ListView fx:id="mPropertiesListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="SOMETIMES" />
+              </children>
+            </VBox>
+          </content>
+        </ScrollPane>
+      </children>
+    </VBox>
+  </left>
+</BorderPane>
