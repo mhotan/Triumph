@@ -11,6 +11,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
+import org.alljoyn.triumph.model.components.EndPoint;
+import org.alljoyn.triumph.util.ViewCache;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 
 public class MainBorderView extends BorderPane {
@@ -36,6 +38,8 @@ public class MainBorderView extends BorderPane {
         setRectangle(mBottomPane, Color.RED);
         setRectangle(mCenterPane, Color.GREEN);
         setRectangle(mTopPane, Color.BLUE);
+        
+        // The end point views
     }
 
     public void setTopPane(Pane arg) {

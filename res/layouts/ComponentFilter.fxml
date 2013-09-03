@@ -8,8 +8,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root type="VBox" maxHeight="-1.0" maxWidth="1.7976931348623157E308" styleClass="root" xmlns:fx="http://javafx.com/fxml">
+<fx:root type="VBox" maxHeight="-1.0" maxWidth="1.7976931348623157E308" styleClass="root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
   <children>
+    <Label fx:id="mTitle" alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="title" text="EndPoint Component Filter" textAlignment="CENTER" VBox.vgrow="NEVER" />
     <GridPane fx:id="mGridPane" hgap="3.0" maxWidth="1.7976931348623157E308" vgap="3.0">
       <children>
         <ComboBox fx:id="mObjectCombo" maxHeight="-1.0" maxWidth="1.7976931348623157E308" onAction="#onSelectObject" promptText="Any" GridPane.columnIndex="0" GridPane.rowIndex="0">
@@ -30,15 +31,12 @@
             </FXCollections>
           </items>
         </ComboBox>
-        <CheckBox fx:id="mIsolateObject" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onIsolateObject" text="Isolate" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-        <CheckBox fx:id="mIsolateInterface" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onIsolateInterface" text="Isolate" GridPane.columnIndex="2" GridPane.rowIndex="1" />
         <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="service-component" text="Objects" GridPane.columnIndex="1" GridPane.rowIndex="0" />
         <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="service-component" text="Interfaces" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       </children>
       <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="-1.0" />
+        <ColumnConstraints fillWidth="true" hgrow="NEVER" minWidth="10.0" prefWidth="-1.0" />
       </columnConstraints>
       <rowConstraints>
         <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
@@ -47,10 +45,21 @@
     </GridPane>
     <HBox fx:id="mCheckBoxContainer" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="container">
       <children>
-        <CheckBox fx:id="mSelectAllBox" mnemonicParsing="false" onAction="#onSelectAll" text="Select All" />
-        <CheckBox fx:id="mMethodBox" mnemonicParsing="false" onAction="#onSelectMethod" text="Methods" />
-        <CheckBox fx:id="mSignalBox" mnemonicParsing="false" onAction="#onSignalSelected" text="Signals" />
-        <CheckBox fx:id="mPropertiesBox" mnemonicParsing="false" text="Properties" />
+        <CheckBox fx:id="mSelectAllBox" mnemonicParsing="false" onAction="#onCheckSelectAll" text="Select All" />
+        <CheckBox fx:id="mMethodBox" mnemonicParsing="false" onAction="#onCheckedMethods" text="Methods" />
+        <CheckBox fx:id="mSignalBox" mnemonicParsing="false" onAction="#onCheckedSignals" text="Signals" />
+        <CheckBox fx:id="mPropertiesBox" mnemonicParsing="false" onAction="#onCheckProperties" text="Properties" />
+      </children>
+    </HBox>
+    <HBox maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0">
+      <children>
+        <Label maxHeight="1.7976931348623157E308" text="Filter by Name:" HBox.hgrow="NEVER" />
+        <TextField fx:id="mNameInput" maxWidth="1.7976931348623157E308" onAction="#onSetFilterName" prefWidth="-1.0" promptText="Component Name" HBox.hgrow="SOMETIMES" />
+      </children>
+    </HBox>
+    <HBox alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0">
+      <children>
+        <Button fx:id="mFilterButton" mnemonicParsing="false" onAction="#onFilter" text="Filter" HBox.hgrow="NEVER" />
       </children>
     </HBox>
   </children>

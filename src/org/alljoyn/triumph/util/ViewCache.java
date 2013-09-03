@@ -49,8 +49,8 @@ public class ViewCache<T, V extends Node> {
     }
     
     /**
-     * Attempts to 
-     * @return 
+     * Attempts to retrieve view for a specific element.
+     * @return View or null if view is not in Cache
      */
     public V getViewForElement(T element) {
         return mMap.get(element);
