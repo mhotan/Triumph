@@ -134,7 +134,7 @@ public class LoadableArgumentView extends BorderPane {
     }
     
     /**
-     * 
+     * Returns the current argument view.
      * @return Current argument view.
      */
     public ArgumentView<?> getCurrentView() {

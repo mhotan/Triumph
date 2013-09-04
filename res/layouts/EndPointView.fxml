@@ -7,21 +7,19 @@
 
 <fx:root type="BorderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" xmlns:fx="http://javafx.com/fxml">
   <left>
-    <VBox fx:id="mLeftPane" maxHeight="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0">
-      <children>
-        <Pane fx:id="mFilterPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="NEVER" />
-        <ScrollPane fx:id="mContentPane" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="SOMETIMES">
-          <content>
-            <VBox fx:id="mListContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0">
-              <children>
-                <ListView fx:id="mMethodsListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="SOMETIMES" />
-                <ListView fx:id="mSignalsListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="SOMETIMES" />
-                <ListView fx:id="mPropertiesListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="SOMETIMES" />
-              </children>
-            </VBox>
-          </content>
-        </ScrollPane>
-      </children>
-    </VBox>
+    <BorderPane fx:id="mLeftPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0">
+      <center>
+        <VBox id="mLeftPane" fx:id="mListsPane" maxHeight="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0">
+          <children>
+            <ListView fx:id="mMethodsListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="SOMETIMES" />
+            <ListView fx:id="mSignalsListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="SOMETIMES" />
+            <ListView fx:id="mPropertiesListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="SOMETIMES" />
+          </children>
+        </VBox>
+      </center>
+      <top>
+        <Pane fx:id="mFilterPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
+      </top>
+    </BorderPane>
   </left>
 </fx:root>

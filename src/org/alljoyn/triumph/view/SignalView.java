@@ -30,7 +30,6 @@ import org.alljoyn.triumph.model.TriumphModel;
 import org.alljoyn.triumph.model.components.Signal;
 import org.alljoyn.triumph.model.components.SignalHandlerManager;
 import org.alljoyn.triumph.model.components.arguments.Argument;
-import org.alljoyn.triumph.view.arguments.editable.ArgumentView;
 
 /**
  * The view that represents a single Signal member of the interface. 

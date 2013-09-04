@@ -2,9 +2,9 @@ package org.alljoyn.triumph.test;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-import org.alljoyn.triumph.view.MainBorderView;
 import org.alljoyn.triumph.view.ServicesView;
 
 public class MainView3Test extends Application {
@@ -18,9 +18,9 @@ public class MainView3Test extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        MainBorderView view = new MainBorderView();
-        view.setTopPane(new ServicesView());
-        stage.setScene(new Scene(view));
+        BorderPane bPane = new BorderPane();
+        bPane.setTop(new ServicesView());
+        stage.setScene(new Scene(bPane));
         stage.show();
     }
 

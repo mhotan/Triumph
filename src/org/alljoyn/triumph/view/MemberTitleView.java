@@ -25,13 +25,12 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-import org.alljoyn.triumph.model.components.Interface;
 import org.alljoyn.triumph.model.components.AJObject;
-import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.Annotation;
+import org.alljoyn.triumph.model.components.EndPoint;
+import org.alljoyn.triumph.model.components.Interface;
 import org.alljoyn.triumph.model.components.Member;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 
@@ -40,7 +39,7 @@ import org.alljoyn.triumph.util.loaders.ViewLoader;
  * 
  * @author mhotan@quicinc.com, Michael Hotan
  */
-public class MemberTitleView extends BorderPane {
+public class MemberTitleView extends VBox {
 
     @FXML
     private ResourceBundle resources;
@@ -55,13 +54,7 @@ public class MemberTitleView extends BorderPane {
     private ListView<Annotation> mAnnotationsList;
 
     @FXML
-    private VBox mDetailLabelPane;
-
-    @FXML
     private Label mInterfaceLabel;
-
-    @FXML
-    private VBox mMainLabelPane;
 
     @FXML
     private Label mMemberName;
@@ -80,14 +73,15 @@ public class MemberTitleView extends BorderPane {
 
         // Preset the object path and the well known name
         mObjectPathLabel.setText("Unknown Object");
+        
         mWellKnownNameLabel.setText("Unknown Advertised Name");
 
         // Add annotations if they exists
         // Other wise remove annotations.
         List<Annotation> annotations = member.getAnnotations();
         if (annotations.isEmpty()) {
-            mMainLabelPane.getChildren().remove(mAnnotationTitleLabel);
-            mMainLabelPane.getChildren().remove(mAnnotationsList);
+            getChildren().remove(mAnnotationTitleLabel);
+            getChildren().remove(mAnnotationsList);
         } else {
             ObservableList<Annotation> anns = FXCollections.observableArrayList(annotations);
             mAnnotationsList.setItems(anns);
@@ -115,9 +109,7 @@ public class MemberTitleView extends BorderPane {
     void initialize() {
         assert mAnnotationTitleLabel != null : "fx:id=\"mAnnotationTitleLabel\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
         assert mAnnotationsList != null : "fx:id=\"mAnnotationsLabel\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
-        assert mDetailLabelPane != null : "fx:id=\"mDetailLabelPane\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
         assert mInterfaceLabel != null : "fx:id=\"mInterfaceLabel\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
-        assert mMainLabelPane != null : "fx:id=\"mMainLabelPane\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
         assert mMemberName != null : "fx:id=\"mMemberName\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
         assert mObjectPathLabel != null : "fx:id=\"mObjectPathLabel\" was not injected: check your FXML file 'MemberTitleView.fxml'.";
         assert mWellKnownNameLabel != null : "fx:id=\"mWellKnownNameLabel\" was not injected: check your FXML file 'MemberTitleView.fxml'.";

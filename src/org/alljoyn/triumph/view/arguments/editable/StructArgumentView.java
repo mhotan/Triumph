@@ -82,5 +82,11 @@ public class StructArgumentView extends MultiElementArgumentView<Object[]> {
 		
 		return fields.toArray();
 	}
+	
+	@Override
+    public void setEditable(boolean editable) {
+	    super.setEditable(editable);
+	    hideAddElementButton();
+	}
 
 }

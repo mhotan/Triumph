@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--  
-/******************************************************************************
- * Copyright 2013, Qualcomm Innovation Center, Inc.
- *
- *    All rights reserved.
- *    This file is licensed under the 3-clause BSD license in the NOTICE.txt
- *    file for this project. A copy of the 3-clause BSD license is found at:
- *
- *        http://opensource.org/licenses/BSD-3-Clause.
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the license is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the license for the specific language governing permissions and
- *    limitations under the license.
- ******************************************************************************/
- -->
+<!-- /****************************************************************************** 
+	* Copyright 2013, Qualcomm Innovation Center, Inc. * * All rights reserved. 
+	* This file is licensed under the 3-clause BSD license in the NOTICE.txt 
+	* file for this project. A copy of the 3-clause BSD license is found at: 
+	* * http://opensource.org/licenses/BSD-3-Clause. * * Unless required by applicable 
+	law or agreed to in writing, software * distributed under the license is 
+	distributed on an "AS IS" BASIS, * WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+	KIND, either express or implied. * See the license for the specific language 
+	governing permissions and * limitations under the license. ******************************************************************************/ -->
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import javafx.scene.control.*?>
@@ -25,38 +17,45 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root type="javafx.scene.layout.BorderPane" maxWidth="1.7976931348623157E308" xmlns:fx="http://javafx.com/fxml">
-  <left>
-    <VBox fx:id="mMainLabelPane" alignment="CENTER" prefHeight="-1.0" prefWidth="-1.0">
-      <children>
-        <Label fx:id="mMemberName" alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="general-label, title-label" text="Method/Signature" />
-        <Label id="mAnnotationsLabel" fx:id="mAnnotationTitleLabel" styleClass="general-label, annotation-title-label" text="Annotation(s):" />
-        <ListView fx:id="mAnnotationsList" prefHeight="-1.0" prefWidth="-1.0" />
-      </children>
-    </VBox>
-  </left>
-  <right>
-    <VBox fx:id="mDetailLabelPane" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0">
-      <children>
-        <Label fx:id="mWellKnownNameLabel" maxWidth="1.7976931348623157E308" styleClass="general-label" text="Well Known Name">
-          <graphic>
-            <Label text="EndPoint:" />
-          </graphic>
-        </Label>
-        <Label fx:id="mInterfaceLabel" maxWidth="1.7976931348623157E308" styleClass="general-label" text="Interface">
-          <graphic>
-            <Label text="Interface:" />
-          </graphic>
-        </Label>
-        <Label fx:id="mObjectPathLabel" maxWidth="1.7976931348623157E308" styleClass="general-label" text="Object Path">
-          <graphic>
-            <Label text="Object:" />
-          </graphic>
-        </Label>
-      </children>
-    </VBox>
-  </right>
-  <stylesheets>
-    <URL value="@MemberTitle.css" />
-  </stylesheets>
+<fx:root type="javafx.scene.layout.VBox" alignment="CENTER"
+	maxWidth="1.7976931348623157E308" xmlns:fx="http://javafx.com/fxml">
+	<children>
+		<Label fx:id="mMemberName" alignment="CENTER" maxWidth="1.7976931348623157E308"
+			styleClass="general-label, title" text="Method/Signature" VBox.vgrow="NEVER" />
+		<HBox maxWidth="1.7976931348623157E308" prefHeight="-1.0"
+			prefWidth="-1.0" VBox.vgrow="NEVER">
+			<children>
+				<Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+					prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+				<Label fx:id="mWellKnownNameLabel" maxWidth="1.7976931348623157E308"
+					styleClass="general-label" text="Well Known Name" HBox.hgrow="NEVER">
+					<graphic>
+						<Label styleClass="component-title" text="EndPoint:" />
+					</graphic>
+				</Label>
+				<Label fx:id="mObjectPathLabel" maxWidth="1.7976931348623157E308"
+					styleClass="general-label" text="Object Path" HBox.hgrow="NEVER">
+					<graphic>
+						<Label styleClass="component-title" text="Object:" />
+					</graphic>
+				</Label>
+				<Label fx:id="mInterfaceLabel" maxWidth="1.7976931348623157E308"
+					styleClass="general-label" text="Interface" HBox.hgrow="NEVER">
+					<graphic>
+						<Label styleClass="component-title" text="Interface:" />
+					</graphic>
+				</Label>
+				<Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+			</children>
+		</HBox>
+		<Label id="mAnnotationsLabel" fx:id="mAnnotationTitleLabel"
+			styleClass="general-label, annotation-title-label" text="Annotation(s):"
+			VBox.vgrow="NEVER" />
+		<ListView fx:id="mAnnotationsList" prefHeight="-1.0"
+			prefWidth="-1.0" VBox.vgrow="SOMETIMES" />
+	</children>
+	<stylesheets>
+		<URL value="@MemberTitle.css" />
+		<URL value="@General.css" />
+	</stylesheets>
 </fx:root>

@@ -86,7 +86,7 @@ public class ServicesView extends HBox implements FilterViewListener {
      * Create a view that manages the presentation of all the EndPoints.
      */
     public ServicesView() {
-        ViewLoader.loadView(getClass().getSimpleName() + ".fxml", this);
+        ViewLoader.loadView(this);
 
         mEndPointTables = new HashSet<EndPointTable>();
 
@@ -98,7 +98,8 @@ public class ServicesView extends HBox implements FilterViewListener {
 
         // Make sure that this view is at least as big 
         minHeightProperty().bind(mFilterView.prefHeightProperty());
-
+        mTabPane.minHeightProperty().bind(minHeightProperty());
+        
         mLocalTable = new EndPointTable(SERVICE_TYPE.LOCAL);
         mDistributedTable = new EndPointTable(SERVICE_TYPE.REMOTE);
         

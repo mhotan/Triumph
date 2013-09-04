@@ -4,10 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.layout.HBox;
@@ -45,7 +42,7 @@ public class TabbedSupportView extends HBox {
         mLogPane.setContent(logView);
     }
     
-    public void setSignalReceivedView(SignalReceivedView view) {
+    public void setSignalReceivedView(SignalsReceivedView view) {
         mSignalReceivedPane.setContent(view);
     }
     

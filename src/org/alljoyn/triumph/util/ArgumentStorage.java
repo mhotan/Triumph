@@ -44,7 +44,6 @@ public class ArgumentStorage {
 
     private static final Logger LOG = Logger.getLogger(ArgumentStorage.class.getSimpleName());
 
-
     private static final String BIN_PATH = "bin";
     private static final String DATA_PATH = BIN_PATH + "/" + "data";
     private static final String ARG_DIR_PATH = DATA_PATH + "/" + "args";
@@ -78,15 +77,21 @@ public class ArgumentStorage {
      * This way each file that hold argument objects only hold arguments
      * of the same type.
      * 
-     * Therefore this class is 
      */
 
+    /**
+     * Gets the singleton instance
+     * @return Returns instance.
+     */
     public static ArgumentStorage getInstance() {
         if (instance == null)
             instance = new ArgumentStorage();
         return instance;
     }
 
+    /**
+     * Private constructor.
+     */
     private ArgumentStorage() {
         //        try {
         File argsDir = new File(ARG_DIR_PATH);
@@ -177,8 +182,7 @@ public class ArgumentStorage {
         private final String mSignature;
 
         /**
-         * Mapping of saved by names and correlated
-         * argument.
+         * Mapping of saved by names and correlated argument.
          */
         private Map<String, Argument<?>> mKnownArgs;
 

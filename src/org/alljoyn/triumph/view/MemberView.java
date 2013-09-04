@@ -32,6 +32,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
@@ -55,6 +56,9 @@ public abstract class MemberView extends VBox {
     @FXML
     private URL location;
 
+    @FXML
+    protected Pane mRightFiller, mLeftFiller, mCenterFiller;
+    
     @FXML
     protected HBox mButtonBar;
 
@@ -104,11 +108,22 @@ public abstract class MemberView extends VBox {
         mInputArgPane.managedProperty().bind(mInputArgPane.visibleProperty());
         mOutputArgPane.managedProperty().bind(mOutputArgPane.visibleProperty());
         
+        // Bind the visibility to layout manager
+        mRightFiller.managedProperty().bind(mRightFiller.visibleProperty());
+        mLeftFiller.managedProperty().bind(mLeftFiller.visibleProperty());
+        mCenterFiller.managedProperty().bind(mCenterFiller.visibleProperty());
+        
+        // Bind the visibility properties of the filler and panes.
+        mRightFiller.visibleProperty().bind(mOutputArgPane.visibleProperty());
+        mLeftFiller.visibleProperty().bind(mInputArgPane.visibleProperty());
+        
         // Load the title view for this member.
         mTitleView = new MemberTitleView(member);
         mTitlePane.getChildren().clear();
         HBox.setHgrow(mTitleView, Priority.ALWAYS);
         mTitlePane.getChildren().add(mTitleView);
+        
+        prefWidthProperty().bind(mTitleView.prefWidthProperty());
 
         // Handle the variable amount of input and output arguments
         List<Argument<?>> inputArgs = member.getInputArguments();

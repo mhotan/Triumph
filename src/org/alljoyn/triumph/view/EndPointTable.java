@@ -55,6 +55,9 @@ public class EndPointTable extends TableView<EndPointRow> {
      */
     private final Collection<EndPointListener> mListeners;
     
+    private final double DEFAULT_MAX_COLUMN_WIDTH = 100;
+    private final double DEFAULT_MIN_COLUMN_WIDTH = 80;
+    
     /**
      * Create an empty table.
      * 
@@ -92,7 +95,9 @@ public class EndPointTable extends TableView<EndPointRow> {
         HBox.setHgrow(this, Priority.ALWAYS);
         setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         
-        TableColumn<EndPointRow, Boolean> connectedCol = new TableColumn<EndPointRow, Boolean>("Session Established");
+        // Create the column for the table that is associated if it is connected.
+        // Here we bind the property to the column.
+        TableColumn<EndPointRow, Boolean> connectedCol = new TableColumn<EndPointRow, Boolean>("Connected");
         connectedCol.setCellValueFactory(new PropertyValueFactory<EndPointRow, Boolean>("connected"));
         connectedCol.setCellFactory(CheckBoxTableCell.forTableColumn(connectedCol));
         connectedCol.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<EndPointRow,Boolean>>() {
@@ -107,10 +112,17 @@ public class EndPointTable extends TableView<EndPointRow> {
                 row.setConnected(TriumphModel.getInstance().buildService(row.getEndPoint()));
             }
         });
+        connectedCol.setMaxWidth(DEFAULT_MAX_COLUMN_WIDTH);
+        connectedCol.setMinWidth(DEFAULT_MIN_COLUMN_WIDTH);
+        
         
         // Create the port column
+        // Bind the value to the EndPoint port row.
+        // Create a text input
         TableColumn<EndPointRow,Integer> portColumn = new TableColumn<EndPointRow,Integer>("Port #");
         portColumn.setCellValueFactory(new PropertyValueFactory<EndPointRow,Integer>("port"));
+        portColumn.setMaxWidth(DEFAULT_MAX_COLUMN_WIDTH);
+        portColumn.setMinWidth(DEFAULT_MIN_COLUMN_WIDTH);
         
         // If the port for this endpoint is distributed and requires a session port then 
         // Make sure the user can edit this value.
