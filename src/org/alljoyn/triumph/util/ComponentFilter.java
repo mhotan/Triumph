@@ -78,11 +78,20 @@ public class ComponentFilter implements Filterable<InterfaceComponent> {
         return mShowProperties;
     }
     
+    public String getCurrentName() {
+        return mName;
+    }
+    
     @Override
     public boolean filter(InterfaceComponent component) {
-        if (!component.belongsToObject(mObject))
+        // If the Object is null then the user is requesting to see
+        // all the objects.
+        if (mObject != null && !component.belongsToObject(mObject))
             return false;
-        if (!component.belongsToInterface(mIface))
+        
+        // If the interface is null then the user is requesting to
+        // all the interfaces.
+        if (mIface != null && !component.belongsToInterface(mIface))
             return false;
         // Compare the lower case version of the component name
         if (!component.getName().toLowerCase().startsWith(mName))

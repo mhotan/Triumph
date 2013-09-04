@@ -9,6 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import org.alljoyn.triumph.model.TransactionLogger.Transaction.TYPE;
+import org.alljoyn.triumph.model.components.InterfaceComponent;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.Signal;
@@ -85,13 +86,16 @@ public class TransactionLogger {
         
         public final BooleanProperty available;
         
+        private final InterfaceComponent mComponent;
+        
         private String mDescription;
         
         public enum TYPE {
             METHOD_INVOKE, SIGNAL_EMIT, PROPERTY_GET, PROPERTY_SET
         }
         
-        protected Transaction(TYPE type) {
+        protected Transaction(InterfaceComponent ifaceComp, TYPE type) {
+            mComponent = ifaceComp;
             mType = type;
             mDate = new Date();
             available = new SimpleBooleanProperty(true);
@@ -111,6 +115,10 @@ public class TransactionLogger {
         
         public String toString() {
             return getDescription();
+        }
+        
+        public InterfaceComponent getInterfaceComponent() {
+            return mComponent;
         }
         
         public String getDescription() {
@@ -133,7 +141,7 @@ public class TransactionLogger {
         public final Argument<?> mOutputArg;
         
         private MethodTransaction(Method method, Argument<?>[] inputArgs, Argument<?> outArg) {
-            super(TYPE.METHOD_INVOKE);
+            super(method, TYPE.METHOD_INVOKE);
             this.mMethod = method;
             this.mInputArgs = inputArgs;
             this.mOutputArg = outArg;
@@ -153,7 +161,7 @@ public class TransactionLogger {
         public final Argument<?>[] mArguments;
         
         private SignalTransaction(Signal signal, Argument<?>[] arguments) {
-            super(TYPE.SIGNAL_EMIT);
+            super(signal, TYPE.SIGNAL_EMIT);
             this.mSignal = signal;
             this.mArguments = arguments;
         }
@@ -171,7 +179,7 @@ public class TransactionLogger {
         public final Argument<?> mArgument;
         
         private PropertyTransaction(Property prop, Argument<?> value, TYPE type) {
-            super(type);
+            super(prop, type);
             mProperty = prop;
             mArgument = value;
         }

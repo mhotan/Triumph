@@ -36,6 +36,7 @@ import org.alljoyn.triumph.model.components.Interface;
 import org.alljoyn.triumph.model.components.AJObject;
 import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.TriumphAJParser;
+import org.alljoyn.triumph.model.components.EndPoint.SERVICE_TYPE;
 import org.alljoyn.triumph.model.session.Session;
 import org.alljoyn.triumph.model.session.SessionManager;
 import org.alljoyn.triumph.test.ifaces.PropertyInterface;
@@ -95,7 +96,8 @@ public class PropertyTest {
 		Status status = mBus.registerBusObject(mService, ObjectPath);
 		Assert.assertEquals(Status.OK, status);
 
-		mSession = mSessionManager.createNewSession(ServiceWellKnownName, PORT);
+		EndPoint ep = new EndPoint(ServiceWellKnownName, SERVICE_TYPE.REMOTE);
+		mSession = mSessionManager.createNewSession(ep, PORT);
 		assertNotNull("Session created", mSession);
 	}
 
@@ -108,11 +110,11 @@ public class PropertyTest {
 	}
 
 	private AJObject privTestHasObjectByObjectPath() throws TriumphException {
-		TriumphAJParser parser = new TriumphAJParser(mSessionManager);
-		EndPoint service = new EndPoint(ServiceWellKnownName);
+		TriumphAJParser parser = new TriumphAJParser(mSession);
+		EndPoint service = new EndPoint(ServiceWellKnownName, SERVICE_TYPE.REMOTE);
 
-		service = parser.parseIntrospectData(service, PORT);
-		List<AJObject> objects = service.getObjects();
+		assertTrue(parser.parseIntrospectData());
+		List<AJObject> objects = mSession.getEndPoint().getObjects();
 
 		// There is always the the DBus peer object for this well known name
 		// Then there is our registered object.  Therefore there is exactly two objects that exist

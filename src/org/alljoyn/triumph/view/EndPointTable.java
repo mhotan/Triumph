@@ -2,22 +2,30 @@ package org.alljoyn.triumph.view;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.util.StringConverter;
 
+import org.alljoyn.triumph.controller.EndPointListener;
+import org.alljoyn.triumph.model.TriumphModel;
 import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.EndPoint.SERVICE_TYPE;
 import org.alljoyn.triumph.util.EndPointFilter;
@@ -43,6 +51,11 @@ public class EndPointTable extends TableView<EndPointRow> {
     private final SERVICE_TYPE mType;
 
     /**
+     * Listeners for responding to selection.
+     */
+    private final Collection<EndPointListener> mListeners;
+    
+    /**
      * Create an empty table.
      * 
      * @param type type of table to use
@@ -51,6 +64,7 @@ public class EndPointTable extends TableView<EndPointRow> {
         super();
         mType = type;
         mListManager = new ListManager<EndPointRow>();
+        mListeners = new HashSet<EndPointListener>();
         init();
     }
 
@@ -65,6 +79,7 @@ public class EndPointTable extends TableView<EndPointRow> {
         mType = type;
         mListManager = new ListManager<EndPointRow>();
         update(endpoints);
+        mListeners = new HashSet<EndPointListener>();
         init();
     }
     
@@ -77,6 +92,22 @@ public class EndPointTable extends TableView<EndPointRow> {
         HBox.setHgrow(this, Priority.ALWAYS);
         setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         
+        TableColumn<EndPointRow, Boolean> connectedCol = new TableColumn<EndPointRow, Boolean>("Session Established");
+        connectedCol.setCellValueFactory(new PropertyValueFactory<EndPointRow, Boolean>("connected"));
+        connectedCol.setCellFactory(CheckBoxTableCell.forTableColumn(connectedCol));
+        connectedCol.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<EndPointRow,Boolean>>() {
+            
+            @Override
+            public void handle(CellEditEvent<EndPointRow, Boolean> event) {
+                Boolean connect = event.getNewValue();
+                if (!connect) return;
+                
+                // Attempt to connect.
+                EndPointRow row = event.getTableView().getItems().get(event.getTablePosition().getRow());
+                row.setConnected(TriumphModel.getInstance().buildService(row.getEndPoint()));
+            }
+        });
+        
         // Create the port column
         TableColumn<EndPointRow,Integer> portColumn = new TableColumn<EndPointRow,Integer>("Port #");
         portColumn.setCellValueFactory(new PropertyValueFactory<EndPointRow,Integer>("port"));
@@ -84,6 +115,8 @@ public class EndPointTable extends TableView<EndPointRow> {
         // If the port for this endpoint is distributed and requires a session port then 
         // Make sure the user can edit this value.
         if (mType == SERVICE_TYPE.REMOTE) {
+            portColumn.setEditable(true);
+            
             portColumn.setCellFactory(TextFieldTableCell.<EndPointRow,Integer>forTableColumn(new IntegerStringConverter()));
             portColumn.setEditable(true);
             portColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<EndPointRow,Integer>>() {
@@ -95,6 +128,8 @@ public class EndPointTable extends TableView<EndPointRow> {
                     row.setPort(t.getNewValue());
                 }
             });
+        } else {
+            portColumn.setEditable(false);
         }
         
         // Create the name column
@@ -104,7 +139,26 @@ public class EndPointTable extends TableView<EndPointRow> {
         
         setItems(mListManager.getUnderlyingList());
         setEditable(true);
-        getColumns().setAll(portColumn, nameColumn);
+        getColumns().setAll(connectedCol, portColumn, nameColumn);
+    
+        getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EndPointRow>() {
+
+            @Override
+            public void changed(ObservableValue<? extends EndPointRow> arg0,
+                    EndPointRow oldVal, EndPointRow newVal) {
+                if (newVal == null) return;
+                if (newVal.equals(oldVal)) return;
+                
+                // If the endpoint is not connected.
+                if (!newVal.getConnected()) {
+                    return;
+                }
+                
+                for (EndPointListener list: mListeners) {
+                    list.onEndPointSelected(newVal.getEndPoint());
+                }
+            }
+        });
     }
     
     public void addFilter(EndPointFilter filter) {
@@ -144,6 +198,14 @@ public class EndPointTable extends TableView<EndPointRow> {
         }
     }
     
+    public void addListener(EndPointListener list) {
+        mListeners.add(list);
+    }
+    
+    public void removeListener(EndPointListener list) {
+        mListeners.remove(list);
+    }
+    
     /**
      * Container class that encapsulates and presents the value of an endpoint.
      * 
@@ -156,6 +218,8 @@ public class EndPointTable extends TableView<EndPointRow> {
          */
         private final EndPoint mEp;
 
+        private BooleanProperty connected;
+        
         private StringProperty name;
 
         private IntegerProperty port;
@@ -166,6 +230,13 @@ public class EndPointTable extends TableView<EndPointRow> {
          */
         public EndPoint getEndPoint() {
             return mEp;
+        }
+        
+        public BooleanProperty connectedProperty() {
+            if (this.connected == null) {
+                this.connected = new SimpleBooleanProperty(mEp.getServiceType() == SERVICE_TYPE.LOCAL);
+            }
+            return this.connected;
         }
         
         /**
@@ -189,7 +260,15 @@ public class EndPointTable extends TableView<EndPointRow> {
             }
             return this.name;
         }
+        
+        public void setConnected(boolean value) {
+            connectedProperty().set(value);
+        }
 
+        public boolean getConnected() {
+            return connectedProperty().get();
+        }
+        
         public void setName(String value) {
             nameProperty().set(value);
         }

@@ -22,8 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
@@ -37,14 +35,13 @@ import org.alljoyn.triumph.model.components.EndPoint.SERVICE_TYPE;
 import org.alljoyn.triumph.util.EndPointFilter;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 import org.alljoyn.triumph.view.EndPointFilterView.FilterViewListener;
-import org.alljoyn.triumph.view.EndPointTable.EndPointRow;
 
 /**
  * Specific view that presents a view of all the presen
  * 
  * @author Michael Hotan, mhotan@quicinc.com
  */
-public class ServicesView extends HBox implements FilterViewListener, ChangeListener<EndPointRow> {
+public class ServicesView extends HBox implements FilterViewListener {
 
     @FXML
     private ResourceBundle resources;
@@ -86,11 +83,6 @@ public class ServicesView extends HBox implements FilterViewListener, ChangeList
     private EndPointFilter mCurrFilter;
     
     /**
-     * Listeners for responding to selection.
-     */
-    private final Collection<EndPointListener> mListeners;
-
-    /**
      * Create a view that manages the presentation of all the EndPoints.
      */
     public ServicesView() {
@@ -110,10 +102,6 @@ public class ServicesView extends HBox implements FilterViewListener, ChangeList
         mLocalTable = new EndPointTable(SERVICE_TYPE.LOCAL);
         mDistributedTable = new EndPointTable(SERVICE_TYPE.REMOTE);
         
-        // Add the listener to 
-        mLocalTable.getSelectionModel().selectedItemProperty().addListener(this);
-        mDistributedTable.getSelectionModel().selectedItemProperty().addListener(this);
-        
         // Add more tables here
         mEndPointTables.add(mLocalTable);
         mEndPointTables.add(mDistributedTable);
@@ -123,14 +111,9 @@ public class ServicesView extends HBox implements FilterViewListener, ChangeList
         mDistributedPane.setContent(mDistributedTable);
         mLocalPane.setContent(mLocalTable);
 
-    /*    getChildren().remove(mTabPane);
-        getChildren().add(mDistributedTable);
-       */ 
         // Bind the layout of the tables to the scroll view.
         mLocalTable.prefWidthProperty().bind(mLocalPane.prefViewportWidthProperty());
         mDistributedTable.prefWidthProperty().bind(mDistributedPane.prefViewportWidthProperty());
-        
-        mListeners = new HashSet<EndPointListener>();
     }
 
     @FXML
@@ -166,24 +149,13 @@ public class ServicesView extends HBox implements FilterViewListener, ChangeList
     }
     
     public void addListener(EndPointListener list) {
-        mListeners.add(list);
+        mLocalTable.addListener(list);
+        mDistributedTable.addListener(list);
     }
     
     public void removeListener(EndPointListener list) {
-        mListeners.remove(list);
+        mLocalTable.removeListener(list);
+        mDistributedTable.removeListener(list);
     }
-
-    @Override
-    public void changed(ObservableValue<? extends EndPointRow> arg0,
-            EndPointRow oldVal, EndPointRow newVal) {
-       if (newVal == null) return;
-       if (newVal.equals(oldVal)) return;
-       
-       // Notify all the listeners on the selections of the new value.
-       for (EndPointListener list: mListeners) {
-           list.onEndPointSelected(newVal.getEndPoint());
-       }
-    }
-
 
 }

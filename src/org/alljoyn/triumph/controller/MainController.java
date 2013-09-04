@@ -14,7 +14,7 @@
  *    limitations under the license.
  ******************************************************************************/
 
-package org.alljoyn.triumph.view;
+package org.alljoyn.triumph.controller;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,6 +39,10 @@ import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.util.ArgumentStorage;
 import org.alljoyn.triumph.util.ArgumentStorage.SaveListener;
 import org.alljoyn.triumph.util.loaders.ImageLoader;
+import org.alljoyn.triumph.view.BusView;
+import org.alljoyn.triumph.view.MainView;
+import org.alljoyn.triumph.view.ServicesView;
+import org.alljoyn.triumph.view.TriumphViewable;
 import org.alljoyn.triumph.view.MainView.MainViewInterface;
 
 /**

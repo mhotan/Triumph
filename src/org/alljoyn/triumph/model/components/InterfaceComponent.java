@@ -37,6 +37,12 @@ public abstract class InterfaceComponent extends AllJoynComponent {
         mInterface = iface;
     }
     
+    /**
+     * @return returns the owning interface.
+     */
+    public Interface getInterface() {
+        return mInterface;
+    }
     
     public boolean belongsToEndPoint(String name) {
         if (name == null) return false;

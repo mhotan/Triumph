@@ -28,6 +28,7 @@ import org.alljoyn.bus.XMLInterfaceDescriptionBuilder;
 import org.alljoyn.bus.ifaces.Introspectable;
 import org.alljoyn.triumph.TriumphException;
 import org.alljoyn.triumph.model.Destroyable;
+import org.alljoyn.triumph.model.components.EndPoint;
 import org.w3c.dom.Node;
 
 /**
@@ -40,7 +41,7 @@ public class SessionManager implements Destroyable, TriumphSessionListener {
 	/**
 	 * Mapping of sessions that currently exist between
 	 */
-	private final Map<String, Session> mSessions;
+	private final Map<EndPoint, Session> mSessions;
 
 	/**
 	 * Connection to virtual bus.
@@ -48,7 +49,7 @@ public class SessionManager implements Destroyable, TriumphSessionListener {
 	private final BusAttachment mBus;
 
 	public SessionManager(BusAttachment busAttachment) {
-		mSessions = new HashMap<String, Session>();
+		mSessions = new HashMap<EndPoint, Session>();
 
 		if (!busAttachment.isConnected())
 			throw new IllegalArgumentException("Bus attachment is not connected");
@@ -64,8 +65,8 @@ public class SessionManager implements Destroyable, TriumphSessionListener {
 	 * @param portNum Port number to connect to
 	 * @return Connected session on success, null on failure
 	 */
-	public Session getSession(String name) {
-		return mSessions.get(name);
+	public Session getSession(EndPoint ep) {
+		return mSessions.get(ep);
 	} 
 
 	/**
@@ -75,27 +76,24 @@ public class SessionManager implements Destroyable, TriumphSessionListener {
 	 * @param toSave Session to save
 	 */
 	private void saveSession(Session toSave) {
-		mSessions.put(toSave.getServiceName(), toSave);
+		mSessions.put(toSave.getEndPoint(), toSave);
 	}
 
 	/**
 	 * Attempts to create a new session 
 	 * 
-	 * @param name name of the Service or advertised well known name to connect to.
+	 * @param ep name of the Service or advertised well known name to connect to.
 	 * @param portNum Port number to use to connect
 	 * @return null on fail, else session with object
 	 * @throws TriumphException Unable to create a session with endpoint
 	 */
-	public Session createNewSession(String name, short portNum) throws TriumphException {
-		Session session = null;
-		try {
-			session = new Session(portNum, name, mBus, this);
-			// Save the session for later use.
-            saveSession(session);
-		} catch (IllegalStateException e) {
-			session = null;
-			throw new TriumphException(e.getMessage());
+	public Session createNewSession(EndPoint ep, short portNum) {
+		Session session = new Session(portNum, ep, mBus, this);
+		if (session.join() != Status.OK) {
+		    return null;
 		}
+		// Save the session for later use.
+        saveSession(session);
 		return session;
 	}
 
@@ -110,7 +108,7 @@ public class SessionManager implements Destroyable, TriumphSessionListener {
 	 * @return Introspectable Introspectable definition of the object found at service
 	 * @throws TriumphException Exception occurred while getting introspection
 	 */
-	public String getInstrospection(String service, String obj, short portNum) 
+	public String getInstrospection(EndPoint ep, String obj, short portNum) 
 			throws TriumphException {
 
 		/*
@@ -124,17 +122,17 @@ public class SessionManager implements Destroyable, TriumphSessionListener {
 		// Attempt to find or create session with the service name.
 		// This Signifies that we have come across an alljoyn
 		// Try to receive a session with the service if we have already established one
-		Session session = getSession(service);
+		Session session = getSession(ep);
 		if (session == null) {
 			// Create a session if it does not exists
-			session = createNewSession(service, portNum);
+			session = createNewSession(ep, portNum);
 			
 		}
 		// If we are unable to retrieve or create a session then it 
 		// is a purely exceptional case
 		if (session == null) {
 			throw new TriumphException("Unable to establish session with service " 
-					+ service + " with port number " + portNum);
+					+ ep + " with port number " + portNum);
 		}
 	
 		// Get the proxy bus object that can handle the interfaces we are looking for
@@ -152,7 +150,7 @@ public class SessionManager implements Destroyable, TriumphSessionListener {
 
 		// 
 		if (ret == null)
-			throw new TriumphException("Error occured while attempting to contact " + service);
+			throw new TriumphException("Error occured while attempting to contact " + ep);
 
 		// Not a local object
 		String intData = null;

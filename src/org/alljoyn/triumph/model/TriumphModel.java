@@ -43,18 +43,17 @@ import org.alljoyn.triumph.MainApplication;
 import org.alljoyn.triumph.TriumphCPPAdapter;
 import org.alljoyn.triumph.TriumphException;
 import org.alljoyn.triumph.model.BusObserver.BusObserverListener;
-import org.alljoyn.triumph.model.components.AllJoynComponent;
-import org.alljoyn.triumph.model.components.Interface;
 import org.alljoyn.triumph.model.components.AJObject;
+import org.alljoyn.triumph.model.components.AllJoynComponent;
 import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.EndPoint.SERVICE_TYPE;
+import org.alljoyn.triumph.model.components.Interface;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.Signal;
 import org.alljoyn.triumph.model.components.SignalContext;
 import org.alljoyn.triumph.model.components.SignalHandler.SignalListener;
 import org.alljoyn.triumph.model.components.SignalHandlerManager;
-import org.alljoyn.triumph.model.components.TriumphAJParser;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
 import org.alljoyn.triumph.model.session.Session;
@@ -316,10 +315,9 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      * Attempts to build service.
      * 
      * @param service Service to attempt to build 
-     * @return The complete built service
-     * @throws TriumphException Exception if could not communicate with the service
+     * @return true on success, false otherwise
      */
-    public EndPoint buildService(EndPoint service) throws TriumphException {
+    public boolean buildService(EndPoint service) {
         return buildService(service, SessionPortStorage.getPort(service.getName()));
     }
 
@@ -391,7 +389,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         EndPoint service = object.getOwner();
 
         // Get the ProxyBusObject to invoke the method.
-        Session session = mSessionManager.getSession(service.getName());
+        Session session = mSessionManager.getSession(service);
         ProxyBusObject proxy = session.getProxy(object.getName());
 
         // Extract all the values of the arguments 
@@ -465,7 +463,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         String signature = signal.getOutputSignature();
 
         // Get the ProxyBusObject to invoke the method.
-        Session session = mSessionManager.getSession(destination);
+        Session session = mSessionManager.getSession(service);
 
         // Extract all the values of the arguments 
         // in a sequential Object array that conforms
@@ -511,7 +509,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         String signature = property.getSignature();
 
         // Get the ProxyBusObject to invoke the method.
-        Session session = mSessionManager.getSession(destination);
+        Session session = mSessionManager.getSession(service);
         ProxyBusObject proxy = session.getProxy(object.getName());
 
         TriumphCPPAdapter.setProperty(mBus, proxy, ifaceName, propertyName, signature, arg.getValue());
@@ -539,7 +537,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         String propertyName = property.getName();
 
         // Get the ProxyBusObject to invoke the method.
-        Session session = mSessionManager.getSession(destination);
+        Session session = mSessionManager.getSession(service);
         ProxyBusObject proxy = session.getProxy(object.getName());
         
         Object propertyObj = TriumphCPPAdapter.getProperty(mBus, proxy, ifaceName, propertyName);
@@ -701,24 +699,18 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      * 
      * @param service Service to build
      * @param sessionPort Session port to use to connect to endpoint
-     * @return The Alljoyn service to use.
-     * @throws TriumphException
+     * @return true on success, false if unable to connect with specific port number.
      */
-    private EndPoint buildService(EndPoint service, short sessionPort) throws TriumphException {
+    private boolean buildService(EndPoint service, short sessionPort) {
         LOG.fine("Building Service Via Introspection: " + service);
-        service.build(mSessionManager, sessionPort);
-        return service;
+     // Attempt to create a session
+        Session session = mSessionManager.getSession(service);
+        if (session == null) 
+            session = mSessionManager.createNewSession(service, sessionPort);
+        if (session == null)
+            return false;
         
-//        // Attempt to create a session
-//        Session session = mSessionManager.getSession(service.getName());
-//        if (session == null) 
-//            session = mSessionManager.createNewSession(service.getName(), sessionPort);
-//        // If fails throw exception
-//        ProxyBusObject proxy = session.getProxy("org/alljoyn/Bus/Peer");
-//        service.saveBusPeerProxy(proxy);
-//
-//        TriumphAJParser parser = new TriumphAJParser(mSessionManager);
-//        return parser.parseIntrospectData(service, sessionPort);
+        return service.build(session);
     }
 
     /**
@@ -731,7 +723,9 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      */
     private TreeItem<AllJoynComponent> buildTree(EndPoint service, short sessionPort) 
             throws TriumphException {
-        return buildService(service, sessionPort).toTree();
+        if ( buildService(service, sessionPort))
+            return service.toTree();
+        throw new TriumphException("Unable to build EndPoint " + service + " Check port");
     }
 
     private class RecievedSignalBroadcaster implements EventHandler<ActionEvent> {

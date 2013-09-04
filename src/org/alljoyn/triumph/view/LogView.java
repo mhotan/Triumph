@@ -29,6 +29,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 
+import org.alljoyn.triumph.model.TransactionLogger;
 import org.alljoyn.triumph.model.TransactionLogger.Transaction;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 
@@ -48,6 +49,13 @@ public class LogView extends BorderPane {
     
     private final List<OnClickListener> mListeners;
 
+    /**
+     * Creates a log view from the defaulted TransactionLogger.
+     */
+    public LogView() {
+        this(TransactionLogger.getInstance().getTransactions());
+    }
+    
     public LogView(ObservableList<Transaction> list) {
         ViewLoader.loadView("LogView.fxml", this);
         

@@ -56,4 +56,14 @@ public class ViewCache<T, V extends Node> {
         return mMap.get(element);
     }
     
+    /**
+     * remove the current view for this element.
+     * 
+     * @param element Element with view to remove
+     * @return true if element was removed, false otherwise.
+     */
+    public boolean removeView(T element) {
+        return mMap.remove(element) != null;
+    }
+    
 }
