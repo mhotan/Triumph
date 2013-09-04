@@ -21,7 +21,7 @@ import javafx.application.Application;
 import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
 
-import org.alljoyn.triumph.controller.MainController2;
+import org.alljoyn.triumph.controller.ViewController;
 import org.alljoyn.triumph.model.TriumphModel;
 import org.alljoyn.triumph.util.loaders.NativeLoader;
 
@@ -84,7 +84,7 @@ public class MainApplication extends Application {
     public void start(Stage primaryStage) throws IOException {
         primaryStage.setTitle(TITLE);		
         TriumphModel model = TriumphModel.getInstance();
-        MainController2 controller = new MainController2(primaryStage);
+        ViewController controller = new ViewController(primaryStage);
         model.addView(controller);
     }
 }

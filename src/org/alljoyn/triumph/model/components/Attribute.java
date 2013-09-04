@@ -31,85 +31,85 @@ import org.w3c.dom.Node;
  * @author Michael Hotan mhotan@quicinc.com
  */
 public class Attribute implements Serializable {
-	/**
+    /**
      * Serialization ID
      */
     private static final long serialVersionUID = -7609236900871099295L;
     private String mKey;
-	private String mValue;
-	
-	/**
-	 * Constructor for serialization.
-	 */
-	public Attribute() {
-	    mKey = "";
-	    mValue = null;
-	}
-	
-	/**
-	 * Create a wrapper for a particular attribute
-	 * @param key Key that points to value
-	 * @param value Value to associate with key.
-	 */
-	public Attribute(String key, String value) {
-		assert key != null;
-		assert value != null;
-		mKey = key;
-		mValue = value;
-	}
-	
-	/**
-	 * Return whether this attribute is a name
-	 * 
-	 * @return true if this attribute represents a name
-	 */
-	public boolean isName() {
-		return mKey.equals("name");
-	}
-	
-	public String getKey() {
-		return mKey;
-	}
-	
-	public String getValue() {
-		return mValue;
-	}
-	
-	public void updateValue(String value) {
-		mValue = value;
-	}
-	
-	public Attribute(Node node) {
-		this(node.getNodeName(), node.getNodeValue());
-	}
-	
-	@Override
-	public String toString() {
-		if (isName())
-			return mValue == null ? "" : mValue.trim();
-		return mKey + "=" + mValue;
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if (o == null) return false;
-		if (!o.getClass().equals(this.getClass())) return false;
-		Attribute a = (Attribute) o;
-		return a.mKey.equals(this.mKey);
-	}
-	
-	@Override
-	public int hashCode() {
-		return mKey.hashCode();
-	}
-	
-	
-	private void writeObject(java.io.ObjectOutputStream out)
-            throws IOException {
-           out.writeUTF(mKey);
-           out.writeUTF(mValue);
+    private String mValue;
+
+    /**
+     * Constructor for serialization.
+     */
+    public Attribute() {
+        mKey = "";
+        mValue = null;
     }
-    
+
+    /**
+     * Create a wrapper for a particular attribute
+     * @param key Key that points to value
+     * @param value Value to associate with key.
+     */
+    public Attribute(String key, String value) {
+        assert key != null;
+        assert value != null;
+        mKey = key;
+        mValue = value;
+    }
+
+    /**
+     * Return whether this attribute is a name
+     * 
+     * @return true if this attribute represents a name
+     */
+    public boolean isName() {
+        return mKey.equals("name");
+    }
+
+    public String getKey() {
+        return mKey;
+    }
+
+    public String getValue() {
+        return mValue;
+    }
+
+    public void updateValue(String value) {
+        mValue = value;
+    }
+
+    public Attribute(Node node) {
+        this(node.getNodeName(), node.getNodeValue());
+    }
+
+    @Override
+    public String toString() {
+        if (isName())
+            return mValue == null ? "" : mValue.trim();
+        return mKey + "=" + mValue;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!o.getClass().equals(this.getClass())) return false;
+        Attribute a = (Attribute) o;
+        return a.mKey.equals(this.mKey);
+    }
+
+    @Override
+    public int hashCode() {
+        return mKey.hashCode();
+    }
+
+
+    private void writeObject(java.io.ObjectOutputStream out)
+            throws IOException {
+        out.writeUTF(mKey);
+        out.writeUTF(mValue);
+    }
+
     private void readObject(java.io.ObjectInputStream in)
             throws IOException, ClassNotFoundException {
         mKey = in.readUTF();

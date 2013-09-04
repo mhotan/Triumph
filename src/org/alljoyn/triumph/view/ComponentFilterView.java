@@ -48,6 +48,12 @@ import org.alljoyn.triumph.model.components.Interface;
 import org.alljoyn.triumph.util.ComponentFilter;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 
+/**
+ * A view that is used to manage a filter for filtering through
+ * Interface Components.
+ * 
+ * @author Michael Hotan, mhotan@quicinc.com
+ */
 public class ComponentFilterView extends VBox {
 
     @FXML

@@ -1,7 +1,6 @@
 package org.alljoyn.triumph.controller;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -16,9 +15,6 @@ import org.alljoyn.triumph.model.TransactionLogger.Transaction.TYPE;
 import org.alljoyn.triumph.model.TriumphModel;
 import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.InterfaceComponent;
-import org.alljoyn.triumph.model.components.Method;
-import org.alljoyn.triumph.model.components.Property;
-import org.alljoyn.triumph.model.components.Signal;
 import org.alljoyn.triumph.model.components.SignalContext;
 import org.alljoyn.triumph.util.ViewCache;
 import org.alljoyn.triumph.view.CustomVBox;
@@ -33,12 +29,12 @@ import org.alljoyn.triumph.view.SignalsReceivedView.SignalReceivedListener;
 import org.alljoyn.triumph.view.TabbedSupportView;
 import org.alljoyn.triumph.view.TriumphViewable;
 
-public class MainController2 implements EndPointListener, TriumphViewable, OnClickListener, SignalReceivedListener {
+public class ViewController implements EndPointListener, TriumphViewable, OnClickListener, SignalReceivedListener {
 
-    /**
-     * Logger for the stats.
-     */
-    private static final Logger LOG = Logger.getLogger(MainController2.class.getSimpleName());
+//    /**
+//     * Logger for the stats.
+//     */
+//    private static final Logger LOG = Logger.getLogger(ViewController.class.getSimpleName());
 
     private final Stage mStage;
 
@@ -78,14 +74,14 @@ public class MainController2 implements EndPointListener, TriumphViewable, OnCli
     /**
      * Private cache for this endpoint
      */
-    private final ViewCache<EndPoint, Node> mEndPointViewCache;
+    private final ViewCache<EndPoint, EndPointView> mEndPointViewCache;
 
     /**
      * Creates a Controller that creates and manages internal views.
      * 
      * @param primaryStage Stage to build view over.
      */
-    public MainController2(Stage primaryStage) {
+    public ViewController(Stage primaryStage) {
         mStage = primaryStage;
         mModel = TriumphModel.getInstance();
 
@@ -97,7 +93,7 @@ public class MainController2 implements EndPointListener, TriumphViewable, OnCli
         mErrorDialog = new ErrorDialog("Error", "Unknown error");
 
         // Create a cache for the EndPoint
-        mEndPointViewCache = new ViewCache<EndPoint, Node>();
+        mEndPointViewCache = new ViewCache<EndPoint, EndPointView>();
 
         // Log view.
         mLogView = new LogView();
@@ -129,8 +125,21 @@ public class MainController2 implements EndPointListener, TriumphViewable, OnCli
         return view;
     }
 
+    /**
+     * 
+     * @param pane
+     */
     private void setContentPane(Pane pane) {
         mMainView.setCenterPane(pane);
+    }
+    
+    /**
+     * Attempts to remove pane.
+     * @param pane Pane to remove.
+     * @return true if successfully removed, false otherwise
+     */
+    private boolean removeContentPane(Pane pane) {
+        return mMainView.removeCenterPane(pane);
     }
     
     @Override
@@ -143,7 +152,7 @@ public class MainController2 implements EndPointListener, TriumphViewable, OnCli
             return;
         }
         
-        Node node = mEndPointViewCache.getViewForElement(ep);
+        EndPointView node = mEndPointViewCache.getViewForElement(ep);
         if (node == null) {
             node = new EndPointView(ep);
             mEndPointViewCache.addView(ep, node);
@@ -151,6 +160,20 @@ public class MainController2 implements EndPointListener, TriumphViewable, OnCli
         setContentPane((EndPointView)node);
     }
 
+    @Override
+    public void onEndPointRemoved(EndPoint ep) {
+        EndPointView view = mEndPointViewCache.getViewForElement(ep);
+        
+        // Remove the endpoint from the mapping.
+        mEndPointViewCache.removeView(ep);
+        // No view found
+        if (view == null) {
+            return;
+        }
+        // Attempt to remove the endpoint view if it is currently being displayed
+        removeContentPane(view);
+    }
+    
     @Override
     public void update() {
         // this represents a pull model.  Everytime the controller 
@@ -160,6 +183,7 @@ public class MainController2 implements EndPointListener, TriumphViewable, OnCli
         List<EndPoint> distributed = mModel.getDistributedServices();
         // Update the list of local services.
         List<EndPoint> locals = mModel.getLocalServices();
+        
         mEndPointsView.updateState(distributed, locals);
     }
 
@@ -171,21 +195,6 @@ public class MainController2 implements EndPointListener, TriumphViewable, OnCli
     private void showError(String title, String message) {
         mErrorDialog.setText(title, message);
         mErrorDialog.show();
-    }
-    
-    @Override
-    public void showMethod(Method method) {
-        // probably do nothing because it is taken care of in EndPointView.
-    }
-
-    @Override
-    public void showSignal(Signal signal) {
-        // probably do nothing because it is taken care of in EndPointView.
-    }
-
-    @Override
-    public void showProperty(Property property) {
-        // probably do nothing because it is taken care of in EndPointView.
     }
 
     @Override
@@ -224,5 +233,7 @@ public class MainController2 implements EndPointListener, TriumphViewable, OnCli
         setContentPane(epView);
         epView.showViewForComponent(component);
     }
+
+    
 
 }

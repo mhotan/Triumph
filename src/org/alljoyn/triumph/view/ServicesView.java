@@ -144,7 +144,6 @@ public class ServicesView extends HBox implements FilterViewListener {
      * @param localEps 
      */
     public void updateState(List<EndPoint> distributedEps, List<EndPoint> localEps) {
-        // TODO Auto-generated method stub
         mDistributedTable.update(distributedEps);
         mLocalTable.update(localEps);
     }

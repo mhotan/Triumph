@@ -16,9 +16,6 @@
 
 package org.alljoyn.triumph.view;
 
-import org.alljoyn.triumph.model.components.Method;
-import org.alljoyn.triumph.model.components.Property;
-import org.alljoyn.triumph.model.components.Signal;
 import org.alljoyn.triumph.model.components.SignalContext;
 
 /**
@@ -44,29 +41,6 @@ public interface TriumphViewable {
      * @param message Error message
      */
     public void showError(String message);
-
-    /**
-     * Given a particular method expose the appropriate amount of detail.
-     * 
-     * @param method Method to show
-     */
-    public void showMethod(Method method);
-
-    /**
-     * Given an Signal the view shows the appropriate
-     * fields and members that represent this Signal instance.
-     * 
-     * @param signal Signal to show
-     */
-    public void showSignal(Signal signal);
-
-    /**
-     * Given an Property the view shows the appropriate
-     * fields and members that represent this Property instance.
-     * 
-     * @param property Property to show
-     */
-    public void showProperty(Property property);
 
     /**
      * This is the notification to the view that a signal has been recieved.

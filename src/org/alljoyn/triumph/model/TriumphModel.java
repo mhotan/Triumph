@@ -28,7 +28,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.TreeItem;
 import javafx.util.Duration;
 
 import org.alljoyn.bus.BusAttachment;
@@ -44,7 +43,6 @@ import org.alljoyn.triumph.TriumphCPPAdapter;
 import org.alljoyn.triumph.TriumphException;
 import org.alljoyn.triumph.model.BusObserver.BusObserverListener;
 import org.alljoyn.triumph.model.components.AJObject;
-import org.alljoyn.triumph.model.components.AllJoynComponent;
 import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.EndPoint.SERVICE_TYPE;
 import org.alljoyn.triumph.model.components.Interface;
@@ -89,8 +87,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
     /**
      * Application name to register for bus attachment
      */
-    private static final String BUSATTACHMENTNAME = "org.alljoyn.triumph.sessions";
-
+    private static final String BUSATTACHMENTNAME = "org.alljoyn.triumph";
 
     /**
      * Reference to an instance of this class
@@ -190,7 +187,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         }
 
         mBusObserver = new BusObserver(mBus, this, true);
-        mSessionManager = new SessionManager(mBus);
+        mSessionManager = new SessionManager(mBus, this);
         mSignalHandlerManager = new SignalHandlerManager(mBus);
         mSignalHandlerManager.setListener(this);
         // TODO Add more Components
@@ -290,28 +287,6 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
     }
 
     /**
-     * This call is to signify that an event has happened and
-     * more detail about the requested service is desired. 
-     * 
-     * @param service name of service that is being requested
-     */
-    public void onServiceSelected(EndPoint service) {
-
-        // If the service is not empty then return fast
-        // There is no need to parse any data because 
-        if (!service.isEmpty()) 
-            return;
-
-        try {
-            TreeItem<AllJoynComponent> root = buildTree(service, SessionPortStorage.getPort(service.getName()));
-            // Expand the tree showing all the objects.
-            root.setExpanded(true);
-        } catch (TriumphException e) {
-            broadCastError(e.getMessage());
-        }
-    }
-
-    /**
      * Attempts to build service.
      * 
      * @param service Service to attempt to build 
@@ -319,35 +294,6 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      */
     public boolean buildService(EndPoint service) {
         return buildService(service, SessionPortStorage.getPort(service.getName()));
-    }
-
-    /**
-     * This method is to be invoked when 
-     * 
-     * @param method Method that is selected
-     */
-    public void onMethodSelected(Method method) {
-        // It is up to the view in case they need to handle the production of the correct view.
-        if (method == null) {
-            throw new NullPointerException("TriumphModel, onMethodSelected: argument method cannot be null");
-        }
-        broadcastMethod(method);
-    }
-
-    /**
-     * Notifies the data model that the signal wants to be focused on.
-     * @param signal Signal that was selected
-     */
-    public void onSignalSelected(Signal signal) {
-        broadcastSignal(signal);
-    }
-
-    /**
-     * Notifies the model that the property has been selected
-     * @param property Property that was selected
-     */
-    public void onPropertySelected(Property property) {
-        broadcastProperty(property);
     }
 
     /**
@@ -503,7 +449,6 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         EndPoint service = object.getOwner();
 
         // Destination endpoint
-        String destination = service.getName();
         String ifaceName = iface.getName();
         String propertyName = property.getName();
         String signature = property.getSignature();
@@ -532,7 +477,6 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         EndPoint service = object.getOwner();
 
         // Destination endpoint
-        String destination = service.getName();
         String ifaceName = iface.getName();
         String propertyName = property.getName();
 
@@ -609,29 +553,6 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
     }
 
     /**
-     * This method notifies all the views that there is a
-     * method that is desired to be shown.
-     * 
-     * @param method Method to present
-     */
-    private void broadcastMethod(Method method) {
-        assert method != null: "Method to show cannot be null";
-        for (TriumphViewable view: mViewables)
-            view.showMethod(method);
-    }
-
-    /**
-     * Notify all the views to portray this disinct
-     * 
-     * @param signal Signal to present in the UI
-     */
-    private void broadcastSignal(Signal signal) {
-        assert signal != null: "Signal to show cannot be null";
-        for (TriumphViewable view: mViewables)
-            view.showSignal(signal);
-    }
-
-    /**
      * For a given received signal, broadcast to all the views to show this signalContext.
      * 
      * @param signalReceived Context of the received signal.
@@ -640,17 +561,6 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         assert signalReceived != null : "Signal Context cannot be null"; 
         for (TriumphViewable view: mViewables)
             view.showSignalReceived(signalReceived);
-    }
-
-    /**
-     * Broadcast to all the views that the property wishes to be shown.
-     * 
-     * @param property  Property to show
-     */
-    private void broadcastProperty(Property property) {
-        assert property != null: "Signal to show cannot be null";
-        for (TriumphViewable view: mViewables)
-            view.showProperty(property);
     }
 
     /**
@@ -702,8 +612,6 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      * @return true on success, false if unable to connect with specific port number.
      */
     private boolean buildService(EndPoint service, short sessionPort) {
-        LOG.fine("Building Service Via Introspection: " + service);
-     // Attempt to create a session
         Session session = mSessionManager.getSession(service);
         if (session == null) 
             session = mSessionManager.createNewSession(service, sessionPort);
@@ -711,21 +619,6 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
             return false;
         
         return service.build(session);
-    }
-
-    /**
-     * For a given service return all the Objects that exists within 
-     * that service.
-     * 
-     * @param service Well known name of service
-     * @return List of all Objects associated with the service
-     * @throws Unable to get introspection
-     */
-    private TreeItem<AllJoynComponent> buildTree(EndPoint service, short sessionPort) 
-            throws TriumphException {
-        if ( buildService(service, sessionPort))
-            return service.toTree();
-        throw new TriumphException("Unable to build EndPoint " + service + " Check port");
     }
 
     private class RecievedSignalBroadcaster implements EventHandler<ActionEvent> {

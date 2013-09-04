@@ -19,28 +19,35 @@ package org.alljoyn.triumph.view;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
+import javafx.scene.layout.Pane;
 
 import org.alljoyn.triumph.model.components.arguments.Argument;
+import org.alljoyn.triumph.model.components.arguments.Argument.DIRECTION;
+import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
+import org.alljoyn.triumph.util.AJConstant;
 import org.alljoyn.triumph.util.ArgumentStorage;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
+import org.alljoyn.triumph.view.arguments.editable.ArgumentView;
+import org.alljoyn.triumph.view.arguments.editable.EditableArgumentViewFactory;
 
 /**
- * Dialog that will appear for saving an argument
+ * A prompt dialog that presents the ability to the user
+ * to create and save an argument.
  * 
  * @author mhotan@quicinc.com, Michael Hotan
  */
-public class SaveArgumentDialog extends GridPane {
+public class SaveArgumentDialog extends BorderPane {
 
     @FXML
     private ResourceBundle resources;
@@ -49,104 +56,189 @@ public class SaveArgumentDialog extends GridPane {
     private URL location;
 
     @FXML
-    private HBox actionParent;
+    private ScrollPane mArgPane;
 
     @FXML
-    private Button mCancelButton;
+    private HBox mButtonBar;
 
     @FXML
-    private Label mError;
+    private Pane mButtonFillerC1, mButtonFillerL1, mButtonFillerL2, mButtonFillerL3, mButtonFillerR1;
 
     @FXML
-    private ImageView mImageView;
+    private Button mCancelButton, mSaveButton;
 
     @FXML
-    private TextField mInput;
+    private Label mError, mNameLabel, mSignatureLabel;
 
     @FXML
-    private Button mOkButton;
+    private GridPane mGridPane;
 
     @FXML
-    private Button mOverwriteButton;
-
-    @FXML
-    private Label messageLabel;
-
-    @FXML
-    private HBox okParent;
-
-    private final Argument<?> mArg;
-
-    private final ArgumentStorage mStorage;
+    private TextField mNameInput, mSignatureInput;
 
     /**
-     * Creates a dialog to save the argument assigned to it.
-     * 
-     * @param argToSave Argument to save.
+     * Argument to show to save.
      */
-    public SaveArgumentDialog(Argument<?> argToSave) {
-        ViewLoader.loadView("SaveArgumentDialog.fxml", this);
-        mArg = argToSave;
-        mStorage = ArgumentStorage.getInstance();
+    private final Argument<?> mArg;
+    private final ArgumentView<?> mArgView;
+    private final CloseListener mCloseListener;
 
-        mOverwriteButton.managedProperty().bind(mOverwriteButton.visibleProperty());
-        mOverwriteButton.setVisible(false);
+    private static final String SAVE = "Save";
+    private static final String OVERWRITE = "Overwrite";
+    
+    public SaveArgumentDialog(CloseListener listener) {
+        this(ArgumentFactory.getArgument("" + AJConstant.ALLJOYN_VARIANT, "", DIRECTION.IN), listener);
+        mSignatureInput.setEditable(true);
+    }
 
+    public SaveArgumentDialog(Argument<?> argument, CloseListener listener) {
+        ViewLoader.loadView(this);
+        
+        mArg = argument;
+        mCloseListener = listener;
+        
+        // If the error message disappears then have the space it took up disappear 
         mError.managedProperty().bind(mError.visibleProperty());
         hideError();
 
-        mInput.textProperty().addListener(new ChangeListener<String>() {
+        // Make sure the save button is always as wide as the save button.
+        mSaveButton.minWidthProperty().bind(mCancelButton.widthProperty());
 
+        // Extract the argument view to present in this view.
+        mArgView = EditableArgumentViewFactory.produceView(mArg);
+        // Hide the save button
+        mArgView.hideSaveButton();
+        mArgView.prefWidthProperty().bind(widthProperty());
+        mArgPane.setContent(mArgView);
+
+        // Set the input Text to a savable name
+        String name = getSavableName();
+        mNameInput.setText(name);
+        mNameLabel.setTooltip(new Tooltip("The name to associate to this argument"));
+        mNameInput.setOnAction(new EventHandler<ActionEvent>() {
+            
             @Override
-            public void changed(ObservableValue<? extends String> observable,
-                    String oldValue, String newValue) {
-
+            public void handle(ActionEvent arg0) {
+                checkName();
             }
         });
+        
+        mSignatureInput.setText(mArg.getDBusSignature());
+        mSignatureInput.setEditable(false);
     }
-
-    @FXML
-    void onSetName(ActionEvent event) {
-        // Reset the values
-        mOverwriteButton.setVisible(false);
-        mOkButton.setVisible(true);
-        hideError();
-
-        String nameToSave = mInput.getText();
-        if (nameToSave == null || nameToSave.isEmpty()) {
-            showError("Can't save name with '" + nameToSave + "'");
-            return;
-        }
-
-        mArg.setSaveByName(nameToSave);
-        // Check if name is already taken.
-        if (mStorage.hasArgument(mArg)) {
-            showError("Name already exist! Would you like to overwrite?");
-            mOverwriteButton.setVisible(true);
-            mOkButton.setVisible(false);
-        }
-    }
-
+    
     @FXML
     void onCancel(ActionEvent event) {
-        Stage stage = (Stage) getScene().getWindow();
-        stage.close();
+        mCloseListener.onRequestClose();
     }
 
     @FXML
-    void onOk(ActionEvent event) {
-        onSetName(event);
+    void onSave(ActionEvent event) {
+        boolean validName = checkName();
+        String currentName = mNameInput.getText();
+        if (validName || mSaveButton.getText().equals(OVERWRITE)) {
+            saveArg(currentName);
+            mSaveButton.setText(SAVE);
+            hideError();
+            mCloseListener.onRequestClose();
+            return;
+        }
     }
 
-    @FXML
-    void onOverwrite(ActionEvent event) {
-        mOverwriteButton.setVisible(false);
-        mOkButton.setVisible(true);
+    private String getSavableName() {
+        // Try to decipher a name to associate to this argument
+        // First attempt to use the last saved by name
+        // Then the actual name of the argument
+        // Then finally use the human readable signature
+        // Then associate a number making the unique 
+        String name = mArg.getSaveByName();
+        if (name == null) {
+            name = mArg.getName().trim();
+            if (name.isEmpty()) {
+                name = mArg.getSignature();
+            }
+        }
+        
+        mArg.setSaveByName(name);
+        int number = 0;
+        // While there is an argument with that name then
+        // attempt to create a new unused name by appending a number.
+        while (hasArg(name)) {
+            String potentialSuffix = "(" + (number) + ")";
+            if (name.endsWith(potentialSuffix)) {
+                name = name.replace(potentialSuffix, "");
+            }
+            number += 1;
+            name += "(" + (number) + ")";
+            mArg.setSaveByName(name);
+        }
+        return name;
+    }
+    
+    /**
+     * Commits the current name in the text field.
+     * Checks if the name is valid 
+     * @return true if name is valid, false otherwise
+     */
+    private boolean checkName() {
         hideError();
-
-        mStorage.saveArgument(mArg);
+        mSaveButton.setText(SAVE);
+        
+        String name = mNameInput.getText().trim();
+        // update text field with correct name
+        mNameInput.setText(name);
+        
+        // check if the name is empty as in there is no characters
+        if (name.isEmpty()) {
+            showError("Empty Name");
+            return false;
+        }
+        
+        // Set the argument save by name
+        if (hasArg(name)) {
+            showError("Name already taken");
+            mSaveButton.setText(OVERWRITE);
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Checks whether there is already an argument of the same type with associated name. 
+     * 
+     * @param name Name to associate with this argument
+     * @return whether or not there is already an argument of the same type with this name.
+     */
+    private boolean hasArg(String name) {
+        String oldName = mArg.getSaveByName();
+        mArg.setSaveByName(name);
+        boolean val =  ArgumentStorage.getInstance().hasArgument(mArg);
+        mArg.setSaveByName(oldName);
+        return val;
+    }
+    
+    /**
+     * Saves the argument with this name.
+     * <br>If the name of this argument is taken by an argument of the same type.
+     * @param name name to associate to this argument.
+     */
+    private void saveArg(String name) {
+        mArg.setSaveByName(name);
+        ArgumentStorage.getInstance().saveArgument(mArg);
     }
 
+    /**
+     * Hides the error message
+     */
+    private void hideError() {
+        mError.setVisible(false);
+    }
+
+    /**
+     * Shows error message.
+     * @param message Message to show
+     */
     private void showError(String message) {
         if (message == null)
             message = "Unknown error";
@@ -154,20 +246,29 @@ public class SaveArgumentDialog extends GridPane {
         mError.setVisible(true);
     }
 
-    private void hideError() {
-        mError.setVisible(false);
-    }
-
     @FXML
     void initialize() {
-        assert actionParent != null : "fx:id=\"actionParent\" was not injected: check your FXML file 'SaveArgumentDialog.fxml'.";
-        assert mCancelButton != null : "fx:id=\"mCancelButton\" was not injected: check your FXML file 'SaveArgumentDialog.fxml'.";
-        assert mError != null : "fx:id=\"mError\" was not injected: check your FXML file 'SaveArgumentDialog.fxml'.";
-        assert mImageView != null : "fx:id=\"mImageView\" was not injected: check your FXML file 'SaveArgumentDialog.fxml'.";
-        assert mInput != null : "fx:id=\"mInput\" was not injected: check your FXML file 'SaveArgumentDialog.fxml'.";
-        assert mOkButton != null : "fx:id=\"mOkButton\" was not injected: check your FXML file 'SaveArgumentDialog.fxml'.";
-        assert mOverwriteButton != null : "fx:id=\"mOverwriteButton\" was not injected: check your FXML file 'SaveArgumentDialog.fxml'.";
-        assert messageLabel != null : "fx:id=\"messageLabel\" was not injected: check your FXML file 'SaveArgumentDialog.fxml'.";
-        assert okParent != null : "fx:id=\"okParent\" was not injected: check your FXML file 'SaveArgumentDialog.fxml'.";
+        assert mArgPane != null : "fx:id=\"mArgPane\" was not injected: check your FXML file 'SaveArgumentView2.fxml'.";
+        assert mButtonBar != null : "fx:id=\"mButtonBar\" was not injected: check your FXML file 'SaveArgumentView2.fxml'.";
+        assert mButtonFillerC1 != null : "fx:id=\"mButtonFillerC1\" was not injected: check your FXML file 'SaveArgumentView2.fxml'.";
+        assert mButtonFillerL1 != null : "fx:id=\"mButtonFillerL1\" was not injected: check your FXML file 'SaveArgumentView2.fxml'.";
+        assert mButtonFillerL2 != null : "fx:id=\"mButtonFillerL2\" was not injected: check your FXML file 'SaveArgumentView2.fxml'.";
+        assert mButtonFillerL3 != null : "fx:id=\"mButtonFillerL3\" was not injected: check your FXML file 'SaveArgumentView2.fxml'.";
+        assert mButtonFillerR1 != null : "fx:id=\"mButtonFillerR1\" was not injected: check your FXML file 'SaveArgumentView2.fxml'.";
+        assert mCancelButton != null : "fx:id=\"mCancelButton\" was not injected: check your FXML file 'SaveArgumentView2.fxml'.";
+        assert mError != null : "fx:id=\"mError\" was not injected: check your FXML file 'SaveArgumentView2.fxml'.";
+        assert mGridPane != null : "fx:id=\"mGridPane\" was not injected: check your FXML file 'SaveArgumentView2.fxml'.";
+        assert mNameInput != null : "fx:id=\"mNameInput\" was not injected: check your FXML file 'SaveArgumentView2.fxml'.";
+        assert mNameLabel != null : "fx:id=\"mNameLabel\" was not injected: check your FXML file 'SaveArgumentView2.fxml'.";
+        assert mSaveButton != null : "fx:id=\"mSaveButton\" was not injected: check your FXML file 'SaveArgumentView2.fxml'.";
+        assert mSignatureInput != null : "fx:id=\"mSignatureInput\" was not injected: check your FXML file 'SaveArgumentView2.fxml'.";
+        assert mSignatureLabel != null : "fx:id=\"mSignatureLabel\" was not injected: check your FXML file 'SaveArgumentView2.fxml'.";
     }
+
+    public interface CloseListener {
+        
+        public void onRequestClose();
+        
+    }
+
 }
