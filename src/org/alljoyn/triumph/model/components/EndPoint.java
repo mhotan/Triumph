@@ -23,10 +23,6 @@ import java.util.logging.Logger;
 import org.alljoyn.bus.ProxyBusObject;
 import org.alljoyn.triumph.TriumphException;
 import org.alljoyn.triumph.model.session.Session;
-import org.alljoyn.triumph.model.session.SessionManager;
-
-import javafx.collections.ObservableList;
-import javafx.scene.control.TreeItem;
 
 /**
  * A wrapper class that pertains to an endpoint or service
@@ -44,10 +40,8 @@ public class EndPoint extends AllJoynComponent {
     private boolean isBuilt;
     
     /**
-     * Session for this endpoint
+     * List of Object that this endpoint contains.
      */
-    private Session mSession;
-
     private final List<AJObject> mObjects;
 
     public enum SERVICE_TYPE {
@@ -164,31 +158,6 @@ public class EndPoint extends AllJoynComponent {
         return "Service: " + getName();
     }
 
-    @Override
-    public TreeItem<AllJoynComponent> toTree() {
-        TreeItem<AllJoynComponent> root = getCachedTree();
-
-        // We have already stored this cached tree.
-        if (root == null)
-            root = new TreeItem<AllJoynComponent>(this);
-
-        // Have to update the cache value if necessary
-        List<AllJoynComponent> currentObjects = new ArrayList<AllJoynComponent>();
-        ObservableList<TreeItem<AllJoynComponent>> children = root.getChildren();
-        for (TreeItem<AllJoynComponent> treeItem : children) {
-            currentObjects.add(treeItem.getValue());
-        }
-
-        // Add all the objects under this root.
-        for (AJObject object: mObjects) {
-            if (!currentObjects.contains(object))
-                children.add(object.toTree());
-        }
-
-        setCachedTree(root);
-        return root;
-    }
-
     public List<AJObject> getObjects() {
         return new ArrayList<AJObject>(mObjects);
     }
@@ -198,12 +167,12 @@ public class EndPoint extends AllJoynComponent {
         if (o == null) return false;
         if (!o.getClass().equals(getClass())) return false;
         EndPoint s = (EndPoint) o;
-        return s.getName().equals(getName());
+        return s.getName().equals(getName()) && s.mServiceType == this.mServiceType;
     }
 
     @Override
     public int hashCode() {
-        return getName().hashCode();
+        return getName().hashCode() + 11 * mServiceType.hashCode();
     }
 
     private ProxyBusObject mStandardProxy;

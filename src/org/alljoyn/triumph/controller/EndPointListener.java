@@ -31,5 +31,12 @@ public interface EndPointListener {
      * @param ep EndPoint that was selected;
      */
     public void onEndPointSelected(EndPoint ep);
+ 
+    /**
+     * Notifies any clients that any view related to this endpoint should be removed.
+     * 
+     * @param eps EndPoints that relate to view to be removed.
+     */
+    public void onEndPointRemoved(EndPoint ep);
     
 }

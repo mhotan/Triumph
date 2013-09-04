@@ -17,8 +17,7 @@
 package org.alljoyn.triumph.model.session;
 
 /**
- * Listener that translates and describes which session was lost
- * which is by name.
+ * Listener that is notified when a specific session is losted.
  * @author mhotan
  */
 public interface TriumphSessionListener {
@@ -26,9 +25,9 @@ public interface TriumphSessionListener {
 	/**
 	 * Notifies that the session has been lost and cannot be connected to
 	 * 
-	 * @param name 
-	 * @param sessionId
+	 * @param name Name of the session
+	 * @param sessionId Session ID that was lost.
 	 */
-	public void sessionLost(String name, int sessionId);
+	public void sessionLost(Session name, int sessionId);
 	
 }

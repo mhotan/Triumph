@@ -174,9 +174,10 @@ public class Session extends SessionListener {
     }
 
     @Override
-    public void sessionLost(int sessionId) {
-        super.sessionLost(sessionId);
-        mListener.sessionLost(mEndPoint.getName(), sessionId);
+    public void sessionLost(int sessionId, int reason) {
+        super.sessionLost(sessionId, reason);
+        if (sessionId != this.sessionId) return;
+        mListener.sessionLost(this, sessionId);
     }
 
     /**
@@ -235,30 +236,5 @@ public class Session extends SessionListener {
         InterfaceDescriptionBuilder builder = new XMLInterfaceDescriptionBuilder(node);
         return builder.build(mBus);
     }
-
-    // Possibly use this later to save the session data
-    //	/**
-    //	 * Details of the session port listener.
-    //	 */
-    //	private static class SessionDetails {
-    //	    
-    //	    public short mPortNum;
-    //	    public String mEndPointName;
-    //	    
-    //	    public SessionDetails() {
-    //	        mPortNum = 0;
-    //	        mEndPointName = null;
-    //	    }
-    //	    
-    //	    /**
-    //	     * 
-    //	     * @param endpoint Endpoint 
-    //	     * @param port Port to associate 
-    //	     */
-    //	    public SessionDetails(String endpoint, short port) {
-    //	        mPortNum = port;
-    //	        mEndPointName = endpoint;
-    //	    }
-    //	}
 
 }

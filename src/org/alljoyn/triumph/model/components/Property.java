@@ -19,8 +19,6 @@ package org.alljoyn.triumph.model.components;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.scene.control.TreeItem;
-
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -195,11 +193,6 @@ public class Property extends InterfaceComponent implements Attributable {
         }
 
         return buf.toString().trim();
-    }
-
-    @Override
-    public TreeItem<AllJoynComponent> toTree() {
-        return new TreeItem<AllJoynComponent>(this);
     }
 
     @Override

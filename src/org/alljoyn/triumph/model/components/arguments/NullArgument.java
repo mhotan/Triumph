@@ -2,8 +2,6 @@ package org.alljoyn.triumph.model.components.arguments;
 
 import java.io.IOException;
 
-import org.alljoyn.triumph.util.AJConstant;
-
 /**
  *  A Special argument that represents a null pointer.
  */

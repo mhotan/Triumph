@@ -83,7 +83,7 @@ public class SignalTest {
 		DBusProxyObj.RequestNameResult res = control.RequestName(ServiceWellKnownName, 
 				DBusProxyObj.REQUEST_NAME_NO_FLAGS);
 
-		mSessionManager = new SessionManager(mBus);
+		mSessionManager = new SessionManager(mBus,null);
 
 		Assert.assertEquals(DBusProxyObj.RequestNameResult.PrimaryOwner, res);
 	}

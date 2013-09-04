@@ -32,8 +32,8 @@ import javafx.stage.Stage;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.model.components.arguments.Argument.DIRECTION;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
-import org.alljoyn.triumph.view.SaveArgumentDialog2;
-import org.alljoyn.triumph.view.SaveArgumentDialog2.CloseListener;
+import org.alljoyn.triumph.view.SaveArgumentDialog;
+import org.alljoyn.triumph.view.SaveArgumentDialog.CloseListener;
 
 /**
  * Custom JavaFX UI control element that represent a general argument.  This provides basic 
@@ -270,7 +270,7 @@ public abstract class ArgumentView<T> extends HBox implements CloseListener {
         onSetCurrentValue();
         mSaveDialog = new Stage();
         mSaveDialog.initModality(Modality.WINDOW_MODAL);
-        SaveArgumentDialog2 dialog = new SaveArgumentDialog2(mArg, this);
+        SaveArgumentDialog dialog = new SaveArgumentDialog(mArg, this);
         mSaveDialog.setScene(new Scene(dialog));
         mSaveDialog.show();
     }

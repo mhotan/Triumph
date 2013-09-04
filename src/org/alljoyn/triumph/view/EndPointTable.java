@@ -1,8 +1,25 @@
+/******************************************************************************
+ * Copyright 2013, Qualcomm Innovation Center, Inc.
+ *
+ *    All rights reserved.
+ *    This file is licensed under the 3-clause BSD license in the NOTICE.txt
+ *    file for this project. A copy of the 3-clause BSD license is found at:
+ *
+ *        http://opensource.org/licenses/BSD-3-Clause.
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the license is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the license for the specific language governing permissions and
+ *    limitations under the license.
+ ******************************************************************************/
+
 package org.alljoyn.triumph.view;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -89,6 +106,7 @@ public class EndPointTable extends TableView<EndPointRow> {
     /**
      * Initial method called by constructor to set specific attributes of the table.
      */
+    @SuppressWarnings("unchecked")
     private void init() {
         // Set up the table column resize policy.
         setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -173,47 +191,68 @@ public class EndPointTable extends TableView<EndPointRow> {
         });
     }
     
+
+    
+    /**
+     * Update the state of the current rows.
+     * 
+     * @param eps Current state of known endpoints
+     * @return Collection of lost endpoints.
+     */
+    public Collection<EndPoint> update(Collection<EndPoint> eps) {
+        Collection<EndPointRow> currentRows = new ArrayList<EndPointTable.EndPointRow>();
+        for (EndPoint p: eps)
+            currentRows.add(new EndPointRow(p));
+        
+        // Find out all the Endpoints we have lost
+        List<EndPointRow> oldList = new ArrayList<EndPointRow>(mListManager.getUnderlyingList());
+        oldList.removeAll(currentRows);
+        mListManager.updateState(currentRows);
+        
+        // Put the list of lost rows to the list of endpoints
+        Collection<EndPoint> lostEps = new ArrayList<EndPoint>();
+        for (EndPointRow row: oldList) {
+            for (EndPointListener list: mListeners)
+                list.onEndPointRemoved(row.getEndPoint());
+        }
+        return lostEps;
+    }
+
+    /**
+     * Attempts to add filter.
+     * 
+     * @param filter Filter to add
+     */
     public void addFilter(EndPointFilter filter) {
         if (filter == null) return;
         mListManager.addFilter(filter);
     }
     
+    /**
+     * Attempts to remove filters
+     * 
+     * @param filter Filter to remove from list manager
+     * @return true if filter was found, false otherwise
+     */
     public boolean removeFilter(EndPointFilter filter) {
         return mListManager.removeFilter(filter);
     }
     
     /**
-     * Update the state of the current rows
-     * @param eps endpoints
+     * Adds EndPointListener
+     * 
+     * @param list Listener to add
      */
-    public void update(Collection<EndPoint> eps) {
-        Collection<EndPointRow> currentRows = new ArrayList<EndPointTable.EndPointRow>();
-        for (EndPoint p: eps)
-            currentRows.add(new EndPointRow(p));
-        mListManager.updateState(currentRows);
-    }
-
-    /**
-     * Basic converter that converts Integer to String and back
-     * @author Michael Hotan, mhotan@quicinc.com
-     */
-    private class IntegerStringConverter extends StringConverter<Integer> {
-
-        @Override
-        public Integer fromString(String string) {
-            return Integer.valueOf(string);
-        }
-
-        @Override
-        public String toString(Integer intVal) {
-            return intVal.toString();
-        }
-    }
-    
     public void addListener(EndPointListener list) {
+        if (list == null) return;
         mListeners.add(list);
     }
     
+    /**
+     * Removes EndPoint listener
+     * 
+     * @param list EndPoint listener to remove
+     */
     public void removeListener(EndPointListener list) {
         mListeners.remove(list);
     }
@@ -319,6 +358,24 @@ public class EndPointTable extends TableView<EndPointRow> {
         @Override 
         public int hashCode() {
             return mEp.hashCode();
+        }
+    }
+
+    /**
+     * Basic converter that converts Integer to String and back
+     * @author Michael Hotan, mhotan@quicinc.com
+     */
+    private class IntegerStringConverter extends StringConverter<Integer> {
+
+        @Override
+        public Integer fromString(String string) {
+            return Integer.valueOf(string);
+        }
+
+        @Override
+        public String toString(Integer intVal) {
+            if (intVal == null) return "";
+            return intVal.toString();
         }
     }
 }

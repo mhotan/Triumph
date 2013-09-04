@@ -29,51 +29,50 @@ import org.w3c.dom.Node;
  */
 public class Method extends Member {
 
-	private static final String LABEL = "method";
-	
-	
-	/*
-	 * These members are helper method for 
-	 * JNI and retrieving the correct name.
-	 */
-	@SuppressWarnings("unused")
-	private final String mInterfaceName, mObjectName;
-	
-	@Override
-	public String getString() {
-		// Now we are doing the easy less writing route.
-		return this.toString();
-	}
+    private static final String LABEL = "method";
 
-	/**
-	 * Creates a method instance that is able to parse a node
-	 * that represents a method
-	 * 
-	 * node must have a name "method"
-	 * 
-	 * @param node node that represents the method.
-	 */
-	Method(Node node, Interface iface) {
-		super(node, iface, TYPE.METHOD, DIRECTION.IN);
-		
-		mInterfaceName = iface.getName();
-		mObjectName = iface.getObject().getName();
-		
-		// Method must be of type method
-		if (!isMethod(node)) 
-			throw new IllegalArgumentException("Illegal node for " 
-					+ getClass().getSimpleName() + " Constructor.  " +
-					"Node must have name \"" + LABEL + "\"");
-	}
-	
-	/**
-	 * Returns whether this node is considered
-	 * to represents a method.
-	 * @param node Speculated Node
-	 * @return whether node represents a signal or not.
-	 */
-	public static boolean isMethod(Node node) {
-		String name = node.getNodeName();
-		return name != null && name.equals(LABEL);
-	}
+    /*
+     * These members are helper method for 
+     * JNI and retrieving the correct name.
+     */
+    @SuppressWarnings("unused")
+    private final String mInterfaceName, mObjectName;
+
+    @Override
+    public String getString() {
+        // Now we are doing the easy less writing route.
+        return this.toString();
+    }
+
+    /**
+     * Creates a method instance that is able to parse a node
+     * that represents a method
+     * 
+     * node must have a name "method"
+     * 
+     * @param node node that represents the method.
+     */
+    Method(Node node, Interface iface) {
+        super(node, iface, TYPE.METHOD, DIRECTION.IN);
+
+        mInterfaceName = iface.getName();
+        mObjectName = iface.getObject().getName();
+
+        // Method must be of type method
+        if (!isMethod(node)) 
+            throw new IllegalArgumentException("Illegal node for " 
+                    + getClass().getSimpleName() + " Constructor.  " +
+                    "Node must have name \"" + LABEL + "\"");
+    }
+
+    /**
+     * Returns whether this node is considered
+     * to represents a method.
+     * @param node Speculated Node
+     * @return whether node represents a signal or not.
+     */
+    public static boolean isMethod(Node node) {
+        String name = node.getNodeName();
+        return name != null && name.equals(LABEL);
+    }
 }

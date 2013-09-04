@@ -1,3 +1,19 @@
+/******************************************************************************
+ * Copyright 2013, Qualcomm Innovation Center, Inc.
+ *
+ *    All rights reserved.
+ *    This file is licensed under the 3-clause BSD license in the NOTICE.txt
+ *    file for this project. A copy of the 3-clause BSD license is found at:
+ *
+ *        http://opensource.org/licenses/BSD-3-Clause.
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the license is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the license for the specific language governing permissions and
+ *    limitations under the license.
+ ******************************************************************************/
+
 package org.alljoyn.triumph.view;
 
 import java.net.URL;
@@ -64,7 +80,7 @@ public class EndPointFilterView extends VBox implements SaveListener {
     private TextField mSuffixInput;
 
     private EndPointFilter mCurFilter;
-    
+
     private ErrorDialog mErrorDialog;
 
     private final ObservableList<EndPointFilter> mAvailableList;
@@ -108,6 +124,15 @@ public class EndPointFilterView extends VBox implements SaveListener {
         // It does not effect the layout inappropriately.
         mErrorDialog = new ErrorDialog("Error", "");
         hideError();
+        
+        addTextChangeListeners();
+    }
+
+    /**
+     * Add all the correct change listeners to the text input boxes.
+     */
+    private void addTextChangeListeners() {
+        
     }
 
     /**
@@ -123,7 +148,7 @@ public class EndPointFilterView extends VBox implements SaveListener {
     @FXML
     void onFilter(ActionEvent event) {
         if (!checkFields()) return;
-        
+
         for (FilterViewListener listener: mListeners) {
             listener.onFilterChanged(mCurFilter);
         }
@@ -146,44 +171,95 @@ public class EndPointFilterView extends VBox implements SaveListener {
         EndPointFilterStorage.getInstance().saveFilter(mCurFilter);
     }
 
+    /**
+     * Attempts to set the port.
+     * 
+     * @return Error on failure, null on success
+     */
+    private String setPort(String portStr) {
+        if (portStr == null || portStr.isEmpty()) {
+            mPortInput.setText("");
+            mCurFilter.setPort(null);
+            return null;
+        }
+        try {
+            portStr = portStr.trim();
+            mCurFilter.setPort(Short.valueOf(portStr));
+            mPortInput.setText(portStr);
+        } catch (NumberFormatException e) {
+            return "Invalid short";
+        }
+        return null;
+    }
+    
     @FXML
     void onSetPort(ActionEvent event) {
         hideError();
-
-        try {
-            String portStr = mPortInput.getText().trim();
-            mPortInput.setText(portStr);
-            if (portStr.isEmpty())
-                mCurFilter.setPort(null);
-            else
-                mCurFilter.setPort(Short.valueOf(portStr));
-        } catch (NumberFormatException e) {
-            showError("Invalid Port", "Not a short");
+        String error = setPort(mPortInput.getText());
+        if (error != null) {
+            showError("Invalid Port", error);
         }
+    }
+
+    /**
+     * Sets the name to save argument by.
+     * 
+     * @param name Name to save name by
+     * @return Error string on failure, null on succes
+     */
+    private String setSaveByName(String name) {
+        if (name.isEmpty()) {
+            return "Can't have empty name";
+        }
+        mCurFilter.setSaveByName(name);
+        return null;
     }
 
     @FXML
     void onSaveByNameSet(ActionEvent event) {
-        String name = mSaveByNameInput.getText();
-        if (name.isEmpty()) {
-            showError("Invalid Name", "Can't have empty name");
-        } else {
-            hideError();
+        hideError(); // hide any current error
+
+        // Check for the error
+        String error = setSaveByName(mSaveByNameInput.getText());
+        if (error != null) {
+            showError("Invalid Name", error);
+            return;
         }
     }
 
-    @FXML
-    void onSetPrefix(ActionEvent event) {
-        String val = mPrefixInput.getText().trim();
+    /**
+     * Sets the current values prefix.
+     * 
+     * @param prefix Prefix to Check for
+     */
+    private void setPrefixName(String prefix) {
+        if (prefix == null) 
+            prefix = "";
+        String val = prefix.trim();
         mPrefixInput.setText(val);
         mCurFilter.setPrefix(val);
     }
 
     @FXML
-    void onSetSuffix(ActionEvent event) {
-        String val = mSuffixInput.getText().trim();
+    void onSetPrefix(ActionEvent event) {
+        setPrefixName(mPrefixInput.getText());
+    }
+
+    /**
+     * Sets the suffix to look for.
+     * @param suffix
+     */
+    private void setSuffixName(String suffix) {
+        if (suffix == null)
+            suffix = "";
+        String val = suffix.trim();
         mSuffixInput.setText(val);
         mCurFilter.setPrefix(val);
+    }
+    
+    @FXML
+    void onSetSuffix(ActionEvent event) {
+        setSuffixName(mSuffixInput.getText());
     }
 
     /**
@@ -220,9 +296,9 @@ public class EndPointFilterView extends VBox implements SaveListener {
             return false;
         }
     }
-    
-    
-    
+
+
+
     /**
      * Switches the current filter to the value inputted.
      * @param filter Filter to use.

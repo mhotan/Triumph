@@ -17,8 +17,6 @@
 package org.alljoyn.triumph.util.loaders;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,25 +31,25 @@ public class NativeLoader {
 
     public static final Logger LOG = Logger.getGlobal();
 
-    /**
-     * String representation for Windows x86 architecture
-     */
-    private static final String ARCHITECTURE_X86 = "x86";
-
-    /**
-     * String representation for Linux AMD 64 bit architecture
-     */
-    private static final String ARCHITECTURE_AMD64 = "amd64";
-
-    /**
-     * String representation for 64-bit linux on itanium architecture
-     */
-    private static final String ARCHITECTURE_IA64 = "ia64";
-
-    /**
-     * String representation for Linux AMD 32 bit architecture
-     */
-    private static final String ARCHITECTURE_I386 = "i386";
+//    /**
+//     * String representation for Windows x86 architecture
+//     */
+//    private static final String ARCHITECTURE_X86 = "x86";
+//
+//    /**
+//     * String representation for Linux AMD 64 bit architecture
+//     */
+//    private static final String ARCHITECTURE_AMD64 = "amd64";
+//
+//    /**
+//     * String representation for 64-bit linux on itanium architecture
+//     */
+//    private static final String ARCHITECTURE_IA64 = "ia64";
+//
+//    /**
+//     * String representation for Linux AMD 32 bit architecture
+//     */
+//    private static final String ARCHITECTURE_I386 = "i386";
 
     /**
      * String representation for the native library directory for Windows x86_64 architecture.

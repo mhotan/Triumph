@@ -1,3 +1,19 @@
+/******************************************************************************
+ * Copyright 2013, Qualcomm Innovation Center, Inc.
+ *
+ *    All rights reserved.
+ *    This file is licensed under the 3-clause BSD license in the NOTICE.txt
+ *    file for this project. A copy of the 3-clause BSD license is found at:
+ *
+ *        http://opensource.org/licenses/BSD-3-Clause.
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the license is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the license for the specific language governing permissions and
+ *    limitations under the license.
+ ******************************************************************************/
+
 package org.alljoyn.triumph.view;
 
 import java.net.URL;
@@ -58,6 +74,22 @@ public class CustomVBox extends VBox {
         // Sets the visibility.
         MiddlePane.setContent(center);
         MiddlePane.setVisible(true);
+    }
+    
+    /**
+     * Attempts to remove center pane.
+     * 
+     * @param center Center pane to remove
+     * @return true if center is within the MiddlePane
+     */
+    public boolean removeCenterPane(Pane center) {
+        if (center == null) return false;
+        Pane content = (Pane) MiddlePane.getContent();
+        if (content.equals(center)) {
+            MiddlePane.setContent(new MessagePane("Connection lost!", ""));
+            return true;
+        }
+        return false;
     }
     
     @FXML
