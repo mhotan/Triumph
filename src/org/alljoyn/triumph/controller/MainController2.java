@@ -7,35 +7,31 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import org.alljoyn.triumph.model.TransactionLogger.MethodTransaction;
-import org.alljoyn.triumph.model.TransactionLogger.PropertyTransaction;
-import org.alljoyn.triumph.model.TransactionLogger.SignalTransaction;
 import org.alljoyn.triumph.model.TransactionLogger.Transaction;
 import org.alljoyn.triumph.model.TransactionLogger.Transaction.TYPE;
 import org.alljoyn.triumph.model.TriumphModel;
-import org.alljoyn.triumph.model.components.AJObject;
 import org.alljoyn.triumph.model.components.EndPoint;
-import org.alljoyn.triumph.model.components.Interface;
 import org.alljoyn.triumph.model.components.InterfaceComponent;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.model.components.Signal;
 import org.alljoyn.triumph.model.components.SignalContext;
 import org.alljoyn.triumph.util.ViewCache;
+import org.alljoyn.triumph.view.CustomVBox;
 import org.alljoyn.triumph.view.EndPointView;
 import org.alljoyn.triumph.view.ErrorDialog;
 import org.alljoyn.triumph.view.LogView;
-import org.alljoyn.triumph.view.MainBorderView;
+import org.alljoyn.triumph.view.LogView.OnClickListener;
 import org.alljoyn.triumph.view.MessagePane;
 import org.alljoyn.triumph.view.ServicesView;
-import org.alljoyn.triumph.view.SignalReceivedView;
+import org.alljoyn.triumph.view.SignalsReceivedView;
+import org.alljoyn.triumph.view.SignalsReceivedView.SignalReceivedListener;
 import org.alljoyn.triumph.view.TabbedSupportView;
 import org.alljoyn.triumph.view.TriumphViewable;
-import org.alljoyn.triumph.view.LogView.OnClickListener;
-import org.alljoyn.triumph.view.SignalReceivedView.SignalReceivedListener;
 
 public class MainController2 implements EndPointListener, TriumphViewable, OnClickListener, SignalReceivedListener {
 
@@ -50,7 +46,7 @@ public class MainController2 implements EndPointListener, TriumphViewable, OnCli
      * This is strictly a container for more intricate view controllers.
      * This just structures the views appropiately.
      */
-    private final MainBorderView mMainView;
+    private final CustomVBox mMainView;
 
     /**
      * This presents the current state of the distributed bus.
@@ -75,7 +71,7 @@ public class MainController2 implements EndPointListener, TriumphViewable, OnCli
     /**
      * Signal received view.
      */
-    private final SignalReceivedView mSignalsReceivedView;
+    private final SignalsReceivedView mSignalsReceivedView;
 
     private final TabbedSupportView mTabbedView;
 
@@ -93,34 +89,26 @@ public class MainController2 implements EndPointListener, TriumphViewable, OnCli
         mStage = primaryStage;
         mModel = TriumphModel.getInstance();
 
-        // Create the view that holds the rest of the views.
-        mMainView = new MainBorderView();
-
         // Create a view that presesents endpoints/services as they come in.
         mEndPointsView = new ServicesView();
-        mMainView.setTopPane(mEndPointsView);
         mEndPointsView.addListener(this);
 
-        // Error dialog to present.
+        // Default error dialog.
         mErrorDialog = new ErrorDialog("Error", "Unknown error");
 
         // Create a cache for the EndPoint
         mEndPointViewCache = new ViewCache<EndPoint, Node>();
-        mMainView.setCenterPane(null); // Disable the center pane.
-        // This prevents unecessary empty space.
 
         // Log view.
         mLogView = new LogView();
         mLogView.addListener(this);
-        mSignalsReceivedView = new SignalReceivedView(this);
+        mSignalsReceivedView = new SignalsReceivedView(this);
         mTabbedView = new TabbedSupportView();
         mTabbedView.setLogView(mLogView);
         mTabbedView.setSignalReceivedView(mSignalsReceivedView);
 
-        // Set the bottom view.
-        mMainView.setBottomPane(mTabbedView);
-        
         // Compose the structure of this view
+        mMainView = buildMainView();
         Scene scene = new Scene(mMainView);
         mStage.setScene(scene);
         mStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -133,14 +121,25 @@ public class MainController2 implements EndPointListener, TriumphViewable, OnCli
         });
         mStage.show();
     }
+    
+    private CustomVBox buildMainView() {
+        // Create the view that holds the rest of the views.
+        CustomVBox view = new CustomVBox(mEndPointsView, mTabbedView);
+        view.setMinSize(800, 600);
+        return view;
+    }
 
+    private void setContentPane(Pane pane) {
+        mMainView.setCenterPane(pane);
+    }
+    
     @Override
     public void onEndPointSelected(EndPoint ep) {
         if (ep == null) return;
         
         // Attempt to build endpoint
         if (!TriumphModel.getInstance().buildService(ep)) {
-            mMainView.setCenterPane(new MessagePane("Unable to connect to " + ep, "Please check that you are using the correct port number"));
+            setContentPane(new MessagePane("Unable to connect to " + ep, "Please check that you are using the correct port number"));
             return;
         }
         
@@ -149,7 +148,7 @@ public class MainController2 implements EndPointListener, TriumphViewable, OnCli
             node = new EndPointView(ep);
             mEndPointViewCache.addView(ep, node);
         }
-        mMainView.setCenterPane((EndPointView)node);
+        setContentPane((EndPointView)node);
     }
 
     @Override
@@ -222,7 +221,7 @@ public class MainController2 implements EndPointListener, TriumphViewable, OnCli
         }
         EndPointView epView = (EndPointView)node;
         // place the endpoint vview insid
-        mMainView.setCenterPane(epView);
+        setContentPane(epView);
         epView.showViewForComponent(component);
     }
 

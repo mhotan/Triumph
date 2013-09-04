@@ -41,7 +41,7 @@ import org.alljoyn.triumph.model.TransactionLogger.Transaction.TYPE;
 import org.alljoyn.triumph.model.components.SignalContext;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 import org.alljoyn.triumph.view.LogView.OnClickListener;
-import org.alljoyn.triumph.view.SignalReceivedView.SignalReceivedListener;
+import org.alljoyn.triumph.view.SignalsReceivedView.SignalReceivedListener;
 
 /**
  * Constructs the Main View for showing the application
@@ -92,7 +92,7 @@ public class MainView extends BorderPane implements SignalReceivedListener, OnCl
     @FXML
     private AnchorPane mTopPane;
     
-    private final SignalReceivedView mReceiveSignalView;
+    private final SignalsReceivedView mReceiveSignalView;
 
     //
     private final MainViewInterface mViewHandler;
@@ -138,7 +138,7 @@ public class MainView extends BorderPane implements SignalReceivedListener, OnCl
         mBottomTabPane.maxWidthProperty().bind(maxWidthProperty());
         
         // Set up the view that handles the display for incoming signals.
-        mReceiveSignalView = new SignalReceivedView(this);
+        mReceiveSignalView = new SignalsReceivedView(this);
         mReceiveSignalView.prefWidthProperty().bind(mSignalReceivedPane.widthProperty());
         mSignalReceivedPane.setContent(mReceiveSignalView);
         

@@ -4,7 +4,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
 
-import org.alljoyn.triumph.view.SignalReceivedView.SignalContectTableItem;
+import org.alljoyn.triumph.view.SignalsReceivedView.SignalContectTableItem;
 
 public class ArgumentTableCellFactory implements Callback<TableColumn<SignalContectTableItem,String>, TableCell<SignalContectTableItem,String>> {
 

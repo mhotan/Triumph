@@ -23,8 +23,7 @@
 	-fx-font-family: 'sans-serif';
 }
 
-.title-label {
-	-fx-font-size: 16pt;
+.component-title {
 	-fx-font-weight: bold;
 }
 

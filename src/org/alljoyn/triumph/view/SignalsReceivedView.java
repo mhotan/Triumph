@@ -38,7 +38,7 @@ import javafx.scene.layout.HBox;
 import org.alljoyn.triumph.model.components.SignalContext;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 
-public class SignalReceivedView extends BorderPane {
+public class SignalsReceivedView extends BorderPane {
 
     @FXML
     private ResourceBundle resources;
@@ -58,8 +58,8 @@ public class SignalReceivedView extends BorderPane {
     @FXML
     private HBox mUtilPane;
 
-    public SignalReceivedView(SignalReceivedListener listener) {
-        ViewLoader.loadView("SignalsReceivedView.fxml", this);
+    public SignalsReceivedView(SignalReceivedListener listener) {
+        ViewLoader.loadView(this);
         mListener = listener;
         
         mTableItems = FXCollections.observableArrayList();
@@ -111,7 +111,7 @@ public class SignalReceivedView extends BorderPane {
     }
     
     private void add(SignalContectTableItem item) {
-        List<SignalContectTableItem> signals = new ArrayList<SignalReceivedView.SignalContectTableItem>(mTableItems);
+        List<SignalContectTableItem> signals = new ArrayList<SignalsReceivedView.SignalContectTableItem>(mTableItems);
         signals.add(item);
         mTableItems.removeAll(mTableItems);
         for (SignalContectTableItem signal : signals)

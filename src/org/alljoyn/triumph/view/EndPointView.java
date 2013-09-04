@@ -11,7 +11,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -41,17 +40,20 @@ public class EndPointView extends BorderPane implements FilterListener {
     private URL location;
 
     @FXML
-    private ScrollPane mContentPane;
-
-    @FXML
     private Pane mFilterPane;
 
     @FXML
-    private VBox mLeftPane;
-    
-    @FXML
-    private VBox mListContainer;
+    private BorderPane mLeftPane;
 
+    @FXML
+    private VBox mListsPane;
+
+    /**
+     * Method list view.
+     */
+    @FXML
+    private ListView<InterfaceComponent> mMethodsListView, mPropertiesListView, mSignalsListView;
+    
     /**
      * The EndPoint to build the view around of.
      */
@@ -61,12 +63,6 @@ public class EndPointView extends BorderPane implements FilterListener {
      * List of methods to present
      */
     private final ListManager<InterfaceComponent> mMethods, mProperties, mSignals;
-    
-    /**
-     * Method list view.
-     */
-    @FXML
-    private ListView<InterfaceComponent> mMethodsListView, mPropertiesListView, mSignalsListView;
     
     /**
      * Current reference to the current filter.
@@ -98,9 +94,8 @@ public class EndPointView extends BorderPane implements FilterListener {
         // TODO Apply the filter to all the current list of items
         
         // Bind the containing pane to the pane that is suppose to hold the filter.
-        mFilterPane.prefWidthProperty().bind(filterView.prefWidthProperty());
-        mFilterPane.prefHeightProperty().bind(filterView.prefHeightProperty());
-        mFilterPane.getChildren().setAll(filterView);
+        mLeftPane.prefWidthProperty().bind(filterView.prefWidthProperty());
+        mLeftPane.setTop(filterView);
         
         // Build the lists of interface components.
         mMethods = new ListManager<InterfaceComponent>(getMethods());
@@ -110,9 +105,6 @@ public class EndPointView extends BorderPane implements FilterListener {
         buildListView(mMethods, mMethodsListView);
         buildListView(mSignals, mSignalsListView);
         buildListView(mProperties, mPropertiesListView);
-        
-        // Make sure the scroll pane is the same preferred with as the filter pane.
-        mContentPane.prefWidthProperty().bind(mFilterPane.widthProperty());
         
         updateWithCurrentFilter();
     }
@@ -138,13 +130,13 @@ public class EndPointView extends BorderPane implements FilterListener {
 
     @FXML
     void initialize() {
-        assert mContentPane != null : "fx:id=\"mContentPane\" was not injected: check your FXML file 'EndPointView.fxml'.";
         assert mFilterPane != null : "fx:id=\"mFilterPane\" was not injected: check your FXML file 'EndPointView.fxml'.";
         assert mLeftPane != null : "fx:id=\"mLeftPane\" was not injected: check your FXML file 'EndPointView.fxml'.";
+        assert mListsPane != null : "fx:id=\"mListsPane\" was not injected: check your FXML file 'EndPointView.fxml'.";
         assert mMethodsListView != null : "fx:id=\"mMethodsListView\" was not injected: check your FXML file 'EndPointView.fxml'.";
         assert mPropertiesListView != null : "fx:id=\"mPropertiesListView\" was not injected: check your FXML file 'EndPointView.fxml'.";
         assert mSignalsListView != null : "fx:id=\"mSignalsListView\" was not injected: check your FXML file 'EndPointView.fxml'.";
-    }
+}
     
     @Override
     public boolean equals(Object o) {
@@ -155,7 +147,7 @@ public class EndPointView extends BorderPane implements FilterListener {
     
     @Override
     public int hashCode() {
-        return mEndPoint.hashCode() * 7;
+        return mEndPoint.hashCode();
     }
 
     /**

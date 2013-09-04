@@ -33,3 +33,7 @@
 #mOutputArgBox {
 	-fx-background-color: rgb(229,229,229)
 }
+
+.vertical-filler {
+	-fx-fill: black;
+}

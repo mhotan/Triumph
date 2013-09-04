@@ -28,7 +28,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<fx:root type="HBox" fx:id="mComponentPane" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="400.0" styleClass="component-pane" xmlns:fx="http://javafx.com/fxml">
+<fx:root type="HBox" fx:id="mComponentPane" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="component-pane" xmlns:fx="http://javafx.com/fxml">
   <children>
     <Label fx:id="mLabel" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" text="Label" HBox.hgrow="NEVER">
       <HBox.margin>

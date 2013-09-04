@@ -26,7 +26,7 @@
 
 <fx:root type="VBox" fx:id="mCompletePane" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased" prefHeight="-1.0" prefWidth="-1.0" styleClass="genlabel" xmlns:fx="http://javafx.com/fxml">
   <children>
-    <HBox fx:id="mTitlePane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="NEVER" />
+    <HBox fx:id="mTitlePane" alignment="BOTTOM_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="NEVER" />
     <HBox fx:id="mButtonBar" alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" spacing="5.0" styleClass="genlabel" VBox.vgrow="NEVER">
       <children>
         <Button fx:id="mInvokeButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#onInvokeButtonPressed" styleClass="buttonbar-element" text="Invoke" />
@@ -37,18 +37,21 @@
     </HBox>
     <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
       <children>
+        <Pane fx:id="mLeftFiller" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="-1.0" prefWidth="50.0" styleClass="vertical-filler" />
         <VBox fx:id="mInputArgPane" alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="argument-pane" HBox.hgrow="ALWAYS">
           <children>
             <Label alignment="BOTTOM_CENTER" maxWidth="1.7976931348623157E308" text="Input Arguments" />
             <VBox fx:id="mInputArgBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
           </children>
         </VBox>
+        <Pane fx:id="mCenterFiller" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="-1.0" prefWidth="50.0" styleClass="vertical-filler" />
         <VBox fx:id="mOutputArgPane" alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="argument-pane" HBox.hgrow="ALWAYS">
           <children>
             <Label alignment="BOTTOM_CENTER" maxWidth="1.7976931348623157E308" text="Output Arguments" />
             <VBox fx:id="mOutputArgBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
           </children>
         </VBox>
+        <Pane fx:id="mRightFiller" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="-1.0" prefWidth="50.0" styleClass="vertical-filler" />
       </children>
     </HBox>
     <Label fx:id="mErrorMessage" alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" styleClass="error-message" text="Error Message" textFill="RED" wrapText="true" VBox.vgrow="NEVER">
