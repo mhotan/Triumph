@@ -5,20 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.util.Callback;
 
 import org.alljoyn.triumph.model.components.AJObject;
 import org.alljoyn.triumph.model.components.AllJoynComponent.TYPE;
@@ -77,7 +74,8 @@ public class EndPointView extends BorderPane implements FilterListener {
     private ComponentFilter mCurrFilter;
     
     /**
-     * 
+     * Not really a cache but just a mapping of InterfaceComponents
+     * and its views.
      */
     private final ViewCache<InterfaceComponent, Node> viewCache;
     
@@ -104,37 +102,27 @@ public class EndPointView extends BorderPane implements FilterListener {
         mFilterPane.prefHeightProperty().bind(filterView.prefHeightProperty());
         mFilterPane.getChildren().setAll(filterView);
         
-        // Make sure when the list are set to not visible.
-        mMethodsListView.managedProperty().bind(mMethodsListView.visibleProperty());
-        mSignalsListView.managedProperty().bind(mSignalsListView.visibleProperty());
-        mPropertiesListView.managedProperty().bind(mPropertiesListView.visibleProperty());
-    
         // Build the lists of interface components.
         mMethods = new ListManager<InterfaceComponent>(getMethods());
         mSignals = new ListManager<InterfaceComponent>(getSignals());
         mProperties = new ListManager<InterfaceComponent>(getProplist());
         
-        // set the items of the list of interface properties
-        mMethodsListView.setItems(mMethods.getUnderlyingList());
-        mSignalsListView.setItems(mSignals.getUnderlyingList());
-        mPropertiesListView.setItems(mProperties.getUnderlyingList());
-        
-        // Add the listener for this view.
-        ComponentSelectionListener selectListener = new ComponentSelectionListener();
-        mMethodsListView.getSelectionModel().selectedItemProperty().addListener(selectListener);
-        mSignalsListView.getSelectionModel().selectedItemProperty().addListener(selectListener);
-        mPropertiesListView.getSelectionModel().selectedItemProperty().addListener(selectListener);
-        
-        // Tell the 
-        ComponentListCellCallback cellCallBack = new ComponentListCellCallback();
-        mMethodsListView.setCellFactory(cellCallBack);
-        mSignalsListView.setCellFactory(cellCallBack);
-        mPropertiesListView.setCellFactory(cellCallBack);
+        buildListView(mMethods, mMethodsListView);
+        buildListView(mSignals, mSignalsListView);
+        buildListView(mProperties, mPropertiesListView);
         
         // Make sure the scroll pane is the same preferred with as the filter pane.
         mContentPane.prefWidthProperty().bind(mFilterPane.widthProperty());
         
         updateWithCurrentFilter();
+    }
+    
+    private void buildListView(ListManager<InterfaceComponent> listManager,
+            ListView<InterfaceComponent> listView) {
+        listView.managedProperty().bind(listView.visibleProperty());
+        listView.setItems(listManager.getUnderlyingList());
+        listView.setOnMouseClicked(new ListSelectionListener(listView));
+        listView.setEditable(true);
     }
   
     
@@ -174,15 +162,15 @@ public class EndPointView extends BorderPane implements FilterListener {
      * Update the state of the current filter.
      */
     private void updateWithCurrentFilter() {
-        // If the current filter is 
-        mMethodsListView.setVisible(mCurrFilter.showMethods());
-        mSignalsListView.setVisible(mCurrFilter.showSignals());
-        mPropertiesListView.setVisible(mCurrFilter.showProperties());
-        
         // Update the filter so that the components match.
         mMethods.addFilter(mCurrFilter);
         mSignals.addFilter(mCurrFilter);
         mProperties.addFilter(mCurrFilter);
+        
+        // If the current filter is 
+        mMethodsListView.setVisible(mCurrFilter.showMethods() && !mMethods.getUnderlyingList().isEmpty());
+        mSignalsListView.setVisible(mCurrFilter.showSignals() && !mSignals.getUnderlyingList().isEmpty());
+        mPropertiesListView.setVisible(mCurrFilter.showProperties() && !mProperties.getUnderlyingList().isEmpty());
     }
     
     @Override
@@ -200,52 +188,46 @@ public class EndPointView extends BorderPane implements FilterListener {
     }
     
     /**
-     * List cell that describes how to draw the cell.
-     * @author mhotan
+     * Attempts to show view for component.
+     * 
+     * @param component Component to show
      */
-    private static class ComponentListCellCallback implements Callback<ListView<InterfaceComponent>, ListCell<InterfaceComponent>> {
-
-        @Override
-        public ListCell<InterfaceComponent> call(
-                ListView<InterfaceComponent> arg0) {
-            return new ListCell<InterfaceComponent>() {
-                @Override
-                protected void updateItem(InterfaceComponent item, boolean empty) {
-                    setTextFill(Color.BLACK);
-                    setText(item.getString());
-                }
-            };
+    public void showViewForComponent(InterfaceComponent component) {
+        Node view = viewCache.getViewForElement(component);
+        if (view == null) {
+            if (component.getType() == TYPE.METHOD) {
+                view = new MethodView((Method) component);
+            } else if (component.getType() == TYPE.SIGNAL) {
+                view = new SignalView((Signal) component);
+            } else if (component.getType() == TYPE.PROPERTY) {
+                view = new PropertyView((Property) component);
+            } else {
+                throw new RuntimeException("Illegal type of interface component being selected " + component.getType());
+            }
+            
+            // update the cache
+            viewCache.addView(component, view);
         }
-        
+        setMainView(view);
     }
     
     /**
      * Listener for interface components being selected.
      * @author mhotan
      */
-    private class ComponentSelectionListener implements ChangeListener<InterfaceComponent> {
+    private class ListSelectionListener implements EventHandler<MouseEvent> {
+
+        private final ListView<InterfaceComponent> mView;
+        
+        public ListSelectionListener(ListView<InterfaceComponent> view) {
+            mView = view;
+        }
 
         @Override
-        public void changed(ObservableValue<? extends InterfaceComponent> arg0,
-                InterfaceComponent oldVal, InterfaceComponent newVal) {
-            if (newVal == null) return;
-            if (newVal.equals(oldVal)) return;
-            Node view = viewCache.getViewForElement(newVal);
-            if (view == null) {
-                if (newVal.getType() == TYPE.METHOD) {
-                    view = new MethodView((Method) newVal);
-                } else if (newVal.getType() == TYPE.SIGNAL) {
-                    view = new SignalView((Signal) newVal);
-                } else if (newVal.getType() == TYPE.PROPERTY) {
-                    view = new PropertyView((Property) newVal);
-                } else {
-                    throw new RuntimeException("Illegal type of interface component being selected " + newVal.getType());
-                }
-                
-                // update the cache
-                viewCache.addView(newVal, view);
-            }
-            setMainView(view);
+        public void handle(MouseEvent event) {
+            InterfaceComponent selected = mView.getSelectionModel().getSelectedItem();
+            if (selected == null) return;
+            showViewForComponent(selected);
         }
         
     }

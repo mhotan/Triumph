@@ -42,6 +42,11 @@ public class EndPoint extends AllJoynComponent {
      * A flag that labels whether this endpoint is built or not.
      */
     private boolean isBuilt;
+    
+    /**
+     * Session for this endpoint
+     */
+    private Session mSession;
 
     private final List<AJObject> mObjects;
 
@@ -92,25 +97,21 @@ public class EndPoint extends AllJoynComponent {
      * @param manager Manager to use to build the endpoint
      * @return true on success, false on failure
      */
-    public boolean build(SessionManager manager, short port) {
+    public boolean build(Session session) {
         if (isBuilt) return true;
         try {
-            // Attempt to create a session
-            Session session = manager.getSession(getName());
-            if (session == null) 
-                session = manager.createNewSession(getName(), port);
             
             // If fails throw exception
             ProxyBusObject proxy = session.getProxy("org/alljoyn/Bus/Peer");
             saveBusPeerProxy(proxy);
 
-            TriumphAJParser parser = new TriumphAJParser(manager);
-            parser.parseIntrospectData(this, port);
-            return true;
+            TriumphAJParser parser = new TriumphAJParser(session);
+            parser.parseIntrospectData();
+            isBuilt = true;
         } catch (TriumphException e) {
             LOG.warning("Failed to build EndPoint " + getName() + " Exception: " + e.getMessage());
-            return false;
         }
+        return isBuilt;
     }
 
     public SERVICE_TYPE getServiceType() {
@@ -211,7 +212,7 @@ public class EndPoint extends AllJoynComponent {
      * Saves Proxy bus object for standard object.
      * @param proxy Proxy to save
      */
-    private void saveBusPeerProxy(ProxyBusObject proxy) {
+    public void saveBusPeerProxy(ProxyBusObject proxy) {
         if (!proxy.getObjPath().equals("org/alljoyn/Bus/Peer")) {
             throw new IllegalArgumentException("saveBusPeerProxy() proxy object path not org/alljoyn/Bus/Peer");
         }

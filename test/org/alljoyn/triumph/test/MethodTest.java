@@ -34,6 +34,7 @@ import org.alljoyn.bus.Status;
 import org.alljoyn.bus.ifaces.DBusProxyObj;
 import org.alljoyn.triumph.TriumphCPPAdapter;
 import org.alljoyn.triumph.TriumphException;
+import org.alljoyn.triumph.model.components.EndPoint.SERVICE_TYPE;
 import org.alljoyn.triumph.model.components.Interface;
 import org.alljoyn.triumph.model.components.AJObject;
 import org.alljoyn.triumph.model.components.EndPoint;
@@ -120,7 +121,8 @@ public class MethodTest {
         Status status = mBus.registerBusObject(mService, ObjectPath);
         Assert.assertEquals(Status.OK, status);
 
-        mSession = mSessionManager.createNewSession(ServiceWellKnownName, PORT);
+        EndPoint ep = new EndPoint(ServiceWellKnownName, SERVICE_TYPE.REMOTE);
+        mSession = mSessionManager.createNewSession(ep, PORT);
         assertNotNull("Session created", mSession);
     }
 
@@ -136,16 +138,16 @@ public class MethodTest {
 
     @Test
     public void testIntrospection() throws TriumphException {
-        String introSpection =  mSessionManager.getInstrospection(ServiceWellKnownName, ObjectPath, PORT);
+        String introSpection =  mSessionManager.getInstrospection(mSession.getEndPoint(), ObjectPath, PORT);
         assertNotNull("Introspected data is not null", introSpection);
     }
 
     private AJObject privTestHasObjectByObjectPath() throws TriumphException {
-        TriumphAJParser parser = new TriumphAJParser(mSessionManager);
-        EndPoint service = new EndPoint(ServiceWellKnownName);
-
-        service = parser.parseIntrospectData(service, PORT);
-        List<AJObject> objects = service.getObjects();
+        TriumphAJParser parser = new TriumphAJParser(mSession);
+        EndPoint service = new EndPoint(ServiceWellKnownName, SERVICE_TYPE.REMOTE);
+        
+        assertTrue("Able to parse introspection", parser.parseIntrospectData());
+        List<AJObject> objects = mSession.getEndPoint().getObjects();
 
         // There is always the the DBus peer object for this well known name
         // Then there is our registered object.  Therefore there is exactly two objects that exist

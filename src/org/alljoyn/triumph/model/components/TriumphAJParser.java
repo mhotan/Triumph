@@ -22,15 +22,17 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.alljoyn.bus.BusException;
 import org.alljoyn.bus.Status;
 import org.alljoyn.triumph.MainApplication;
 import org.alljoyn.triumph.TriumphException;
-import org.alljoyn.triumph.model.session.SessionManager;
+import org.alljoyn.triumph.model.session.Session;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -46,10 +48,12 @@ import org.xml.sax.SAXException;
  */
 public class TriumphAJParser {
 
+    private static final Logger LOG = Logger.getLogger(TriumphAJParser.class.getSimpleName());
+    
     /**
      * Must have a session to 
      */
-    private final SessionManager mBusManager;
+    private final Session mSession;
 
     private final static String DOC_TYPE = "<!DOCTYPE node PUBLIC \"-" +
             "//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n" +
@@ -59,10 +63,10 @@ public class TriumphAJParser {
      * Creates a parser with a session manager that is able to access the bus.
      * @param manager Initialized 
      */
-    public TriumphAJParser(SessionManager manager) {
-        if (manager == null) 
+    public TriumphAJParser(Session session) {
+        if (session == null) 
             throw new IllegalArgumentException("Null Session manager for parser.");
-        mBusManager = manager;
+        mSession = session;
     }
 
 
@@ -75,22 +79,28 @@ public class TriumphAJParser {
      * @return The complete service with all the internal objects
      * @throws TriumphException Unable to get introspection
      */
-    public EndPoint parseIntrospectData(EndPoint service,
-            short sessionId) throws TriumphException {
+    public boolean parseIntrospectData() throws TriumphException {
+        EndPoint service = null;
+        try {
+            service = mSession.getEndPoint();
+            short sessionId = (short) mSession.getSessionID();
+            // Retrieve all the names of the objects that currently exists within that
+            // service.  This allows us to check if we need to create a session.
+            Set<AJObject> currentObjects = new HashSet<AJObject>(service.getObjects());
+            Set<String> currObjStrs = new HashSet<String>(currentObjects.size());
+            for (AJObject obj: currentObjects) 
+                currObjStrs.add(obj.getName());
 
-        
+            // Parse the root object path first and recursively complete the set
+            List<AJObject> objects = parse(service.getName(), "/", sessionId, currObjStrs);
+            service.addAll(objects);
+            return true;
+        } catch (TriumphException e) {
+            LOG.warning("Unable to parse instrospection for " + service);
+            return false;
+        }
 
-        // Retrieve all the names of the objects that currently exists within that
-        // service.  This allows us to check if we need to create a session.
-        Set<AJObject> currentObjects = new HashSet<AJObject>(service.getObjects());
-        Set<String> currObjStrs = new HashSet<String>(currentObjects.size());
-        for (AJObject obj: currentObjects) 
-            currObjStrs.add(obj.getName());
 
-        // Parse the root object path first and recursively complete the set
-        List<AJObject> objects = parse(service.getName(), "/", sessionId, currObjStrs);
-        service.addAll(objects);
-        return service;
     }
 
     /**
@@ -116,7 +126,7 @@ public class TriumphAJParser {
 
         try {
             // Get the introspect data of the bus mamager
-            String intr = mBusManager.getInstrospection(service, objectPath, sessionPortNum);
+            String intr = mSession.getIntrospection(objectPath);
 
             // A builder that will be used to parse a String.
             // After removing the header the builder parses the document into nodes.
@@ -129,7 +139,7 @@ public class TriumphAJParser {
             Node node = doc.getDocumentElement();
 
             // Register the node's interfaces on the bus the bus manager uses.
-            Status status = mBusManager.registerInterface(node);
+            Status status = mSession.registerInterface(node);
             if (status == Status.BUS_IFACE_ALREADY_EXISTS) {
                 MainApplication.getLogger().info("Repeated Interface found while parsing service: " + service + " object path: " + objectPath);
             } else if (status != Status.OK) {
@@ -157,6 +167,8 @@ public class TriumphAJParser {
             throw new RuntimeException("SAXException: " + e);
         } catch (IOException e) {
             throw new RuntimeException("IOException: " + e);
+        } catch (BusException e) {
+            throw new TriumphException(e);
         }
     }
 

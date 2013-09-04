@@ -28,7 +28,7 @@ public interface EndPointListener {
     /**
      * Notifies clients that EndPoint was selected 
      * 
-     * @param ep EdnPoint that was selected;
+     * @param ep EndPoint that was selected;
      */
     public void onEndPointSelected(EndPoint ep);
     

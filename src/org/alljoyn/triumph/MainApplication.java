@@ -21,9 +21,9 @@ import javafx.application.Application;
 import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
 
+import org.alljoyn.triumph.controller.MainController2;
 import org.alljoyn.triumph.model.TriumphModel;
 import org.alljoyn.triumph.util.loaders.NativeLoader;
-import org.alljoyn.triumph.view.MainController2;
 
 /**
  * The main application class that will be in charge of a set key initial and control tasks.
