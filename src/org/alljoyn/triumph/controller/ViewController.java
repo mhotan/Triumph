@@ -12,7 +12,6 @@ import javafx.stage.WindowEvent;
 
 import org.alljoyn.triumph.model.TransactionLogger.Transaction;
 import org.alljoyn.triumph.model.TransactionLogger.Transaction.TYPE;
-import org.alljoyn.triumph.model.TriumphModel;
 import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.InterfaceComponent;
 import org.alljoyn.triumph.model.components.SignalContext;
@@ -57,7 +56,7 @@ public class ViewController implements EndPointListener, TriumphViewable, OnClic
     /**
      * Reference to model instance.
      */
-    private final TriumphModel mModel;
+    private final TriumphController mModel;
 
     /**
      * log view.
@@ -83,7 +82,7 @@ public class ViewController implements EndPointListener, TriumphViewable, OnClic
      */
     public ViewController(Stage primaryStage) {
         mStage = primaryStage;
-        mModel = TriumphModel.getInstance();
+        mModel = TriumphController.getInstance();
 
         // Create a view that presesents endpoints/services as they come in.
         mEndPointsView = new ServicesView();
@@ -147,7 +146,7 @@ public class ViewController implements EndPointListener, TriumphViewable, OnClic
         if (ep == null) return;
         
         // Attempt to build endpoint
-        if (!TriumphModel.getInstance().buildService(ep)) {
+        if (!TriumphController.getInstance().buildService(ep)) {
             setContentPane(new MessagePane("Unable to connect to " + ep, "Please check that you are using the correct port number"));
             return;
         }

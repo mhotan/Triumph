@@ -14,7 +14,7 @@
  *    limitations under the license.
  ******************************************************************************/
 
-package org.alljoyn.triumph.model.session;
+package org.alljoyn.triumph.controller.session;
 
 /**
  * Listener that is notified when a specific session is losted.
@@ -22,12 +22,12 @@ package org.alljoyn.triumph.model.session;
  */
 public interface TriumphSessionListener {
 
-	/**
-	 * Notifies that the session has been lost and cannot be connected to
-	 * 
-	 * @param name Name of the session
-	 * @param sessionId Session ID that was lost.
-	 */
-	public void sessionLost(Session name, int sessionId);
-	
+    /**
+     * Notifies that the session has been lost and cannot be connected to
+     * 
+     * @param session Name of the session
+     * @param sessionId Session ID that was lost.
+     */
+    public void sessionLost(Session session, int sessionId);
+    
 }

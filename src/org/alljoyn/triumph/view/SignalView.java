@@ -26,7 +26,7 @@ import javafx.scene.control.CheckBox;
 
 import org.alljoyn.bus.BusException;
 import org.alljoyn.bus.Status;
-import org.alljoyn.triumph.model.TriumphModel;
+import org.alljoyn.triumph.controller.TriumphController;
 import org.alljoyn.triumph.model.components.Signal;
 import org.alljoyn.triumph.model.components.SignalHandlerManager;
 import org.alljoyn.triumph.model.components.arguments.Argument;
@@ -58,7 +58,7 @@ public class SignalView extends MemberView {
         super(signal);
         mSignal = signal;
      // get the manager for signals.
-        mManager = TriumphModel.getInstance().getSignalHandlerManager();
+        mManager = TriumphController.getInstance().getSignalHandlerManager();
         boolean hasSignalHandler = mManager.hasSignalHandler(mSignal);
         
         // Make sure output arguments are not editable 
@@ -119,7 +119,7 @@ public class SignalView extends MemberView {
         }
 
         // Use the model as the call back to emit the signal
-        TriumphModel model = TriumphModel.getInstance();
+        TriumphController model = TriumphController.getInstance();
         List<Argument<?>> args = mSignal.getOutputArguments();
         model.onEmitSignal(mSignal, args, sessionlessBox.selectedProperty().get());
     }

@@ -23,7 +23,7 @@ import java.util.Set;
 
 import org.alljoyn.bus.BusAttachment;
 import org.alljoyn.bus.Status;
-import org.alljoyn.triumph.model.Destroyable;
+import org.alljoyn.triumph.controller.Destroyable;
 import org.alljoyn.triumph.model.components.SignalHandler.SignalListener;
 
 /**

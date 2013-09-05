@@ -14,7 +14,7 @@
  *    limitations under the license.
  ******************************************************************************/
 
-package org.alljoyn.triumph.util;
+package org.alljoyn.triumph.model;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -38,7 +38,7 @@ import org.alljoyn.bus.BusAttachment;
  */
 public class SessionPortStorage {
 
-    private static final Logger LOGGER = Logger.getGlobal();
+    private static final Logger LOGGER = Logger.getLogger(SessionPortStorage.class.getSimpleName());
 
     private static final String DELIMINATOR = ";;";
 
@@ -145,16 +145,19 @@ public class SessionPortStorage {
         if (serviceName == null || portNumber < 0) return;
 
         // Save in memory cache.
-        getInstance().mInternalMap.put(serviceName, portNumber);
+        SessionPortStorage instance = getInstance();
+        synchronized (instance) {
+            instance.mInternalMap.put(serviceName, portNumber);
 
-        try {
-            BufferedWriter bw =  new BufferedWriter(new FileWriter(new File(FILE_PATH), true));
-            bw.append(serviceName + DELIMINATOR + portNumber);
-            bw.newLine();
-            bw.close();
-        } catch (IOException e) {
-            throw new RuntimeException("Error trying to extract port: " + e.getMessage());
-        } 
+            try {
+                BufferedWriter bw =  new BufferedWriter(new FileWriter(new File(FILE_PATH), true));
+                bw.append(serviceName + DELIMINATOR + portNumber);
+                bw.newLine();
+                bw.close();
+            } catch (IOException e) {
+                throw new RuntimeException("Error trying to extract port: " + e.getMessage());
+            } 
+        }
     }
 
     /**
@@ -173,9 +176,12 @@ public class SessionPortStorage {
      * @return Port number associated to service or BusAttachment.SESSION_PORT_ANY if it cannot be found
      */
     public static short getPort(String serviceName) {
+        short ret = BusAttachment.SESSION_PORT_ANY;
         SessionPortStorage storage = getInstance();
-        if (storage.mInternalMap.containsKey(serviceName))
-            return storage.mInternalMap.get(serviceName);
-        return BusAttachment.SESSION_PORT_ANY;
+        synchronized (storage) {
+            if (storage.mInternalMap.containsKey(serviceName))
+                ret = storage.mInternalMap.get(serviceName);
+        }
+        return ret;
     }
 }

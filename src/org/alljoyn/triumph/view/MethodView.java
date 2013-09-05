@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 import javafx.fxml.FXML;
 
 import org.alljoyn.bus.BusException;
-import org.alljoyn.triumph.model.TriumphModel;
+import org.alljoyn.triumph.controller.TriumphController;
 import org.alljoyn.triumph.model.components.Method;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 
@@ -34,7 +34,7 @@ import org.alljoyn.triumph.model.components.arguments.Argument;
  */
 public class MethodView extends MemberView {
 
-    private static final Logger LOGGER = Logger.getGlobal();
+    private static final Logger LOGGER = Logger.getLogger(MethodView.class.getSimpleName());
 
     private final Method mMethod;
 
@@ -72,7 +72,7 @@ public class MethodView extends MemberView {
         }
         
         // TODO Collect all the arguments and 
-        TriumphModel model = TriumphModel.getInstance();
+        TriumphController model = TriumphController.getInstance();
         List<Argument<?>> args = mMethod.getInputArguments();
         Argument<?> outArg  = model.onMethodInvoked(mMethod, args);
 

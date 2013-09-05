@@ -42,12 +42,12 @@ import javafx.scene.layout.Priority;
 import javafx.util.StringConverter;
 
 import org.alljoyn.triumph.controller.EndPointListener;
-import org.alljoyn.triumph.model.TriumphModel;
+import org.alljoyn.triumph.controller.TriumphController;
+import org.alljoyn.triumph.model.SessionPortStorage;
 import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.EndPoint.SERVICE_TYPE;
 import org.alljoyn.triumph.util.EndPointFilter;
 import org.alljoyn.triumph.util.ListManager;
-import org.alljoyn.triumph.util.SessionPortStorage;
 import org.alljoyn.triumph.view.EndPointTable.EndPointRow;
 
 /**
@@ -127,7 +127,7 @@ public class EndPointTable extends TableView<EndPointRow> {
                 
                 // Attempt to connect.
                 EndPointRow row = event.getTableView().getItems().get(event.getTablePosition().getRow());
-                row.setConnected(TriumphModel.getInstance().buildService(row.getEndPoint()));
+                row.setConnected(TriumphController.getInstance().buildService(row.getEndPoint()));
             }
         });
         connectedCol.setMaxWidth(DEFAULT_MAX_COLUMN_WIDTH);

@@ -14,7 +14,7 @@
  *    limitations under the license.
  ******************************************************************************/
 
-package org.alljoyn.triumph.util;
+package org.alljoyn.triumph.model;
 
 import java.io.EOFException;
 import java.io.File;
@@ -24,13 +24,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
-import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import org.alljoyn.triumph.model.components.arguments.Argument;
@@ -56,20 +53,6 @@ public class ArgumentStorage {
 
     private List<SaveListener> mListeners;
     
-    private static Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
-
-    static {
-        //add owners permission
-        perms.add(PosixFilePermission.OWNER_READ);
-        perms.add(PosixFilePermission.OWNER_WRITE);
-        //add group permissions
-        perms.add(PosixFilePermission.GROUP_READ);
-        perms.add(PosixFilePermission.GROUP_WRITE);
-        //add others permissions
-        perms.add(PosixFilePermission.OTHERS_READ);
-        perms.add(PosixFilePermission.OTHERS_WRITE);
-    }
-
     /*
      * To keep track of the different type of arguments.
      * This storage has a reference to internal storage managers.
