@@ -115,7 +115,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
     /**
      * All locally available Service.
      */
-    private final Set<String> mDistributedServices, mLocalServices;
+    private final Set<EndPoint> mDistributedServices, mLocalServices;
 
     /**
      * Bus observer
@@ -169,8 +169,8 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         // Instantiate members for tracking variables
 
         // Set to track the name for all the services
-        mDistributedServices = new HashSet<String>();
-        mLocalServices = new HashSet<String>();
+        mDistributedServices = new HashSet<EndPoint>();
+        mLocalServices = new HashSet<EndPoint>();
 
         // Destroyable list
         mDestroyables = new ArrayList<Destroyable>();
@@ -229,23 +229,13 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
     /* ********************************************************* */
 
     public synchronized List<EndPoint> getDistributedServices() {
-        List<String> servicesStr = new ArrayList<String>(mDistributedServices);
-        List<EndPoint> services = new ArrayList<EndPoint>(servicesStr.size());
-        for (String service: servicesStr) {
-            EndPoint ser = new EndPoint(service, SERVICE_TYPE.REMOTE);
-            services.add(ser);
-        }
+        List<EndPoint> services = new ArrayList<EndPoint>(mDistributedServices);
         return services;
     }
 
     public synchronized List<EndPoint> getLocalServices() {
         // Extract all the names of the local services
-        List<String> servicesStr = new ArrayList<String>(mLocalServices);
-        List<EndPoint> services = new ArrayList<EndPoint>(servicesStr.size());
-        for (String service: servicesStr) {
-            EndPoint ser = new EndPoint(service, SERVICE_TYPE.LOCAL);
-            services.add(ser);
-        }
+        List<EndPoint> services = new ArrayList<EndPoint>(mLocalServices);
         return services;
     }
 
@@ -265,24 +255,39 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
     /* ********************************************************* */
 
     @Override
-    public void onDistributedNameFound(Collection<String> name) {
-        mDistributedServices.addAll(name);
+    public void onDistributedNameFound(Collection<String> names) {
+        for (String name : names) {
+            mDistributedServices.add(new EndPoint(name, SERVICE_TYPE.REMOTE));
+        }
         broadcastUpdate();
     }
 
     @Override
-    public void onLocalNameFound(Collection<String> name) {
-        mLocalServices.addAll(name);
+    public void onLocalNameFound(Collection<String> names) {
+        for (String name: names) {
+            mLocalServices.add(new EndPoint(name, SERVICE_TYPE.LOCAL));
+        }
         broadcastUpdate();
     }
 
     @Override
     public void onNameLost(Collection<String> names) {
-        mDistributedServices.removeAll(names);
-        mLocalServices.removeAll(names);
-        for (String name: names) {
-            LOG.info("Service lost: " + name);
+        // Remove all the endpoints that have the same name
+        Collection<EndPoint> toRemove = new HashSet<EndPoint>();
+        for (EndPoint ep : mDistributedServices) {
+            if (names.contains(ep.getName()));
+                toRemove.add(ep);
         }
+        mDistributedServices.removeAll(toRemove);
+        toRemove.clear();
+        
+        // Remove all the Endpoints that have the same name
+        for (EndPoint ep : mLocalServices) {
+            if (names.contains(ep.getName()));
+                toRemove.add(ep);
+        }
+        mLocalServices.removeAll(toRemove);
+        
         broadcastUpdate();
     }
 
