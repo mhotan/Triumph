@@ -29,10 +29,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.alljoyn.bus.BusException;
+import org.alljoyn.bus.ProxyBusObject;
 import org.alljoyn.bus.Status;
+import org.alljoyn.bus.ifaces.Introspectable;
 import org.alljoyn.triumph.MainApplication;
 import org.alljoyn.triumph.TriumphException;
-import org.alljoyn.triumph.model.session.Session;
+import org.alljoyn.triumph.controller.session.Session;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -83,7 +85,7 @@ public class TriumphAJParser {
         EndPoint service = null;
         try {
             service = mSession.getEndPoint();
-            short sessionId = (short) mSession.getSessionID();
+            short sessionId = (short) mSession.getSessionId();
             // Retrieve all the names of the objects that currently exists within that
             // service.  This allows us to check if we need to create a session.
             Set<AJObject> currentObjects = new HashSet<AJObject>(service.getObjects());
@@ -126,7 +128,9 @@ public class TriumphAJParser {
 
         try {
             // Get the introspect data of the bus mamager
-            String intr = mSession.getIntrospection(objectPath);
+            ProxyBusObject proxy = mSession.getProxy(objectPath);
+            Introspectable i = proxy.getInterface(Introspectable.class);
+            String intr = i.Introspect();
 
             // A builder that will be used to parse a String.
             // After removing the header the builder parses the document into nodes.

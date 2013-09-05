@@ -1,4 +1,4 @@
-package org.alljoyn.triumph.util;
+package org.alljoyn.triumph.model;
 
 import java.io.EOFException;
 import java.io.File;
@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import org.alljoyn.triumph.util.EndPointFilter;
 
 public class EndPointFilterStorage {
 

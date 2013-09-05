@@ -31,8 +31,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
+import org.alljoyn.triumph.model.ArgumentStorage;
 import org.alljoyn.triumph.model.components.arguments.Argument;
-import org.alljoyn.triumph.util.ArgumentStorage;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 import org.alljoyn.triumph.view.arguments.editable.ArgumentView;
 import org.alljoyn.triumph.view.arguments.editable.EditableArgumentViewFactory;

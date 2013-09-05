@@ -32,11 +32,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 
+import org.alljoyn.triumph.model.ArgumentStorage;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.model.components.arguments.Argument.DIRECTION;
 import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
 import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.util.ArgumentStorage;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 import org.alljoyn.triumph.view.arguments.editable.ArgumentView;
 import org.alljoyn.triumph.view.arguments.editable.EditableArgumentViewFactory;

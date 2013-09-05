@@ -14,7 +14,7 @@
  *    limitations under the license.
  ******************************************************************************/
 
-package org.alljoyn.triumph.model;
+package org.alljoyn.triumph.controller;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,7 +41,11 @@ import org.alljoyn.bus.Status;
 import org.alljoyn.triumph.MainApplication;
 import org.alljoyn.triumph.TriumphCPPAdapter;
 import org.alljoyn.triumph.TriumphException;
-import org.alljoyn.triumph.model.BusObserver.BusObserverListener;
+import org.alljoyn.triumph.controller.BusObserver.BusObserverListener;
+import org.alljoyn.triumph.controller.session.Session;
+import org.alljoyn.triumph.controller.session.SessionManager;
+import org.alljoyn.triumph.model.SessionPortStorage;
+import org.alljoyn.triumph.model.TransactionLogger;
 import org.alljoyn.triumph.model.components.AJObject;
 import org.alljoyn.triumph.model.components.EndPoint;
 import org.alljoyn.triumph.model.components.EndPoint.SERVICE_TYPE;
@@ -54,9 +58,6 @@ import org.alljoyn.triumph.model.components.SignalHandler.SignalListener;
 import org.alljoyn.triumph.model.components.SignalHandlerManager;
 import org.alljoyn.triumph.model.components.arguments.Argument;
 import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
-import org.alljoyn.triumph.model.session.Session;
-import org.alljoyn.triumph.model.session.SessionManager;
-import org.alljoyn.triumph.util.SessionPortStorage;
 import org.alljoyn.triumph.view.TriumphViewable;
 
 /**
@@ -75,7 +76,7 @@ import org.alljoyn.triumph.view.TriumphViewable;
  * 
  * @author Michael Hotan mhotan@quicinc.com
  */
-public class TriumphModel implements BusObserverListener, SignalListener, Destroyable {
+public class TriumphController implements BusObserverListener, SignalListener, Destroyable {
 
     private static final Logger LOG = MainApplication.getLogger();
 
@@ -94,7 +95,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      * Note: Follows singleton pattern to enforce that there 
      * only exists one model 
      */
-    private static TriumphModel mModel;
+    private static TriumphController mModel;
 
     /**
      * List of destroyable object that 
@@ -154,9 +155,9 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
      * 
      * @return Single instance of the model
      */
-    public static TriumphModel getInstance() {
+    public static TriumphController getInstance() {
         if (mModel == null) {
-            mModel = new TriumphModel();
+            mModel = new TriumphController();
         }
         return mModel;
     }
@@ -164,10 +165,8 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
     /**
      * Creates and initialize a model for 
      */
-    private TriumphModel() {
-
+    private TriumphController() {
         // Instantiate members for tracking variables
-
         // Set to track the name for all the services
         mDistributedServices = new HashSet<EndPoint>();
         mLocalServices = new HashSet<EndPoint>();
@@ -275,7 +274,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         // Remove all the endpoints that have the same name
         Collection<EndPoint> toRemove = new HashSet<EndPoint>();
         for (EndPoint ep : mDistributedServices) {
-            if (names.contains(ep.getName()));
+            if (names.contains(ep.getName()))
                 toRemove.add(ep);
         }
         mDistributedServices.removeAll(toRemove);
@@ -283,7 +282,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
         
         // Remove all the Endpoints that have the same name
         for (EndPoint ep : mLocalServices) {
-            if (names.contains(ep.getName()));
+            if (names.contains(ep.getName()))
                 toRemove.add(ep);
         }
         mLocalServices.removeAll(toRemove);
@@ -431,7 +430,7 @@ public class TriumphModel implements BusObserverListener, SignalListener, Destro
             emitter.setSessionlessFlag(true);
         } else {
             emitter = new SignalEmitter(mSignalBusObject, destination, 
-                    session.getSessionID(), GlobalBroadcast.Off);
+                    session.getSessionId(), GlobalBroadcast.Off);
         }
         TriumphCPPAdapter.emitSignal(emitter, ifaceName, signalName, signature, args);
         

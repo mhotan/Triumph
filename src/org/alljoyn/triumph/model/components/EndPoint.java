@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 import org.alljoyn.bus.ProxyBusObject;
 import org.alljoyn.triumph.TriumphException;
-import org.alljoyn.triumph.model.session.Session;
+import org.alljoyn.triumph.controller.session.Session;
 
 /**
  * A wrapper class that pertains to an endpoint or service

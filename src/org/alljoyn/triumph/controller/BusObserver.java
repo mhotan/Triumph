@@ -14,7 +14,7 @@
  *    limitations under the license.
  ******************************************************************************/
 
-package org.alljoyn.triumph.model;
+package org.alljoyn.triumph.controller;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -257,7 +257,6 @@ public class BusObserver implements Destroyable {
         @Override
         public synchronized void lostAdvertisedName(
                 String name, short transport, String namePrefix) {
-            LOG.info("Lost advertised name " + name);
 
             if (name == null || name.length() == 0) {
                 // TODO Log invalid name

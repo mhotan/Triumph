@@ -14,7 +14,7 @@
  *    limitations under the license.
  ******************************************************************************/
 
-package org.alljoyn.triumph.model;
+package org.alljoyn.triumph.controller;
 
 /**
  * Interface that when implemented, forces the implementing class

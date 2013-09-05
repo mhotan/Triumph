@@ -148,7 +148,7 @@ public class Property extends InterfaceComponent implements Attributable {
 
     @Override
     public List<Attribute> getAttributes() {
-        return new ArrayList<>(mAttributes);
+        return new ArrayList<Attribute>(mAttributes);
     }
 
     @Override

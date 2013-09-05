@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.alljoyn.triumph.model.SessionPortStorage;
 import org.alljoyn.triumph.view.EndPointTable.EndPointRow;
 
 /**

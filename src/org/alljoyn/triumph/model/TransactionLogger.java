@@ -52,7 +52,7 @@ public class TransactionLogger {
      * @param inputArgs 
      * @param outArg
      */
-    void logMethodInvocation(Method method, Argument<?>[] inputArgs, Argument<?> outArg) {
+    public void logMethodInvocation(Method method, Argument<?>[] inputArgs, Argument<?> outArg) {
         Transaction t = new MethodTransaction(method, inputArgs, outArg);
         mList.add(t);
     }
@@ -60,17 +60,17 @@ public class TransactionLogger {
     /**
      * 
      */
-    void logSignalEmition(Signal signal, Argument<?>[] args) {
+    public void logSignalEmition(Signal signal, Argument<?>[] args) {
         Transaction t = new SignalTransaction(signal, args);
         mList.add(t);
     }
     
-    void logPropertyGet(Property prop, Argument<?> arg) {
+    public void logPropertyGet(Property prop, Argument<?> arg) {
         Transaction t = new PropertyTransaction(prop, arg, TYPE.PROPERTY_GET);
         mList.add(t);
     }
     
-    void logPropertySet(Property prop, Argument<?> arg) {
+    public void logPropertySet(Property prop, Argument<?> arg) {
         Transaction t = new PropertyTransaction(prop, arg, TYPE.PROPERTY_SET);
         mList.add(t);
     }

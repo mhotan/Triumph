@@ -34,9 +34,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
+import org.alljoyn.triumph.model.EndPointFilterStorage;
+import org.alljoyn.triumph.model.EndPointFilterStorage.SaveListener;
 import org.alljoyn.triumph.util.EndPointFilter;
-import org.alljoyn.triumph.util.EndPointFilterStorage;
-import org.alljoyn.triumph.util.EndPointFilterStorage.SaveListener;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 
 /**

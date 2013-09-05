@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  */
 public class NativeLoader {
 
-    public static final Logger LOG = Logger.getGlobal();
+    public static final Logger LOG = Logger.getLogger(NativeLoader.class.getSimpleName());
 
 //    /**
 //     * String representation for Windows x86 architecture
