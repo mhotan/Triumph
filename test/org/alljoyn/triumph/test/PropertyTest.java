@@ -32,13 +32,13 @@ import org.alljoyn.bus.annotation.BusProperty;
 import org.alljoyn.bus.ifaces.DBusProxyObj;
 import org.alljoyn.triumph.TriumphCPPAdapter;
 import org.alljoyn.triumph.TriumphException;
-import org.alljoyn.triumph.model.components.Interface;
+import org.alljoyn.triumph.controller.session.Session;
+import org.alljoyn.triumph.controller.session.SessionManager;
 import org.alljoyn.triumph.model.components.AJObject;
 import org.alljoyn.triumph.model.components.EndPoint;
-import org.alljoyn.triumph.model.components.TriumphAJParser;
 import org.alljoyn.triumph.model.components.EndPoint.SERVICE_TYPE;
-import org.alljoyn.triumph.model.session.Session;
-import org.alljoyn.triumph.model.session.SessionManager;
+import org.alljoyn.triumph.model.components.Interface;
+import org.alljoyn.triumph.model.components.TriumphAJParser;
 import org.alljoyn.triumph.test.ifaces.PropertyInterface;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -61,7 +61,6 @@ public class PropertyTest {
 	private static BusAttachment mBus;
 	private static SessionManager mSessionManager;
 	private static Session mSession;
-	private Object[] mInArgs;
 	private static MyPropertyService mService;
 
 	@BeforeClass
@@ -103,17 +102,16 @@ public class PropertyTest {
 
 	@After
 	public void tearDown() throws Exception {
-		Status status = mSession.closeConnection();
+		Status status = mSession.disConnect();
 		Assert.assertEquals(Status.OK, status);
 		mBus.unregisterBusObject(mService);
-		mInArgs = null;
 	}
 
 	private AJObject privTestHasObjectByObjectPath() throws TriumphException {
 		TriumphAJParser parser = new TriumphAJParser(mSession);
 		EndPoint service = new EndPoint(ServiceWellKnownName, SERVICE_TYPE.REMOTE);
 
-		assertTrue(parser.parseIntrospectData());
+		assertTrue(parser.parseIntrospectData(service));
 		List<AJObject> objects = mSession.getEndPoint().getObjects();
 
 		// There is always the the DBus peer object for this well known name

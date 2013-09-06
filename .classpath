@@ -7,8 +7,7 @@
 	<classpathentry kind="lib" path="res"/>
 	<classpathentry kind="lib" path="libs/jars/jfxrt.jar"/>
 	<classpathentry kind="lib" path="libs"/>
-	<classpathentry kind="lib" path="libs/jars/jfxtras-labs-2.2-r4.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/alljoyn_java"/>
 	<classpathentry kind="lib" path="libs/jars/alljoyn_about.jar"/>
+	<classpathentry kind="lib" path="libs/jars/alljoyn.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

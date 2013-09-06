@@ -256,7 +256,9 @@ public class TriumphController implements BusObserverListener, SignalListener, D
     @Override
     public void onDistributedNameFound(Collection<String> names) {
         for (String name : names) {
-            mDistributedServices.add(new EndPoint(name, SERVICE_TYPE.REMOTE));
+            EndPoint ep = new EndPoint(name, SERVICE_TYPE.REMOTE);
+            if (!mDistributedServices.contains(ep))
+                mDistributedServices.add(ep);
         }
         broadcastUpdate();
     }
@@ -264,7 +266,9 @@ public class TriumphController implements BusObserverListener, SignalListener, D
     @Override
     public void onLocalNameFound(Collection<String> names) {
         for (String name: names) {
-            mLocalServices.add(new EndPoint(name, SERVICE_TYPE.LOCAL));
+            EndPoint ep = new EndPoint(name, SERVICE_TYPE.LOCAL);
+            if (!mLocalServices.contains(ep))
+                mLocalServices.add(ep);
         }
         broadcastUpdate();
     }
@@ -297,7 +301,14 @@ public class TriumphController implements BusObserverListener, SignalListener, D
      * @return true on success, false otherwise
      */
     public boolean buildService(EndPoint service) {
-        return buildService(service, SessionPortStorage.getPort(service.getName()));
+        Session session = mSessionManager.getSession(service);
+        if (session != null) {
+            return service.build(session);
+        } 
+        session = mSessionManager.createNewSession(service, SessionPortStorage.getPort(service.getName()));
+        assert service.equals(session.getEndPoint()): "Session EndPoint equality";
+        if (session == null) return false;
+        return service.build(session);
     }
 
     /**
@@ -608,22 +619,22 @@ public class TriumphController implements BusObserverListener, SignalListener, D
     /* 	Helper Methods											 */	  
     /* ********************************************************* */
 
-    /**
-     * Build the service and all its components via introspection.
-     * 
-     * @param service Service to build
-     * @param sessionPort Session port to use to connect to endpoint
-     * @return true on success, false if unable to connect with specific port number.
-     */
-    private boolean buildService(EndPoint service, short sessionPort) {
-        Session session = mSessionManager.getSession(service);
-        if (session == null) 
-            session = mSessionManager.createNewSession(service, sessionPort);
-        if (session == null)
-            return false;
-        
-        return service.build(session);
-    }
+//    /**
+//     * Build the service and all its components via introspection.
+//     * 
+//     * @param service Service to build
+//     * @param sessionPort Session port to use to connect to endpoint
+//     * @return true on success, false if unable to connect with specific port number.
+//     */
+//    private boolean buildService(EndPoint service, short sessionPort) {
+//        Session session = mSessionManager.getSession(service);
+//        if (session == null) 
+//            session = mSessionManager.createNewSession(service, sessionPort);
+//        if (session == null)
+//            return false;
+//        
+//        return service.build(session);
+//    }
 
     private class RecievedSignalBroadcaster implements EventHandler<ActionEvent> {
 

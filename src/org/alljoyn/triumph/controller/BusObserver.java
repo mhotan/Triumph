@@ -235,9 +235,9 @@ public class BusObserver implements Destroyable {
             // What is found is that when the new owner is found and the new owner is null,
             // that signifies that the name is lost.
             // Ignore any unique names.
-            if (newOwner == null && !busName.startsWith(":")) {
-                removeAdvertisedName(busName);
-            }
+//            if (newOwner == null && !busName.startsWith(":")) {
+//                removeAdvertisedName(busName);
+//            }
         }
 
         @Override
@@ -269,6 +269,7 @@ public class BusObserver implements Destroyable {
         }
 
         private void removeAdvertisedName(String name) {
+            
             // Make sure we remove the name if it is stored in the
             // buffer then throw it on the lost buffer to ensure 
             // that we notify the buffer is lost.

@@ -35,7 +35,7 @@ class BasicSessionImpl extends Session {
     /**
      * Session Port number for connecting to specific Alljoyn Bus endpoint
      */
-    private final short mPortNum;
+    private final short mPort;
 
     /**
      * Session name to connect to.
@@ -54,9 +54,9 @@ class BasicSessionImpl extends Session {
         super(bus, listener);
         if (ep == null)
             throw new IllegalArgumentException("Name is null");
-        if (port == 0) 
+        if (port == 0 && ep.getServiceType() != SERVICE_TYPE.LOCAL) 
             throw new IllegalArgumentException("Port cannot be 0");
-        mPortNum = port;
+        mPort = port;
         mEndPoint = ep;
     }
 
@@ -84,11 +84,16 @@ class BasicSessionImpl extends Session {
         // Join a session using the bus attachment.
         SessionOpts sessionOpts = new SessionOpts();
         Mutable.IntegerValue sessionId = new Mutable.IntegerValue();
-        Status status = mBus.joinSession(mEndPoint.getName(), mPortNum, sessionId, sessionOpts, this);
+        Status status = mBus.joinSession(mEndPoint.getName(), mPort, sessionId, sessionOpts, this);
         if (status != Status.OK) {
             LOG.warning("Unable to join session with " + mEndPoint.getName());
             return -1;
         }
         return sessionId.value;
+    }
+    
+    @Override
+    public int getPort() {
+        return mPort;
     }
 }

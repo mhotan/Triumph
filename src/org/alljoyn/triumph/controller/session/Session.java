@@ -30,6 +30,7 @@ import org.alljoyn.bus.ifaces.Introspectable;
 import org.alljoyn.bus.ifaces.Peer;
 import org.alljoyn.bus.ifaces.Properties;
 import org.alljoyn.triumph.model.components.EndPoint;
+import org.alljoyn.triumph.model.components.TriumphProxyBusObject;
 import org.w3c.dom.Node;
 
 /**
@@ -107,34 +108,17 @@ public abstract class Session extends SessionListener {
     public abstract EndPoint getEndPoint();
     
     /**
+     * @return The port used to establish a connection.
+     */
+    public abstract int getPort();
+    
+    /**
      * A quick access method to get teh EndPoint Name.
      * 
      * @return the EndPoint name associate to this service
      */
     public String getEndPointName() {
         return getEndPoint().getName();
-    }
-    
-    /**
-     * Saves the proxy bus object associated with a specific object path. 
-     * 
-     * @param objectPath Object path to associate to proxy bus object
-     * @param proxy Proxy object to save for later use.
-     */
-    private void addProxy(String objectPath, ProxyBusObject proxy) {
-        if (objectPath == null || proxy == null) return;
-        mProxies.put(objectPath, proxy);
-    }
-    
-    /**
-     * Returns a proxy bus object for the Object identified and the object path
-     * and at the pre specified EndPoint
-     * 
-     * @param objectPath Object path of the proxybusobject to obtain
-     * @return ProxyBusObject on success, null otherwise
-     */
-    public ProxyBusObject getProxy(String objectPath) {
-        return getProxy(objectPath, STANDARD_INTERFACES);
     }
     
     /**
@@ -179,7 +163,6 @@ public abstract class Session extends SessionListener {
         mIsConnected = false;
         return Status.ALLJOYN_JOINSESSION_REPLY_CONNECT_FAILED;
     }
-    
 
     /**
      * Check whether this session is connected.
@@ -201,6 +184,28 @@ public abstract class Session extends SessionListener {
      */
     private void setSessionId(int id) {
         mSessionId = id;
+    }
+    
+    /**
+     * Saves the proxy bus object associated with a specific object path. 
+     * 
+     * @param objectPath Object path to associate to proxy bus object
+     * @param proxy Proxy object to save for later use.
+     */
+    private void addProxy(String objectPath, ProxyBusObject proxy) {
+        if (objectPath == null || proxy == null) return;
+        mProxies.put(objectPath, proxy);
+    }
+    
+    /**
+     * Returns a proxy bus object for the Object identified and the object path
+     * and at the pre specified EndPoint
+     * 
+     * @param objectPath Object path of the proxybusobject to obtain
+     * @return ProxyBusObject on success, null otherwise
+     */
+    public ProxyBusObject getProxy(String objectPath) {
+        return getProxy(objectPath, STANDARD_INTERFACES);
     }
     
     /**
@@ -228,7 +233,7 @@ public abstract class Session extends SessionListener {
 
         // Create a new proxy object.
         if (createNew) {
-            proxy = mBus.getProxyBusObject(
+            proxy = new TriumphProxyBusObject(mBus,
                     getEndPointName(), 
                     objPath, 
                     getSessionId(), 

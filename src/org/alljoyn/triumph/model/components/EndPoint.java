@@ -44,9 +44,15 @@ public class EndPoint extends AllJoynComponent {
      */
     private final List<AJObject> mObjects;
 
+    /**
+     * Type of endpoint
+     * @author Michael Hotan, mhotan@quicinc.com
+     */
     public enum SERVICE_TYPE {
         LOCAL, REMOTE
     }
+    
+    private ProxyBusObject mStandardProxy;
 
     private final SERVICE_TYPE mServiceType;
 
@@ -100,7 +106,7 @@ public class EndPoint extends AllJoynComponent {
             saveBusPeerProxy(proxy);
 
             TriumphAJParser parser = new TriumphAJParser(session);
-            parser.parseIntrospectData();
+            parser.parseIntrospectData(this);
             isBuilt = true;
         } catch (TriumphException e) {
             LOG.warning("Failed to build EndPoint " + getName() + " Exception: " + e.getMessage());
@@ -175,7 +181,6 @@ public class EndPoint extends AllJoynComponent {
         return getName().hashCode() + 11 * mServiceType.hashCode();
     }
 
-    private ProxyBusObject mStandardProxy;
 
     /**
      * Saves Proxy bus object for standard object.
@@ -191,4 +196,5 @@ public class EndPoint extends AllJoynComponent {
     public ProxyBusObject getBusPeerProxy() {
         return mStandardProxy;
     }
+    
 }
