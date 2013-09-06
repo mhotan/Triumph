@@ -67,7 +67,7 @@ public class MemberTitleView extends VBox {
 
     public MemberTitleView(Member member) {
         // Load the associated 
-        ViewLoader.loadView("MemberTitleView.fxml", this);
+        ViewLoader.loadView(this);
 
         mMemberName.setText(member.getName());
 

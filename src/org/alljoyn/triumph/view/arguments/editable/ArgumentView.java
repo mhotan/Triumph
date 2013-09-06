@@ -130,13 +130,15 @@ public abstract class ArgumentView<T> extends HBox implements CloseListener {
         // Hide any possible errors
         hideError();
 
-        mSave.setOnAction(new EventHandler<ActionEvent>() {
+        if (mSave != null) {
+            mSave.setOnAction(new EventHandler<ActionEvent>() {
 
-            @Override
-            public void handle(ActionEvent event) {
-                onSave(event);
-            }
-        });
+                @Override
+                public void handle(ActionEvent event) {
+                    onSave(event);
+                }
+            });
+        }
     }
 
     /**

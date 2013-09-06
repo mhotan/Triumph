@@ -36,6 +36,7 @@ import java.util.Set;
 
 import org.alljoyn.bus.BusException;
 import org.alljoyn.bus.Variant;
+import org.alljoyn.triumph.model.ArgumentStorage;
 import org.alljoyn.triumph.model.components.Attribute;
 import org.alljoyn.triumph.model.components.arguments.Argument.DIRECTION;
 import org.alljoyn.triumph.model.components.arguments.ArgumentFactory;
@@ -46,7 +47,6 @@ import org.alljoyn.triumph.model.components.arguments.SignatureArgument;
 import org.alljoyn.triumph.model.components.arguments.StructArgument;
 import org.alljoyn.triumph.model.components.arguments.VariantArgument;
 import org.alljoyn.triumph.util.AJConstant;
-import org.alljoyn.triumph.util.ArgumentStorage;
 import org.alljoyn.triumph.util.loaders.NativeLoader;
 import org.junit.After;
 import org.junit.Before;

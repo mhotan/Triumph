@@ -31,14 +31,14 @@ import org.alljoyn.bus.Status;
 import org.alljoyn.bus.ifaces.DBusProxyObj;
 import org.alljoyn.triumph.TriumphCPPAdapter;
 import org.alljoyn.triumph.TriumphException;
-import org.alljoyn.triumph.model.components.Interface;
+import org.alljoyn.triumph.controller.session.Session;
+import org.alljoyn.triumph.controller.session.SessionManager;
 import org.alljoyn.triumph.model.components.AJObject;
 import org.alljoyn.triumph.model.components.EndPoint;
+import org.alljoyn.triumph.model.components.EndPoint.SERVICE_TYPE;
+import org.alljoyn.triumph.model.components.Interface;
 import org.alljoyn.triumph.model.components.Member;
 import org.alljoyn.triumph.model.components.TriumphAJParser;
-import org.alljoyn.triumph.model.components.EndPoint.SERVICE_TYPE;
-import org.alljoyn.triumph.model.session.Session;
-import org.alljoyn.triumph.model.session.SessionManager;
 import org.alljoyn.triumph.test.ifaces.SignalInterface;
 import org.alljoyn.triumph.test.ifaces.SignalReceiver;
 import org.alljoyn.triumph.test.ifaces.SignalSource;
@@ -121,7 +121,7 @@ public class SignalTest {
 
 	@After
 	public void tearDown() throws Exception {
-		Status status = mSession.closeConnection();
+		Status status = mSession.disConnect();
 		Assert.assertEquals(Status.OK, status);
 		mBus.unregisterBusObject(mReceiver);
 		mBus.unregisterBusObject(mSource);
@@ -131,7 +131,7 @@ public class SignalTest {
 		TriumphAJParser parser = new TriumphAJParser(mSession);
 		EndPoint service = new EndPoint(ServiceWellKnownName, SERVICE_TYPE.REMOTE);
 		
-		assertTrue(parser.parseIntrospectData());
+		assertTrue(parser.parseIntrospectData(service));
         List<AJObject> objects = mSession.getEndPoint().getObjects();
 		
 		// There is always the the DBus peer object for this well known name
@@ -170,7 +170,7 @@ public class SignalTest {
 		String argumentSignature = member.getOutputSignature();
 		
 		SignalEmitter emitter = new SignalEmitter(
-				mSource, ServiceWellKnownName, mSession.getSessionID(), GlobalBroadcast.Off);
+				mSource, ServiceWellKnownName, mSession.getSessionId(), GlobalBroadcast.Off);
 		TriumphCPPAdapter.emitSignal(emitter, ifaceName, signalName, argumentSignature, args);
 	}
 	

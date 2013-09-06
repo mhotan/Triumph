@@ -21,7 +21,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ DynamicDispatch.class, ForEachLoopTest.class,
+@SuiteClasses({ DynamicDispatch.class,
 	MethodTest.class, NumberFormatTest.class,
 		SignatureSplitTest.class, SimpleArgumentTest.class })
 public class AllTests {

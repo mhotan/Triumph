@@ -122,11 +122,14 @@ public class EndPointTable extends TableView<EndPointRow> {
             
             @Override
             public void handle(CellEditEvent<EndPointRow, Boolean> event) {
+             // Attempt to connect.
+                EndPointRow row = event.getTableView().getItems().get(event.getTablePosition().getRow());
+                if (row == null) return;
+                
                 Boolean connect = event.getNewValue();
                 if (!connect) return;
                 
-                // Attempt to connect.
-                EndPointRow row = event.getTableView().getItems().get(event.getTablePosition().getRow());
+                
                 row.setConnected(TriumphController.getInstance().buildService(row.getEndPoint()));
             }
         });

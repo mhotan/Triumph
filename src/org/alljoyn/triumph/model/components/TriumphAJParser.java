@@ -71,7 +71,6 @@ public class TriumphAJParser {
         mSession = session;
     }
 
-
     /**
      * Given an Alljoyn Service attempt to retrieve all the objects that are accessible.
      * This returns a complete AllJoyn Service and all the internal objects.
@@ -81,10 +80,8 @@ public class TriumphAJParser {
      * @return The complete service with all the internal objects
      * @throws TriumphException Unable to get introspection
      */
-    public boolean parseIntrospectData() throws TriumphException {
-        EndPoint service = null;
+    public boolean parseIntrospectData(EndPoint service) throws TriumphException {
         try {
-            service = mSession.getEndPoint();
             short sessionId = (short) mSession.getSessionId();
             // Retrieve all the names of the objects that currently exists within that
             // service.  This allows us to check if we need to create a session.

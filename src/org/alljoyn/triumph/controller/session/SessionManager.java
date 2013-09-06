@@ -31,13 +31,14 @@ import javafx.util.Duration;
 import org.alljoyn.about.AboutService;
 import org.alljoyn.about.AboutServiceImpl;
 import org.alljoyn.bus.BusAttachment;
+import org.alljoyn.bus.BusListener;
 import org.alljoyn.bus.Status;
 import org.alljoyn.bus.Variant;
 import org.alljoyn.services.common.AnnouncementHandler;
 import org.alljoyn.services.common.BusObjectDescription;
 import org.alljoyn.triumph.TriumphException;
-import org.alljoyn.triumph.controller.Destroyable;
 import org.alljoyn.triumph.controller.BusObserver.BusObserverListener;
+import org.alljoyn.triumph.controller.Destroyable;
 import org.alljoyn.triumph.model.SessionPortStorage;
 import org.alljoyn.triumph.model.components.EndPoint;
 
@@ -124,7 +125,12 @@ public class SessionManager implements Destroyable, TriumphSessionListener, Anno
      * @return Connected session on success, null on failure
      */
     public synchronized Session getSession(EndPoint ep) {
-        return mSessions.get(ep);
+        Session session = mSessions.get(ep);
+        if (session != null) {
+            // Attempt to connect if not already connect.
+            session.connect();
+        }
+        return session;
     } 
 
     /**
@@ -193,7 +199,9 @@ public class SessionManager implements Destroyable, TriumphSessionListener, Anno
     }
 
     private synchronized void flushLostEPs() {
-        if (mBusListener == null || mLostEPs.isEmpty()) return;
+        if (mBusListener == null || mLostEPs.isEmpty()) {
+            return;
+        }
         mBusListener.onNameLost(mLostEPs);
         mLostEPs.clear();
     }
@@ -221,21 +229,18 @@ public class SessionManager implements Destroyable, TriumphSessionListener, Anno
     }
 
     @Override
-    public void onAnnouncement(String endPointName, short port, 
+    public void onAnnouncement(String uniqueName, short port, 
             BusObjectDescription[] objectDescriptions, Map<String, Variant> aboutData) {
         if (mAboutService == null) return;
         // AllJoyn thread.
         // Create an About Client and About session
-        AboutSession session = new AboutSession(mAboutService, endPointName, port, mBus, this);
-        if (session.connect() != Status.OK) {
-            LOG.warning("Unable to create a session with " + endPointName);
-            return;
-        }
-        SessionPortStorage.savePort(endPointName, port);
+        AboutSession session = new AboutSession(mAboutService, uniqueName, port, mBus, this);
+        SessionPortStorage.savePort(uniqueName, port);
         
         // Create a thread to add About session 
         Thread t = new Thread(new AboutSessionSaver(session));
         t.start();
+        saveSession(session);
     }
 
     @Override
@@ -252,20 +257,30 @@ public class SessionManager implements Destroyable, TriumphSessionListener, Anno
         private final AboutSession mSession;
         
         AboutSessionSaver(AboutSession session) {
-            if (!session.isConnected() || session.connect() != Status.OK) {
-                throw new IllegalStateException("Session must be or be able to connect");
-            }
             mSession = session;
         }
         
         @Override
         public void run() {
+            if (mSession.connect() != Status.OK)
+                return;
+            
             EndPoint ep = mSession.getEndPoint();
             if (!ep.build(mSession)) {
                 LOG.warning("Unable to build Endpoint " + ep.getName());
                 return;
             }
             saveSession(mSession);
+        }
+    }
+    
+    private static class SessionBusListener extends BusListener {
+        
+        @Override
+        public void nameOwnerChanged(
+                String busName, String previousOwner, String newOwner) {
+            super.nameOwnerChanged(busName, previousOwner, newOwner);
+            if (newOwner == null) return; // Ignore null new owner names
         }
         
     }

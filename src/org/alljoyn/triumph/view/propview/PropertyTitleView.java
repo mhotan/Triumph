@@ -6,19 +6,18 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-import org.alljoyn.triumph.model.components.Interface;
 import org.alljoyn.triumph.model.components.AJObject;
 import org.alljoyn.triumph.model.components.EndPoint;
+import org.alljoyn.triumph.model.components.Interface;
 import org.alljoyn.triumph.model.components.Property;
 import org.alljoyn.triumph.util.loaders.ViewLoader;
 
 /**
  * Title view for the property.
  */
-public class PropertyTitleView extends BorderPane {
+public class PropertyTitleView extends VBox {
 
     @FXML
     private ResourceBundle resources;
