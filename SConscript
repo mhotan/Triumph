@@ -36,7 +36,7 @@ else:
 
 # Generate all the class files
 third_party_jars_dir = env.Dir('libs/jars')
-third_party_jars = ['alljoyn.jar', 'jfxrt.jar']
+third_party_jars = ['alljoyn.jar', 'jfxrt.jar', 'alljoyn_about.jar']
 
 # Create the concatonated string of the 3rd party jars to add to classpath
 # This is the argument flag -cp or -classpath with arg values of
