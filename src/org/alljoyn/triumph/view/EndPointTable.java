@@ -72,8 +72,8 @@ public class EndPointTable extends TableView<EndPointRow> {
      */
     private final Collection<EndPointListener> mListeners;
     
-    private final double DEFAULT_MAX_COLUMN_WIDTH = 100;
-    private final double DEFAULT_MIN_COLUMN_WIDTH = 80;
+    private final double DEFAULT_MAX_COLUMN_WIDTH = 150;
+    private final double DEFAULT_MIN_COLUMN_WIDTH = 100;
     
     /**
      * Create an empty table.
@@ -170,9 +170,15 @@ public class EndPointTable extends TableView<EndPointRow> {
         TableColumn<EndPointRow,String> nameColumn = new TableColumn<EndPointRow,String>("Name");
         nameColumn.setCellValueFactory(new PropertyValueFactory<EndPointRow,String>("name"));
         
+        // Create a column for machine ids
+        TableColumn<EndPointRow,String> machineIDCol = new TableColumn<EndPointRow,String>("Machine ID");
+        machineIDCol.setCellValueFactory(new PropertyValueFactory<EndPointRow,String>("machineid"));
+        machineIDCol.setMaxWidth(DEFAULT_MAX_COLUMN_WIDTH);
+        machineIDCol.setMinWidth(DEFAULT_MIN_COLUMN_WIDTH);
+        
         setItems(mListManager.getUnderlyingList());
         setEditable(true);
-        getColumns().setAll(connectedCol, portColumn, nameColumn);
+        getColumns().setAll(connectedCol, portColumn, nameColumn, machineIDCol);
     
         getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EndPointRow>() {
 
@@ -277,6 +283,8 @@ public class EndPointTable extends TableView<EndPointRow> {
         private StringProperty name;
 
         private IntegerProperty port;
+        
+        private StringProperty machineid;
 
         /**
          * Gets the contained endpoint
@@ -315,6 +323,14 @@ public class EndPointTable extends TableView<EndPointRow> {
             return this.name;
         }
         
+        public StringProperty machineidProperty() {
+            if (this.machineid == null) {
+                this.machineid = new SimpleStringProperty();
+                this.machineid.bind(mEp.getMachineId());
+            }
+            return this.machineid;
+        }
+        
         public void setConnected(boolean value) {
             connectedProperty().set(value);
         }
@@ -338,6 +354,14 @@ public class EndPointTable extends TableView<EndPointRow> {
 
         public int getPort() { 
             return portProperty().get(); 
+        }
+        
+        public void setMachineid(String machineid) {
+            machineidProperty().set(machineid);
+        }
+        
+        public String getMachineid() {
+            return machineidProperty().get();
         }
 
         public EndPointRow(EndPoint ep) {

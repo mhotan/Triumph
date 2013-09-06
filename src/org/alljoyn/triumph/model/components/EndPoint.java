@@ -20,7 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
+import org.alljoyn.bus.BusException;
 import org.alljoyn.bus.ProxyBusObject;
+import org.alljoyn.bus.ifaces.Peer;
 import org.alljoyn.triumph.TriumphException;
 import org.alljoyn.triumph.controller.session.Session;
 
@@ -52,9 +57,13 @@ public class EndPoint extends AllJoynComponent {
         LOCAL, REMOTE
     }
     
+    private StringProperty machineid;
+    
     private ProxyBusObject mStandardProxy;
 
     private final SERVICE_TYPE mServiceType;
+    
+    private static final String ALLJOYN_PEER_OBJ_PATH = "/org/alljoyn/Bus/Peer";
 
     /**
      * Creates an empty Service with no objects
@@ -89,8 +98,14 @@ public class EndPoint extends AllJoynComponent {
 
         // If there are objects then this is built.
         isBuilt = objects != null;
+        
+        machineid = new SimpleStringProperty("???");
     }
 
+    public StringProperty getMachineId() {
+        return machineid;
+    }
+    
     /**
      * Attempts to build this endpoint and extract all of its objects.
      * 
@@ -102,7 +117,7 @@ public class EndPoint extends AllJoynComponent {
         try {
             
             // If fails throw exception
-            ProxyBusObject proxy = session.getProxy("org/alljoyn/Bus/Peer");
+            ProxyBusObject proxy = session.getProxy(ALLJOYN_PEER_OBJ_PATH);
             saveBusPeerProxy(proxy);
 
             TriumphAJParser parser = new TriumphAJParser(session);
@@ -181,14 +196,19 @@ public class EndPoint extends AllJoynComponent {
         return getName().hashCode() + 11 * mServiceType.hashCode();
     }
 
-
     /**
      * Saves Proxy bus object for standard object.
      * @param proxy Proxy to save
      */
     public void saveBusPeerProxy(ProxyBusObject proxy) {
-        if (!proxy.getObjPath().equals("org/alljoyn/Bus/Peer")) {
+        if (!proxy.getObjPath().equals(ALLJOYN_PEER_OBJ_PATH)) {
             throw new IllegalArgumentException("saveBusPeerProxy() proxy object path not org/alljoyn/Bus/Peer");
+        }
+        Peer p = proxy.getInterface(Peer.class);
+        try {
+            machineid.set(p.GetMachineId());
+        } catch (BusException e) {
+            LOG.warning("Unable to get machine ID " + e);
         }
         mStandardProxy = proxy;
     }
